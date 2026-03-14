@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | SENTINEL-X</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Specific Privacy Page Styling */
+        .privacy-container {
+            text-align: left;
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .privacy-container h3 {
+            color: #e53935;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+        .privacy-container p, .privacy-container li {
+            color: #cccccc;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+        .privacy-container ul { margin-left: 20px; }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #64b5f6;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: 0.2s;
+        }
+        .back-btn:active { transform: scale(0.95); color: #ffffff; }
+        .highlight { color: #4CAF50; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 style="color: #E53935; letter-spacing: 2px;">Privacy Policy</h1>
+        <p style="color: #888;">SENTINEL-X | Secure 3-Tier Architecture</p>
+    </header>
+
+    <main style="max-width: 800px; margin: 0 auto; padding: 0 20px;">
+        <a href="index.html" class="back-btn">← Return to Secure Hub</a>
+
+        <section class="privacy-container">
+            <p><strong>Effective Date:</strong> February 2026</p>
+            
+            <h3>1. Academic Project Status</h3>
+            <p>Sentinel-X is a proprietary academic project engineered to demonstrate autonomous SOS and Context-Aware Auto-Responder capabilities. We adhere strictly to a "Privacy by Design" framework.</p>
+
+            <h3>2. Tier 1: User Authentication</h3>
+            <p>To access the Secure Evidence Portal, users must verify their identity:</p>
+            <ul>
+                <li><strong>Gmail OAuth:</strong> Managed securely via Google Firebase. We log only your email address to generate a unique cryptographic UID.</li>
+                <li>We do not share, sell, or use your email for marketing purposes.</li>
+            </ul>
+
+            <h3>3. Tier 2: Local Device Data (SOS & Responder)</h3>
+            <p>Sentinel-X requests access to sensitive hardware solely for autonomous protection:</p>
+            <ul>
+                <li><strong>Location Data (GPS):</strong> Accessed only during an active SOS trigger. Coordinates are dispatched locally via SMS to trusted contacts and are never stored on our external servers.</li>
+                <li><strong>Telephony & SMS Logs:</strong> Scanned locally on the device to manage the Context-Aware Auto-Responder. These logs never leave your device.</li>
+                <li><strong>Camera & Microphone:</strong> Accessed exclusively when you manually trigger the Secure Evidence Vault.</li>
+            </ul>
+
+            <h3>4. Tier 3: Encrypted Cloud Evidence Vault</h3>
+            <p>Video evidence captured in the vault is handled with strict security protocols:</p>
+            <ul>
+                <li>Evidence is uploaded directly to a private <span class="highlight">Cloudinary Media Vault</span>.</li>
+                <li>Files are isolated in the <code>sentinel_evidence</code> directory.</li>
+                <li>Every log is permanently linked to your verified Firebase UID to ensure a secure chain of custody.</li>
+            </ul>
+
+            <h3>5. Data Sovereignty</h3>
+            <p>As the user, you retain absolute ownership of your data. You may revoke camera, microphone, and location permissions at any time via your Android device settings.</p>
+        </section>
+    </main>
+
+    <footer style="margin-top: 40px; border-top: 1px solid #333; padding-top: 20px; color: #555; font-size: 0.8rem; text-align: center; padding-bottom: 20px;">
+        <p>© 2026 Suryakant Chaudhary & S Jaya Kumar. All Rights Reserved. Bangalore University BCA Project.</p>
+    </footer>
+
+</body>
+</html>
