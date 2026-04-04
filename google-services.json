@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "192301825793",
+    "project_id": "sentinel-vault-fb4b7",
+    "storage_bucket": "sentinel-vault-fb4b7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:192301825793:android:27c7492a4f478dfa8fe500",
+        "android_client_info": {
+          "package_name": "com.sentinel3tierx.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "192301825793-b6ncjr857vas09er0e4rc1vdjke8p865.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sentinel3tierx.app",
+            "certificate_hash": "69bcb91965f59fa2999583492de7c2278f3c09a1"
+          }
+        },
+        {
+          "client_id": "192301825793-vfaqepo22bs26q6750hc1n9oep59n9hj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDI8tUgY7_UgTXSr8SaJDiATfURepF-9AA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "192301825793-vfaqepo22bs26q6750hc1n9oep59n9hj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

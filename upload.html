@@ -3,31 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentinel-X | Evidence Vault</title>
+    
+    <title>Raksha-Suraksha | Tier-3 Evidence Vault</title>
+    <meta name="title" content="Raksha-Suraksha | Tier-3 Evidence Vault">
+    <meta name="description" content="Authorized agents only. Secure cloud-based video evidence vault for the Raksha-Suraksha system.">
+    
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 
-    <h1>SENTINEL VAULT</h1>
+    <h1>RAKSHA-SURAKSHA VAULT</h1>
     
-    <div id="authGate" class="auth-box" style="margin-top: 40px;">
+    <div id="authGate" class="auth-box">
         <h3>IDENTITY REQUIRED</h3>
         <p>Authentication required for Cloud Vault access.</p>
-        <button id="btnGoogle" style="background: #4285F4; color: white; padding: 15px; width: 90%; border: none; border-radius: 8px; font-weight: bold; margin-top: 15px;">SIGN IN WITH GMAIL</button>
-        <p id="authError" style="color: #E53935; font-size: 0.85rem; margin-top: 15px; font-weight: bold;"></p>
+        <button id="btnGoogle">SIGN IN WITH GMAIL</button>
+        <p id="authError" class="warning-text"></p>
     </div>
 
-    <div id="secureVault" class="hidden" style="margin-top: 20px;">
-        <p style="color: #4CAF50; font-weight: bold;">AGENT: <span id="userName"></span></p>
+    <div id="secureVault" class="hidden auth-box">
+        <p class="highlight">AGENT: <span id="userName"></span></p>
         
-        <video id="videoPreview" autoplay muted playsinline style="width: 100%; max-width: 400px; border: 2px solid #E53935; border-radius: 10px; margin: 20px 0; background: #000; box-shadow: 0 0 15px rgba(229, 57, 53, 0.3);"></video>
+        <video id="videoPreview" autoplay muted playsinline></video>
         
-        <button id="btnStart" style="background: linear-gradient(135deg, #E53935, #b71c1c); color: white; padding: 15px; width: 90%; border: none; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 15px rgba(229, 57, 53, 0.4);">ACTIVATE HARDWARE</button>
-        <button id="btnStop" class="hidden" style="background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; padding: 15px; width: 90%; border: none; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);">UPLOAD EVIDENCE</button>
+        <button id="btnStart">ACTIVATE HARDWARE</button>
+        <button id="btnStop" class="hidden">UPLOAD EVIDENCE</button>
         
-        <div id="statusText" style="color: #64b5f6; margin-top: 20px; font-weight: bold;">System Armed.</div>
+        <div id="statusText" style="color: #66FCF1; margin-top: 20px; font-weight: bold;">System Armed.</div>
     </div>
 
     <script>
@@ -59,13 +63,13 @@
 
         document.getElementById('btnGoogle').addEventListener('click', () => {
             const provider = new firebase.auth.GoogleAuthProvider();
-            authError.style.color = "#FFB300"; // Orange
+            authError.style.color = "#00E5FF"; // Tactical Cyan
             authError.innerText = "Opening Secure Gate... (Watch for popup blockers at the bottom of your screen)";
             
             firebase.auth().signInWithPopup(provider).catch((error) => {
-                authError.style.color = "#E53935"; // Red
+                authError.style.color = "#D32F2F"; // Alert Red
                 if (error.code === 'auth/popup-blocked') {
-                    authError.innerText = "⚠️ Chrome blocked the login window! Please look at the very bottom of your screen and tap 'Always show' to allow Sentinel-X to securely log you in.";
+                    authError.innerText = "⚠️ Chrome blocked the login window! Please look at the very bottom of your screen and tap 'Always show' to allow Raksha-Suraksha to securely log you in.";
                 } else {
                     authError.innerText = "Access Error: " + error.message;
                 }
@@ -87,14 +91,12 @@
                 mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
 
                 mediaRecorder.onstop = async () => {
-                    statusText.innerText = "UPLOADING TO CLOUD..."; statusText.style.color = "#FFCA28";
+                    statusText.innerText = "UPLOADING TO CLOUD..."; statusText.style.color = "#00E5FF"; // Tactical Cyan
                     
-                    // FIXED: Telling Cloudinary it is a WebM video natively!
                     const blob = new Blob(recordedChunks, { type: 'video/webm' });
                     const formData = new FormData();
                     
-                    // FIXED: Appended a real filename with an extension!
-                    formData.append('file', blob, 'sentinel_log.webm');
+                    formData.append('file', blob, 'raksha_suraksha_log.webm');
                     formData.append('upload_preset', 'sentinel_videos'); 
                     formData.append('folder', 'sentinel_evidence'); 
 
@@ -102,16 +104,16 @@
                         const response = await fetch('https://api.cloudinary.com/v1_1/duaii5zhm/video/upload', { method: 'POST', body: formData });
                         const data = await response.json();
                         if(data.secure_url) {
-                            statusText.innerText = "EVIDENCE SECURED."; statusText.style.color = "#4CAF50";
+                            statusText.innerText = "EVIDENCE SECURED."; statusText.style.color = "#00E676"; // Success Green
                         }
-                    } catch (err) { statusText.innerText = "UPLOAD FAILED."; statusText.style.color = "#E53935"; }
+                    } catch (err) { statusText.innerText = "UPLOAD FAILED."; statusText.style.color = "#D32F2F"; } // Alert Red
                     stream.getTracks().forEach(track => track.stop());
                 };
 
                 recordedChunks = []; mediaRecorder.start();
                 btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
-                statusText.innerText = "🔴 RECORDING..."; statusText.style.color = "#E53935";
-            } catch (err) { statusText.innerText = "Camera Permission Denied."; statusText.style.color = "#E53935"; }
+                statusText.innerText = "🔴 RECORDING..."; statusText.style.color = "#D32F2F"; // Alert Red
+            } catch (err) { statusText.innerText = "Camera Permission Denied."; statusText.style.color = "#D32F2F"; } // Alert Red
         });
 
         btnStop.addEventListener('click', () => {
