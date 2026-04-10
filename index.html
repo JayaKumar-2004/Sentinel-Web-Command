@@ -4,23 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <meta property="og:site_name" content="Raksha-Suraksha">
+    <meta name="application-name" content="Raksha-Suraksha">
+    
     <title>Raksha-Suraksha | Advanced Anti-Theft & Personal Safety App</title>
     <meta name="title" content="Raksha-Suraksha | Advanced Anti-Theft & Personal Safety App">
     <meta name="description" content="Raksha-Suraksha is a military-grade personal safety and anti-theft Android application built for offline security, SOS exfiltration, and device tracking.">
     <meta name="keywords" content="Raksha-Suraksha, safety app, anti-theft app, offline SOS, Android security, women safety app, fake switch off app, Bengaluru">
     <meta name="author" content="S Jaya Kumar & Suryakant Chaudhary">
 
+    <link rel="icon" type="image/png" href="temp_logo.png">
+    <link rel="apple-touch-icon" href="temp_logo.png">
+
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://jayakumar-2004.github.io/Sentinel-Web-Command/">
     <meta property="og:title" content="Raksha-Suraksha | Personal Safety App">
     <meta property="og:description" content="Military-grade personal safety and anti-theft application.">
 
-
-<meta name="google-site-verification" content="h-iwzAF8UBxR-KMoV6O_aK9Npp2V4pObmgSO-uhKksw" />
+    <meta name="google-site-verification" content="h-iwzAF8UBxR-KMoV6O_aK9Npp2V4pObmgSO-uhKksw" />
 
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #0f172a; /* Tactical Slate Navy - NOT BLACK */
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease-out; /* Smooth fade effect */
+        }
+        .splash-logo {
+            width: 120px;
+            margin-bottom: 20px;
+        }
+        .splash-title {
+            color: #00E5FF; /* Tactical Cyan */
+            font-size: 2rem;
+            letter-spacing: 4px;
+            margin: 0;
+            font-family: sans-serif;
+            text-align: center;
+        }
+        .splash-subtitle {
+            color: #888888;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            margin-top: 10px;
+            font-family: sans-serif;
+            text-align: center;
+        }
+        .splash-loading {
+            color: #3b82f6; /* Blue loading text */
+            position: absolute;
+            bottom: 50px;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+    </style>
 </head>
 <body>
+
+    <div id="splash-screen">
+        <img src="temp_logo.png" alt="Raksha-Suraksha Logo" class="splash-logo">
+        <h1 class="splash-title">RAKSHA-SURAKSHA</h1>
+        <p class="splash-subtitle">TACTICAL COMMAND SYSTEM</p>
+        <p class="splash-loading">INITIALIZING PROTOCOLS...</p>
+    </div>
 
     <header>
         <h1>RAKSHA-SURAKSHA</h1>
@@ -65,6 +127,20 @@
     <footer>
         <p>© 2026 Suryakant Chaudhary & S Jaya Kumar. All Rights Reserved. Raksha-Suraksha Academic Project.</p>
     </footer>
+
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                var splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0'; // Start the fade out
+                
+                // Wait for the fade out to finish (1 second) then remove it from the page completely
+                setTimeout(function() {
+                    splash.style.display = 'none';
+                }, 1000);
+            }, 3000); // 3000 milliseconds = 3 seconds wait time
+        });
+    </script>
 
 </body>
 </html>
