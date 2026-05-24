@@ -20,59 +20,241 @@
     <meta property="og:url" content="https://jayakumar-2004.github.io/Sentinel-Web-Command/">
     <meta property="og:title" content="Raksha-Suraksha | Personal Safety App">
     <meta property="og:description" content="Military-grade personal safety and anti-theft application.">
-
     <meta name="google-site-verification" content="h-iwzAF8UBxR-KMoV6O_aK9Npp2V4pObmgSO-uhKksw" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
 
     <style>
+        /* 🌟 MASTER UI OVERRIDES 🌟 */
+        body {
+            background-color: #050b14;
+            background-image: radial-gradient(circle at center, #0a192f 0%, #020c1b 100%);
+            color: #e6f1ff;
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Rajdhani', sans-serif;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        p, a, .subtitle {
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        /* 🌟 STICKY TACTICAL NAV BAR 🌟 */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            background: rgba(2, 12, 27, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .sticky-nav a {
+            color: #00E5FF;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            padding: 5px 10px;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .sticky-nav a:hover {
+            background: rgba(0, 229, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+        }
+
+        /* 🌟 DASHBOARD HEADER 🌟 */
+        header {
+            text-align: center;
+            padding: 40px 20px 20px;
+        }
+        
+        header h1 {
+            color: #00E5FF;
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+        }
+
+        header p {
+            color: #8892b0;
+            font-size: 1rem;
+        }
+
+        /* 🌟 CSS GRID FOR DESKTOP/MOBILE SCALING 🌟 */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr; /* Side-by-side on desktop */
+            }
+            .full-width {
+                grid-column: span 2; /* Spans across both columns */
+            }
+        }
+
+        /* 🌟 GLASSMORPHISM PANELS 🌟 */
+        .glass-panel {
+            background: rgba(16, 24, 32, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .glass-panel:hover {
+            transform: translateY(-5px);
+            border: 1px solid rgba(0, 229, 255, 0.5);
+            box-shadow: 0 12px 40px rgba(0, 229, 255, 0.1);
+        }
+
+        .glass-panel h2, .glass-panel h3 {
+            color: #e6f1ff;
+            margin-top: 0;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+            width: 100%;
+        }
+
+        .glass-panel .subtitle {
+            color: #8892b0;
+            font-size: 0.85rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        /* 🌟 TACTICAL BUTTONS 🌟 */
+        .btn-tactical {
+            display: inline-block;
+            width: 85%;
+            background: rgba(0, 229, 255, 0.05);
+            color: #00E5FF;
+            border: 1px solid #00E5FF;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            border-radius: 8px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .btn-tactical:hover {
+            background: rgba(0, 229, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+            transform: scale(1.02);
+        }
+
+        .btn-destructive {
+            border-color: #ff3366;
+            color: #ff3366;
+            background: rgba(255, 51, 102, 0.05);
+        }
+
+        .btn-destructive:hover {
+            background: rgba(255, 51, 102, 0.2);
+            box-shadow: 0 0 20px rgba(255, 51, 102, 0.4);
+        }
+        
+        .btn-disabled {
+            border-color: #555;
+            color: #555;
+            cursor: not-allowed;
+        }
+        .btn-disabled:hover {
+            transform: none;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .warning-text {
+            color: #ff3366;
+            font-size: 0.75rem;
+            margin-top: 10px;
+        }
+
+        /* 🌟 SPLASH SCREEN ANIMATIONS 🌟 */
         #splash-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: #0f172a; /* Tactical Slate Navy - NOT BLACK */
+            background-color: #050b14; 
             z-index: 9999;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: opacity 1s ease-out; /* Smooth fade effect */
+            transition: opacity 1s ease-out; 
         }
         .splash-logo {
             width: 120px;
             margin-bottom: 20px;
+            filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.5));
         }
         .splash-title {
-            color: #00E5FF; /* Tactical Cyan */
-            font-size: 2rem;
-            letter-spacing: 4px;
+            color: #00E5FF; 
+            font-size: 2.5rem;
+            letter-spacing: 6px;
             margin: 0;
-            font-family: sans-serif;
-            text-align: center;
-        }
-        .splash-subtitle {
-            color: #888888;
-            font-size: 0.9rem;
-            letter-spacing: 3px;
-            margin-top: 10px;
-            font-family: sans-serif;
-            text-align: center;
         }
         .splash-loading {
-            color: #3b82f6; /* Blue loading text */
+            color: #3b82f6; 
             position: absolute;
             bottom: 50px;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+        }
+        .blinking-cursor {
+            font-weight: bold;
+            color: #00E5FF;
+            animation: 1s blink step-end infinite;
+        }
+        @keyframes blink { 50% { color: transparent; } }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #8892b0;
             font-size: 0.8rem;
-            letter-spacing: 2px;
-            animation: blink 1.5s infinite;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: 40px;
         }
-        @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0.4; }
-            100% { opacity: 1; }
-        }
+        footer a { color: #00E5FF; }
     </style>
 </head>
 <body>
@@ -80,78 +262,102 @@
     <div id="splash-screen">
         <img src="temp_logo.png" alt="Raksha-Suraksha Logo" class="splash-logo">
         <h1 class="splash-title">RAKSHA-SURAKSHA</h1>
-        <p class="splash-subtitle">TACTICAL COMMAND SYSTEM</p>
-        <p class="splash-loading">INITIALIZING PROTOCOLS...</p>
+        <p class="splash-subtitle" style="font-family: 'Share Tech Mono', monospace; color: #8892b0; letter-spacing: 4px;">TACTICAL COMMAND SYSTEM</p>
+        <p class="splash-loading"><span id="typing-text"></span><span class="blinking-cursor">_</span></p>
     </div>
+
+    <nav class="sticky-nav">
+        <a href="#deployment">Deployment</a>
+        <a href="#radar">Radar Data</a>
+        <a href="#vault">Intel Vault</a>
+        <a href="#defense">Defense Deck</a>
+    </nav>
 
     <header>
         <h1>RAKSHA-SURAKSHA</h1>
         <p>Autonomous Guardian & Anti-Theft System</p>
     </header>
 
-    <main>
-        <section class="download-section">
+    <main class="dashboard-grid">
+        
+        <section id="deployment" class="glass-panel">
             <h2>System Installation</h2>
             <p class="subtitle">Deploy the 3-Tier Autonomous SOS System directly to your Android device.</p>
             
-            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk" class="btn-apk">
-                ⬇️ DOWNLOAD RAKSHA-SURAKSHA (APK)
+            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk" class="btn-tactical">
+                ⬇️ DOWNLOAD APK
             </a>
-
-            <p class="warning-text">*Requires Android 8.0+. Enable "Install Unknown Apps" in your settings.</p>
+            <p class="warning-text">*Requires Android 8.0+. Enable "Install Unknown Apps".</p>
         </section>
 
-        <section class="map-section">
+        <section id="radar" class="glass-panel">
             <h2>Offline Radar Data</h2>
-            <p class="subtitle">Manual downloads for off-grid routing data. Extract into your Downloads/RakshaSuraksha folder.</p>
+            <p class="subtitle">Extract routing data into your Downloads/RakshaSuraksha folder for off-grid survival.</p>
             
-            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/South_India_Pack.zip" class="btn-map">
-                DOWNLOAD SOUTH INDIA (706 MB)
+            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/South_India_Pack.zip" class="btn-tactical">
+                🗺️ SOUTH INDIA (706 MB)
             </a>
             
-            <div class="btn-map-disabled">NORTH INDIA (PENDING)</div>
+            <div class="btn-tactical btn-disabled">NORTH INDIA (PENDING)</div>
         </section>
 
-        <section class="auth-box">
+        <section id="vault" class="glass-panel full-width">
             <h3>Tier-3 Evidence Vault</h3>
-            <p class="subtitle">Authorized agents only. Access the secure portal to view or upload threat intel.</p>
+            <p class="subtitle">Authorized agents only. Access the secure Firebase portal to view uploaded threat intel and intruder captures.</p>
             
-            <a href="upload.html" class="btn-vault">ENTER SECURE VAULT</a>
+            <a href="upload.html" class="btn-tactical btn-destructive" style="width: 50%;">
+                🔒 ENTER SECURE VAULT
+            </a>
         </section>
 
-        <section class="auth-box">
+        <section id="defense" class="glass-panel full-width">
             <h3>Academic Defense Deck</h3>
             <p class="subtitle">Access the official project presentation directly from the cloud or download the raw backup file.</p>
             
-            <a href="FINALpptPro5.pdf" target="_blank" class="btn-vault" style="margin-bottom: 15px; display: block;">
-                📄 VIEW PRESENTATION (PDF)
-            </a>
+            <div style="display: flex; gap: 15px; width: 100%; justify-content: center; flex-wrap: wrap;">
+                <a href="FINALpptPro5.pdf" target="_blank" class="btn-tactical" style="width: 40%; min-width: 200px;">
+                    📄 VIEW PRESENTATION
+                </a>
 
-            <a href="FINALpptPro5.pptx" download class="btn-apk" style="display: block;">
-                ⬇️ DOWNLOAD BACKUP (PPTX)
-            </a>
+                <a href="FINALpptPro5.pptx" download class="btn-tactical" style="width: 40%; min-width: 200px; border-color: #8892b0; color: #8892b0;">
+                    ⬇️ DOWNLOAD PPTX BACKUP
+                </a>
+            </div>
         </section>
 
-        <section class="links">
-            <a href="privacy.html">Read our System Privacy Policy (GPS & SMS Data)</a>
-        </section>
     </main>
 
     <footer>
-        <p>© 2026 Suryakant Chaudhary & S Jaya Kumar. All Rights Reserved. Raksha-Suraksha Academic Project.</p>
+        <p><a href="privacy.html">System Privacy Policy (GPS & SMS Data)</a></p>
+        <p>© 2026 Suryakant Chaudhary & S Jaya Kumar. All Rights Reserved.<br>Raksha-Suraksha Academic Project.</p>
     </footer>
 
     <script>
+        // Splash Screen Typing Effect
         window.addEventListener('load', function() {
+            const text = "INITIALIZING PROTOCOLS...";
+            let i = 0;
+            const speed = 75; // Typing speed in milliseconds
+            
+            function typeWriter() {
+                if (i < text.length) {
+                    document.getElementById("typing-text").innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, speed);
+                }
+            }
+            
+            // Start typing immediately
+            typeWriter();
+
+            // Fade out splash screen after 3.5 seconds
             setTimeout(function() {
                 var splash = document.getElementById('splash-screen');
-                splash.style.opacity = '0'; // Start the fade out
-                
-                // Wait for the fade out to finish (1 second) then remove it from the page completely
+                splash.style.opacity = '0'; 
                 setTimeout(function() {
                     splash.style.display = 'none';
                 }, 1000);
-            }, 3000); // 3000 milliseconds = 3 seconds wait time
+            }, 3500); 
         });
     </script>
 
