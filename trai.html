@@ -5,45 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raksha-Suraksha | TRAI Protocols</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        .legal-list { text-align: left; width: 100%; color: #8892b0; line-height: 1.6; }
-        .legal-list h4 { color: #66FCF1; margin-top: 25px; font-size: 1.2rem; }
-        .legal-list p { font-size: 0.9rem; margin-bottom: 10px; }
-    </style>
 </head>
 <body>
 
-    <header class="topbar" style="justify-content: center;">
-        <h1 style="color: #00E5FF; font-size: 1.8rem; margin: 0;">TRAI COMPLIANCE</h1>
+    <header class="topbar">
+        <a href="dashboard.html" class="btn-tactical" style="width: auto; padding: 5px 10px; margin: 0;">⬅️ BACK</a>
+        <div class="topbar-logo"><h2 style="margin: 0;">TRAI COMPLIANCE</h2></div>
+        <div class="topbar-account">LEGAL DOC</div>
     </header>
 
-    <main class="dashboard-content" style="max-width: 900px; margin: 0 auto;">
-        <section class="glass-panel">
-            <h2>Regulatory Framework</h2>
-            <p class="subtitle">Raksha-Suraksha adheres to the guidelines set by TRAI and the DoT.</p>
+    <main class="dashboard-content" style="max-width: 1200px;">
+        <section class="glass-panel" style="display: block;">
             
-            <div class="legal-list">
-                <h4>1. P2P SMS Routing</h4>
-                <p>SOS exfiltration utilizes native device-level SMS routing directly from the user's SIM, classifying it as P2P communication.</p>
-                <h4>2. DLT Registration Exemption</h4>
-                <p>The system is exempt from DLT blockchain registration for commercial telemarketers.</p>
-                <h4>3. Anti-Spam Policy</h4>
-                <p>Operates strictly within the TRAI mandate of 100 SMS per day per SIM.</p>
-                <h4>4. ERSS (Rule 112) Alignment</h4>
-                <p>Designed to complement the Ministry of Home Affairs' Rule 112 regarding physical hardware panic buttons.</p>
-                <h4>5. NCPR / DND Override</h4>
-                <p>Emergency SMS alerts bypass Do Not Disturb (DND) registry blocks.</p>
-                <h4>6. Zero Interception Architecture</h4>
-                <p>Does not intercept or block standard telecom routing.</p>
+            <!-- CSS Grid Applied Here -->
+            <div class="trai-layout">
+                
+                <!-- Left Side: Intro -->
+                <div class="trai-intro">
+                    <h2 style="margin-top: 0;">Regulatory Framework</h2>
+                    <p class="subtitle" style="text-align: left;">Raksha-Suraksha is engineered in strict accordance with the guidelines set by the Telecom Regulatory Authority of India (TRAI) and the Department of Telecommunications (DoT).</p>
+                    <a href="dashboard.html" class="btn-tactical" style="width: 100%;">⬅️ RETURN TO DASHBOARD</a>
+                </div>
+                
+                <!-- Right Side: Rules -->
+                <div class="legal-list">
+                    <h4 style="margin-top: 0;">1. P2P SMS Routing</h4>
+                    <p>SOS exfiltration utilizes native device-level SMS routing directly from the user's SIM, classifying it as P2P communication.</p>
+                    
+                    <h4>2. DLT Registration Exemption</h4>
+                    <p>The system is exempt from DLT blockchain registration for commercial telemarketers.</p>
+                    
+                    <h4>3. Anti-Spam Policy</h4>
+                    <p>Operates strictly within the TRAI mandate of 100 SMS per day per SIM.</p>
+                    
+                    <h4>4. ERSS (Rule 112) Alignment</h4>
+                    <p>Designed to complement the Ministry of Home Affairs' Rule 112 regarding physical hardware panic buttons.</p>
+                    
+                    <h4>5. NCPR / DND Override</h4>
+                    <p>Emergency SMS alerts bypass Do Not Disturb (DND) registry blocks.</p>
+                    
+                    <h4>6. Zero Interception Architecture</h4>
+                    <p>Does not intercept or block standard telecom routing.</p>
+                </div>
             </div>
 
-            <a href="dashboard.html" class="btn-tactical" style="margin-top: 30px; width: auto;">⬅️ RETURN TO DASHBOARD</a>
         </section>
     </main>
-
-    <footer>
-        <p>© 2026 Suryakant Chaudhary & S Jaya Kumar. Bangalore University BCA Project.</p>
-    </footer>
 
 </body>
 </html>
