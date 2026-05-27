@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raksha-Suraksha | Live Satellite Tracking</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- LEAFLET API -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<!-- no-scroll completely kills page lag/movement when panning map -->
+<body class="no-scroll">
+
+    <div class="rolling-header">
+        <marquee behavior="scroll" direction="left" scrollamount="6">
+            🔴 RAKSHA-SURAKSHA : LIVE SATELLITE GPS TRACKING INITIALIZED 🔴
+        </marquee>
+    </div>
+
+    <header class="topbar">
+        <a href="dashboard.html" class="btn-tactical" style="width: auto; padding: 5px 10px; margin: 0;">⬅️ BACK</a>
+        <div class="topbar-logo"><h2>SATELLITE RADAR</h2></div>
+        <div class="topbar-account" style="color: #00E676;">GPS ACTIVE</div>
+    </header>
+
+    <!-- FULLSCREEN MAP CONTAINER -->
+    <div id="fullscreen-map"></div>
+
+    <script>
+        // Initialize Map
+        var map = L.map('fullscreen-map').setView([12.9716, 77.5946], 12); 
+
+        // ESRI SATELLITE TILE LAYER (True satellite view)
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+            maxZoom: 18
+        }).addTo(map);
+
+        // LIVE GPS TRACKING (Locate user via hardware chip)
+        map.locate({setView: true, maxZoom: 16, watch: true, enableHighAccuracy: true});
+
+        var marker;
+        var circle;
+
+        function onLocationFound(e) {
+            var radius = e.accuracy / 2;
+            if (!marker) {
+                // First ping - create marker
+                marker = L.marker(e.latlng).addTo(map).bindPopup("<b style='color:black;'>📱 TARGET DEVICE LOCATED</b>").openPopup();
+                circle = L.circle(e.latlng, radius, {color: '#00E5FF', fillColor: '#00E5FF', fillOpacity: 0.2}).addTo(map);
+            } else {
+                // Update live position
+                marker.setLatLng(e.latlng);
+                circle.setLatLng(e.latlng);
+                circle.setRadius(radius);
+            }
+        }
+        
+        function onLocationError(e) {
+            alert("Hardware GPS Access Denied. Defaulting to cached coordinates.");
+        }
+
+        map.on('locationfound', onLocationFound);
+        map.on('locationerror', onLocationError);
+    </script>
+</body>
+</html>
