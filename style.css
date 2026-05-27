@@ -1,6 +1,15 @@
+/* =========================================================
+   RAKSHA-SURAKSHA MASTER STYLESHEET
+   Theme: Tactical Cyberpunk (Glassmorphism, Cyan, Deep Navy)
+   ========================================================= */
+
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap');
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
     background: radial-gradient(circle at 15% 50px, #0f2c4c, #020c1b 60%);
@@ -14,15 +23,15 @@ body {
 
 .hidden { display: none !important; }
 
+/* --- TYPOGRAPHY --- */
 h1, h2, h3 { font-family: 'Rajdhani', sans-serif; letter-spacing: 2px; text-transform: uppercase; }
 h1 { font-size: 2.6rem; color: #00E5FF; text-shadow: 0 0 15px rgba(0, 229, 255, 0.4); }
 h2 { color: #00E5FF; margin-bottom: 15px; font-size: 1.6rem; }
 h3 { color: #66FCF1; margin-bottom: 10px; font-size: 1.3rem; }
-
 .subtitle { color: #8892b0; font-size: 0.85rem; margin-bottom: 25px; line-height: 1.5; }
 .warning-text { color: #ff3366; font-size: 0.75rem; margin-top: 10px; }
 
-/* ROLLING HEADER */
+/* --- ROLLING HEADER --- */
 .rolling-header {
     background-color: #D32F2F;
     color: #FFF;
@@ -32,63 +41,118 @@ h3 { color: #66FCF1; margin-bottom: 10px; font-size: 1.3rem; }
     letter-spacing: 2px;
 }
 
-/* TOPBAR */
+/* --- TOPBAR (Left, Center, Right Alignment) --- */
 .topbar {
     position: sticky;
     top: 0;
-    background: rgba(2, 12, 27, 0.9);
+    background: rgba(2, 12, 27, 0.95);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(0, 229, 255, 0.2);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 30px;
-    z-index: 1000;
+    padding: 15px 20px;
+    z-index: 2000;
 }
-.menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: #00E5FF; }
 
-/* APP LAYOUT & SIDEBAR */
-.app-layout { display: flex; max-width: 1400px; margin: 0 auto; width: 100%; flex: 1; }
+.menu-toggle {
+    cursor: pointer; 
+    color: #00E5FF; 
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.topbar-logo { flex: 1; text-align: center; }
+.topbar-logo h2 { font-size: 1.2rem; margin: 0; }
+.topbar-account { font-size: 0.8rem; text-align: right; }
+
+/* --- TRUE POP-MENU SIDEBAR --- */
+.app-layout { 
+    display: block; 
+    width: 100%;
+}
+
 .sidebar {
+    position: fixed;
+    top: 0;
+    left: -300px; /* Hidden off-screen by default */
     width: 250px;
-    padding: 20px;
-    position: sticky;
-    top: 80px;
-    height: calc(100vh - 80px);
-    border-right: 1px solid rgba(136, 146, 176, 0.2);
+    height: 100vh;
+    background: rgba(2, 12, 27, 0.98);
+    border-right: 1px solid #00E5FF;
+    z-index: 3000;
+    transition: left 0.4s ease-in-out;
+    padding-top: 80px;
+    box-shadow: 5px 0 25px rgba(0,0,0,0.8);
 }
-.sidebar a {
-    display: block; color: #8892b0; text-decoration: none; padding: 12px 15px; margin-bottom: 10px; border-radius: 5px; transition: 0.3s; font-size: 0.95rem;
-}
-.sidebar a:hover, .sidebar a.active { color: #66FCF1; background: rgba(102, 252, 241, 0.1); border: 1px solid #66FCF1; }
 
-/* DASHBOARD GRID */
-.dashboard-content { flex-grow: 1; padding: 20px; display: grid; grid-template-columns: 1fr; gap: 25px; width: 100%; }
+.sidebar.active { left: 0; } /* Slides in when activated */
+
+.close-menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #ff3366;
+    font-size: 1.5rem;
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.sidebar a {
+    display: block;
+    color: #8892b0;
+    text-decoration: none;
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(136, 146, 176, 0.1);
+    transition: 0.3s;
+    font-size: 0.95rem;
+}
+.sidebar a:hover, .sidebar a.active { color: #66FCF1; background: rgba(102, 252, 241, 0.1); }
+
+/* --- DASHBOARD GRID --- */
+.dashboard-content { 
+    width: 100%; 
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px; 
+    display: grid; 
+    grid-template-columns: 1fr; 
+    gap: 25px; 
+}
 @media (min-width: 900px) { .dashboard-content { grid-template-columns: 1fr 1fr; } }
 
-/* MOBILE RESPONSIVE */
-@media (max-width: 850px) {
-    .menu-toggle { display: block; }
-    .topbar { padding: 15px; flex-wrap: wrap; }
-    .topbar-logo h2 { font-size: 1.2rem; text-align: center; }
-    .app-layout { flex-direction: column; }
-    .sidebar { display: none; width: 100%; height: auto; position: relative; border-right: none; }
-    .sidebar.active { display: flex; flex-wrap: wrap; justify-content: center; }
+/* --- GLASS PANELS --- */
+.glass-panel {
+    background: rgba(16, 24, 32, 0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 229, 255, 0.15);
+    border-radius: 16px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    transition: 0.3s;
 }
+.glass-panel:hover { transform: translateY(-5px); border: 1px solid rgba(0, 229, 255, 0.5); box-shadow: 0 12px 40px rgba(0, 229, 255, 0.1); }
 
-/* GLASS PANELS */
-.glass-panel, .auth-box, .privacy-container {
-    background: rgba(16, 24, 32, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(0, 229, 255, 0.15); border-radius: 16px; padding: 30px; display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%;
-}
-.glass-panel:hover { transform: translateY(-5px); border: 1px solid rgba(0, 229, 255, 0.5); box-shadow: 0 12px 40px rgba(0, 229, 255, 0.1); transition: 0.3s; }
-
-/* BUTTONS */
+/* --- BUTTONS --- */
 button, .btn-tactical {
-    display: inline-block; width: 85%; max-width: 350px; background: rgba(0, 229, 255, 0.05); color: #00E5FF; border: 1px solid #00E5FF; padding: 12px 20px; font-size: 0.9rem; text-decoration: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;
+    display: inline-block; width: 85%; max-width: 350px; background: rgba(0, 229, 255, 0.05); color: #00E5FF; border: 1px solid #00E5FF; padding: 12px 20px; font-size: 0.9rem; text-decoration: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 10px; text-align: center;
 }
 button:hover, .btn-tactical:hover { background: rgba(0, 229, 255, 0.2); transform: scale(1.02); }
-.btn-destructive { border-color: #ff3366; color: #ff3366; background: rgba(255, 51, 102, 0.05); }
-.btn-destructive:hover { background: rgba(255, 51, 102, 0.2); }
 
-#videoPreview { width: 100%; max-width: 400px; border-radius: 10px; margin: 20px auto; border: 1px solid rgba(0, 229, 255, 0.5); display: block; }
-footer { text-align: center; padding: 20px; border-top: 1px solid rgba(136,146,176,0.2); margin-top: 20px; color: #8892b0; font-size: 0.8rem; }
+/* --- TACTICAL MAP DARK MODE FIX --- */
+.leaflet-layer,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+
+footer { text-align: center; padding: 20px; border-top: 1px solid rgba(136,146,176,0.2); margin-top: auto; color: #8892b0; font-size: 0.8rem; }
