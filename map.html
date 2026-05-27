@@ -3,67 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha-Suraksha | Live Satellite Tracking</title>
+    <title>Raksha-Suraksha | Free Satellite Radar</title>
     <link rel="stylesheet" href="style.css">
     
-    <!-- LEAFLET API -->
+    <!-- 1. LEAFLET CORE (For the Map) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- 2. LEAFLET GEOCODER (For Area Searching) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <!-- 3. LEAFLET ROUTING MACHINE (For Navigation/Routing) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
+    <style>
+        /* Custom tweaks to make the free plugins look tactical */
+        .leaflet-routing-container {
+            background-color: rgba(2, 12, 27, 0.9) !important;
+            color: #00E5FF !important;
+            border: 1px solid #00E5FF !important;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .leaflet-control-geocoder {
+            background-color: rgba(2, 12, 27, 0.9) !important;
+            border: 2px solid #00E5FF !important;
+        }
+        .leaflet-control-geocoder input {
+            background-color: transparent !important;
+            color: #FFF !important;
+            font-family: 'Share Tech Mono', monospace;
+        }
+    </style>
 </head>
-<!-- no-scroll completely kills page lag/movement when panning map -->
 <body class="no-scroll">
 
+    <!-- ROLLING HEADER -->
     <div class="rolling-header">
         <marquee behavior="scroll" direction="left" scrollamount="6">
-            🔴 RAKSHA-SURAKSHA : LIVE SATELLITE GPS TRACKING INITIALIZED 🔴
+            🔴 RAKSHA-SURAKSHA : OPEN-SOURCE SATELLITE TRACKING & ROUTING ACTIVE 🔴
         </marquee>
     </div>
 
+    <!-- FLUID TOPBAR -->
     <header class="topbar">
-        <a href="dashboard.html" class="btn-tactical" style="width: auto; padding: 5px 10px; margin: 0;">⬅️ BACK</a>
+        <a href="dashboard.html" class="btn-tactical" style="width: auto; padding: 5px 10px; margin: 0; max-width: none;">⬅️ BACK</a>
         <div class="topbar-logo"><h2>SATELLITE RADAR</h2></div>
         <div class="topbar-account" style="color: #00E676;">GPS ACTIVE</div>
     </header>
 
     <!-- FULLSCREEN MAP CONTAINER -->
-    <div id="fullscreen-map"></div>
+    <div id="google-map"></div> <!-- Reusing the same CSS ID for sizing -->
 
     <script>
-        // Initialize Map
-        var map = L.map('fullscreen-map').setView([12.9716, 77.5946], 12); 
+        // Initialize Map centered on Bengaluru
+        var map = L.map('google-map').setView([12.9716, 77.5946], 12); 
 
-        // ESRI SATELLITE TILE LAYER (True satellite view)
+        // TACTICAL SATELLITE LAYER (Esri - 100% Free, No API Key)
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+            attribution: 'Tiles &copy; Esri',
             maxZoom: 18
         }).addTo(map);
 
-        // LIVE GPS TRACKING (Locate user via hardware chip)
-        map.locate({setView: true, maxZoom: 16, watch: true, enableHighAccuracy: true});
+        // 1. ADD SEARCH BAR (Free Nominatim Geocoder)
+        var geocoder = L.Control.geocoder({
+            defaultMarkGeocode: true,
+            placeholder: "Search targets or areas..."
+        }).addTo(map);
 
-        var marker;
-        var circle;
-
-        function onLocationFound(e) {
-            var radius = e.accuracy / 2;
-            if (!marker) {
-                // First ping - create marker
-                marker = L.marker(e.latlng).addTo(map).bindPopup("<b style='color:black;'>📱 TARGET DEVICE LOCATED</b>").openPopup();
-                circle = L.circle(e.latlng, radius, {color: '#00E5FF', fillColor: '#00E5FF', fillOpacity: 0.2}).addTo(map);
-            } else {
-                // Update live position
-                marker.setLatLng(e.latlng);
-                circle.setLatLng(e.latlng);
-                circle.setRadius(radius);
+        // 2. ADD ROUTING MACHINE (Free OSRM Server)
+        // To use this, you can drag the routing markers on the map!
+        var control = L.Routing.control({
+            waypoints: [
+                L.latLng(12.9716, 77.5946), // Start: Bengaluru Center
+                L.latLng(13.0279, 77.5409)  // End: Example location (Yeshwanthpur)
+            ],
+            routeWhileDragging: true,
+            lineOptions: {
+                styles: [{color: '#ff3366', opacity: 0.8, weight: 5}]
             }
-        }
-        
-        function onLocationError(e) {
-            alert("Hardware GPS Access Denied. Defaulting to cached coordinates.");
-        }
+        }).addTo(map);
 
-        map.on('locationfound', onLocationFound);
-        map.on('locationerror', onLocationError);
+        // 3. LIVE DEVICE TRACKING (HTML5 GPS Chip)
+        map.locate({setView: false, maxZoom: 16, watch: true, enableHighAccuracy: true});
+
+        var liveMarker, liveCircle;
+
+        map.on('locationfound', function(e) {
+            var radius = e.accuracy / 2;
+            
+            if (!liveMarker) {
+                // Initial ping - create icon
+                var customIcon = L.icon({
+                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149059.png', // Simple blue dot
+                    iconSize: [20, 20]
+                });
+                liveMarker = L.marker(e.latlng, {icon: customIcon}).addTo(map).bindPopup("<b style='color:black;'>📱 TARGET DEVICE LOCATED</b>");
+                liveCircle = L.circle(e.latlng, radius, {color: '#00E5FF', fillColor: '#00E5FF', fillOpacity: 0.2}).addTo(map);
+            } else {
+                // Update position
+                liveMarker.setLatLng(e.latlng);
+                liveCircle.setLatLng(e.latlng);
+                liveCircle.setRadius(radius);
+            }
+        });
+
+        map.on('locationerror', function(e) {
+            console.log("Hardware GPS Access Denied or Unavailable.");
+        });
     </script>
 </body>
 </html>
