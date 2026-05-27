@@ -1,15 +1,6 @@
-/* =========================================================
-   RAKSHA-SURAKSHA MASTER STYLESHEET
-   Theme: Tactical Cyberpunk (Glassmorphism, Cyan, Deep Navy)
-   ========================================================= */
-
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap');
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     background: radial-gradient(circle at 15% 50px, #0f2c4c, #020c1b 60%);
@@ -21,138 +12,74 @@ body {
     flex-direction: column;
 }
 
+/* For Map Page: Freeze scrolling */
+body.no-scroll { overflow: hidden; }
+
 .hidden { display: none !important; }
 
-/* --- TYPOGRAPHY --- */
 h1, h2, h3 { font-family: 'Rajdhani', sans-serif; letter-spacing: 2px; text-transform: uppercase; }
 h1 { font-size: 2.6rem; color: #00E5FF; text-shadow: 0 0 15px rgba(0, 229, 255, 0.4); }
 h2 { color: #00E5FF; margin-bottom: 15px; font-size: 1.6rem; }
 h3 { color: #66FCF1; margin-bottom: 10px; font-size: 1.3rem; }
 .subtitle { color: #8892b0; font-size: 0.85rem; margin-bottom: 25px; line-height: 1.5; }
-.warning-text { color: #ff3366; font-size: 0.75rem; margin-top: 10px; }
 
 /* --- ROLLING HEADER --- */
-.rolling-header {
-    background-color: #D32F2F;
-    color: #FFF;
-    padding: 5px 0;
-    font-weight: bold;
-    font-size: 0.9rem;
-    letter-spacing: 2px;
-}
+.rolling-header { background-color: #D32F2F; color: #FFF; padding: 5px 0; font-weight: bold; font-size: 0.9rem; letter-spacing: 2px; }
 
-/* --- TOPBAR (Left, Center, Right Alignment) --- */
+/* --- TOPBAR (Responsive Fixes) --- */
 .topbar {
-    position: sticky;
-    top: 0;
-    background: rgba(2, 12, 27, 0.95);
-    backdrop-filter: blur(10px);
+    position: sticky; top: 0;
+    background: rgba(2, 12, 27, 0.95); backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(0, 229, 255, 0.2);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    z-index: 2000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 20px; z-index: 2000;
+}
+.menu-toggle { cursor: pointer; color: #00E5FF; font-size: 1.5rem; font-weight: bold; display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+.topbar-logo { flex: 1; text-align: center; padding: 0 10px; }
+.topbar-logo h2 { font-size: 1.2rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-account { font-size: 0.8rem; text-align: right; white-space: nowrap; }
+
+@media (max-width: 600px) {
+    .topbar { padding: 10px; }
+    .menu-toggle { font-size: 1.2rem; }
+    .menu-toggle span { display: none; } /* Hides the word "MENU" on mobile to save space */
+    .topbar-logo h2 { font-size: 1rem; }
+    .topbar-account { font-size: 0.65rem; }
 }
 
-.menu-toggle {
-    cursor: pointer; 
-    color: #00E5FF; 
-    font-size: 1.5rem;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.topbar-logo { flex: 1; text-align: center; }
-.topbar-logo h2 { font-size: 1.2rem; margin: 0; }
-.topbar-account { font-size: 0.8rem; text-align: right; }
-
-/* --- TRUE POP-MENU SIDEBAR --- */
-.app-layout { 
-    display: block; 
-    width: 100%;
-}
-
+/* --- SIDEBAR --- */
+.app-layout { display: block; width: 100%; }
 .sidebar {
-    position: fixed;
-    top: 0;
-    left: -300px; /* Hidden off-screen by default */
-    width: 250px;
-    height: 100vh;
-    background: rgba(2, 12, 27, 0.98);
-    border-right: 1px solid #00E5FF;
-    z-index: 3000;
-    transition: left 0.4s ease-in-out;
-    padding-top: 80px;
+    position: fixed; top: 0; left: -300px; width: 250px; height: 100vh;
+    background: rgba(2, 12, 27, 0.98); border-right: 1px solid #00E5FF;
+    z-index: 3000; transition: left 0.4s ease-in-out; padding-top: 80px;
     box-shadow: 5px 0 25px rgba(0,0,0,0.8);
 }
-
-.sidebar.active { left: 0; } /* Slides in when activated */
-
-.close-menu {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    color: #ff3366;
-    font-size: 1.5rem;
-    cursor: pointer;
-    font-family: 'Rajdhani', sans-serif;
-}
-
-.sidebar a {
-    display: block;
-    color: #8892b0;
-    text-decoration: none;
-    padding: 12px 20px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid rgba(136, 146, 176, 0.1);
-    transition: 0.3s;
-    font-size: 0.95rem;
-}
+.sidebar.active { left: 0; }
+.close-menu { position: absolute; top: 20px; right: 20px; color: #ff3366; font-size: 1.5rem; cursor: pointer; }
+.sidebar a { display: block; color: #8892b0; text-decoration: none; padding: 12px 20px; border-bottom: 1px solid rgba(136, 146, 176, 0.1); transition: 0.3s; font-size: 0.95rem; }
 .sidebar a:hover, .sidebar a.active { color: #66FCF1; background: rgba(102, 252, 241, 0.1); }
 
 /* --- DASHBOARD GRID --- */
-.dashboard-content { 
-    width: 100%; 
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px; 
-    display: grid; 
-    grid-template-columns: 1fr; 
-    gap: 25px; 
-}
+.dashboard-content { width: 100%; max-width: 1400px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 1fr; gap: 25px; }
 @media (min-width: 900px) { .dashboard-content { grid-template-columns: 1fr 1fr; } }
 
 /* --- GLASS PANELS --- */
-.glass-panel {
-    background: rgba(16, 24, 32, 0.4);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(0, 229, 255, 0.15);
-    border-radius: 16px;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    width: 100%;
-    transition: 0.3s;
+.glass-panel { background: rgba(16, 24, 32, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(0, 229, 255, 0.15); border-radius: 16px; padding: 30px; display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%; transition: 0.3s; }
+.glass-panel:hover { border: 1px solid rgba(0, 229, 255, 0.5); box-shadow: 0 12px 40px rgba(0, 229, 255, 0.1); }
+
+/* --- TRAI SPLIT LAYOUT (Desktop Site View) --- */
+.trai-layout { display: grid; grid-template-columns: 1fr; gap: 30px; text-align: left; }
+.legal-list { width: 100%; color: #8892b0; line-height: 1.6; }
+.legal-list h4 { color: #66FCF1; margin-top: 25px; font-size: 1.1rem; }
+@media (min-width: 900px) {
+    .trai-layout { grid-template-columns: 350px 1fr; } /* Info left, Rules right */
+    .trai-intro { position: sticky; top: 100px; height: fit-content; }
 }
-.glass-panel:hover { transform: translateY(-5px); border: 1px solid rgba(0, 229, 255, 0.5); box-shadow: 0 12px 40px rgba(0, 229, 255, 0.1); }
 
 /* --- BUTTONS --- */
-button, .btn-tactical {
-    display: inline-block; width: 85%; max-width: 350px; background: rgba(0, 229, 255, 0.05); color: #00E5FF; border: 1px solid #00E5FF; padding: 12px 20px; font-size: 0.9rem; text-decoration: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 10px; text-align: center;
-}
+button, .btn-tactical { display: inline-block; width: 85%; max-width: 350px; background: rgba(0, 229, 255, 0.05); color: #00E5FF; border: 1px solid #00E5FF; padding: 12px 20px; font-size: 0.9rem; text-decoration: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 10px; text-align: center; }
 button:hover, .btn-tactical:hover { background: rgba(0, 229, 255, 0.2); transform: scale(1.02); }
 
-/* --- TACTICAL MAP DARK MODE FIX --- */
-.leaflet-layer,
-.leaflet-control-zoom-in,
-.leaflet-control-zoom-out,
-.leaflet-control-attribution {
-  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
-}
-
-footer { text-align: center; padding: 20px; border-top: 1px solid rgba(136,146,176,0.2); margin-top: auto; color: #8892b0; font-size: 0.8rem; }
+/* --- FULLSCREEN MAP --- */
+#fullscreen-map { width: 100vw; height: calc(100vh - 90px); z-index: 1; }
