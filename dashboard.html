@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raksha-Suraksha | Guardian Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+
+    <!-- ROLLING HEADER -->
+    <div class="rolling-header">
+        <marquee behavior="scroll" direction="left" scrollamount="6">
+            🛡️ RAKSHA-SURAKSHA : TACTICAL GUARDIAN & TRACKING SYSTEM ACTIVE 🛡️
+        </marquee>
+    </div>
+
+    <!-- MAIN NAV -->
+    <header class="topbar">
+        <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
+        <div class="topbar-logo"><h2>GUARDIAN & TRACKING SYSTEM</h2></div>
+        <div class="topbar-account" id="userEmail" style="color: #00E5FF; font-size: 0.9rem;">VERIFYING...</div>
+    </header>
+
+    <div class="app-layout">
+        <!-- SIDEBAR -->
+        <nav class="sidebar" id="sidebar">
+            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk">📲 App Download</a>
+            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/South_India_Pack.zip">🗺️ Map Download</a>
+            <a href="FINALpptPro5.pdf" target="_blank">❓ Full Guide</a>
+            <a href="#settings">⚙️ Settings</a>
+            <a href="privacy.html">🔒 Policy</a>
+            <a href="trai.html">📜 TRAI Rules</a>
+        </nav>
+
+        <!-- DASHBOARD GRID -->
+        <main class="dashboard-content">
+            
+            <section class="glass-panel" style="grid-column: 1 / -1; text-align: center;">
+                <h3>COMMAND CENTER GATEWAY</h3>
+                <p class="subtitle">Access deep system architecture and evidence vaults.</p>
+                <a href="master-control.html" class="btn-tactical" style="font-size: 1.1rem;">🎛️ ENTER MASTER / USER CONTROL</a>
+            </section>
+
+            <section class="glass-panel">
+                <h3>🌤️ Tactical Weather</h3>
+                <p class="subtitle">Local atmospheric conditions for safe routing.</p>
+                <a href="#" class="btn-tactical">ACCESS MODULE</a>
+            </section>
+
+            <section class="glass-panel">
+                <h3>🔗 App Linking</h3>
+                <p class="subtitle">Manage synchronized devices and guardian nodes.</p>
+                <a href="#" class="btn-tactical">ACCESS MODULE</a>
+            </section>
+
+            <section class="glass-panel" style="grid-column: 1 / -1;">
+                <h3 style="color: #ff3366;">🔴 LIVE RADAR MAP</h3>
+                <div id="web-map" style="height: 350px; width: 100%; border-radius: 8px; border: 1px solid #00E5FF;"></div>
+            </section>
+
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2026 Suryakant Chaudhary & S Jaya Kumar. All Rights Reserved. Raksha-Suraksha Academic Project.</p>
+    </footer>
+
+    <script>
+        // Firebase Auth Check & Account Display
+        const firebaseConfig = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
+        firebase.initializeApp(firebaseConfig);
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
+            else window.location.href = 'index.html'; // Redirect if not logged in
+        });
+
+        // Sidebar Toggle for Mobile
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+
+        // Map Initialization
+        var map = L.map('web-map').setView([12.9716, 77.5946], 12); 
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
+        L.circle([12.9716, 77.5946], { color: '#ff3366', fillColor: '#ff3366', fillOpacity: 0.4, radius: 800 }).addTo(map).bindPopup("<b style='color:black;'>📱 RAKSHA-SURAKSHA DEVICE</b>").openPopup();
+    </script>
+</body>
+</html>
+
