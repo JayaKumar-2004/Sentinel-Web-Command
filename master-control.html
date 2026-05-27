@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raksha-Suraksha | Master Control</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+
+    <div class="rolling-header">
+        <marquee behavior="scroll" direction="left" scrollamount="6">
+            🛡️ RAKSHA-SURAKSHA : MASTER CONTROL & EVIDENCE VAULT 🛡️
+        </marquee>
+    </div>
+
+    <header class="topbar">
+        <a href="dashboard.html" class="btn-tactical" style="width: auto; padding: 5px 10px; margin: 0;">⬅️ BACK</a>
+        <div class="topbar-logo"><h2 style="margin: 0;">MASTER / USER CONTROL</h2></div>
+        <div class="topbar-account" id="userEmail" style="color: #00E5FF; font-size: 0.9rem;">VERIFYING...</div>
+    </header>
+
+    <div class="app-layout">
+        <!-- SIDEBAR -->
+        <nav class="sidebar" id="sidebar">
+            <a href="dashboard.html">🏠 Dashboard</a>
+            <a href="#app-controls">🎛️ App Controls</a>
+            <a href="#location">📍 App Location</a>
+            <a href="#messages">💬 Message Control</a>
+            <a href="#vault" class="active">📼 Vault Control</a>
+        </nav>
+
+        <main class="dashboard-content">
+            
+            <section class="glass-panel" id="vault" style="grid-column: 1 / -1;">
+                <h3>🛡️ TIER-3 EVIDENCE VAULT</h3>
+                <p class="subtitle">Authorized agents only. Secure cloud-based video evidence capture.</p>
+                
+                <video id="videoPreview" autoplay muted playsinline></video>
+                <button id="btnStart" class="btn-destructive">ACTIVATE HARDWARE</button>
+                <button id="btnStop" class="hidden">UPLOAD EVIDENCE</button>
+                
+                <div id="statusText" style="color: #66FCF1; margin-top: 20px; font-weight: bold;">System Armed.</div>
+            </section>
+
+            <section class="glass-panel">
+                <h3>🎛️ App Controls</h3>
+                <p class="subtitle">Remote device locking and parameter modification.</p>
+                <a href="#" class="btn-tactical">ACCESS MODULE</a>
+            </section>
+
+            <section class="glass-panel">
+                <h3>💬 Message Control</h3>
+                <p class="subtitle">Manage SMS routing and trusted contacts.</p>
+                <a href="#" class="btn-tactical">ACCESS MODULE</a>
+            </section>
+
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2026 Suryakant Chaudhary & S Jaya Kumar. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Auth Check
+        const firebaseConfig = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
+        firebase.initializeApp(firebaseConfig);
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
+            else window.location.href = 'index.html';
+        });
+
+        // Cloudinary Vault Logic
+        let mediaRecorder; let recordedChunks = [];
+        const videoPreview = document.getElementById('videoPreview');
+        const btnStart = document.getElementById('btnStart');
+        const btnStop = document.getElementById('btnStop');
+        const statusText = document.getElementById('statusText');
+
+        btnStart.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: true });
+                videoPreview.srcObject = stream;
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+
+                mediaRecorder.onstop = async () => {
+                    statusText.innerText = "UPLOADING TO CLOUD..."; statusText.style.color = "#00E5FF";
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    const formData = new FormData();
+                    formData.append('file', blob, 'raksha_suraksha_log.webm');
+                    formData.append('upload_preset', 'sentinel_videos'); 
+                    formData.append('folder', 'sentinel_evidence'); 
+
+                    try {
+                        const response = await fetch('https://api.cloudinary.com/v1_1/duaii5zhm/video/upload', { method: 'POST', body: formData });
+                        const data = await response.json();
+                        if(data.secure_url) {
+                            statusText.innerText = "EVIDENCE SECURED."; statusText.style.color = "#00E676"; 
+                        }
+                    } catch (err) { statusText.innerText = "UPLOAD FAILED."; statusText.style.color = "#D32F2F"; }
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                recordedChunks = []; mediaRecorder.start();
+                btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
+                statusText.innerText = "🔴 RECORDING..."; statusText.style.color = "#D32F2F";
+            } catch (err) { statusText.innerText = "Camera Permission Denied."; statusText.style.color = "#D32F2F"; }
+        });
+
+        btnStop.addEventListener('click', () => {
+            mediaRecorder.stop();
+            btnStop.classList.add('hidden'); btnStart.classList.remove('hidden');
+            btnStart.innerText = "NEW LOG";
+        });
+    </script>
+</body>
+</html>
