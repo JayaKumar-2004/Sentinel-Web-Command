@@ -10,21 +10,32 @@
 </head>
 <body>
 
+    <!-- ROLLING HEADER WITH LOGO -->
     <div class="rolling-header">
         <marquee behavior="scroll" direction="left" scrollamount="6">
+            <img src="temp_logo.png" alt="Logo" style="height: 14px; vertical-align: middle; margin-right: 10px;">
             🛡️ RAKSHA-SURAKSHA : MASTER CONTROL HUB ACTIVE 🛡️
         </marquee>
     </div>
 
+    <!-- MAIN NAV -->
     <header class="topbar">
-        <a href="dashboard.html" class="btn-tactical" style="width: auto; padding: 5px 10px; margin: 0;">⬅️ BACK TO DASHBOARD</a>
-        <div class="topbar-logo"><h2 style="margin: 0;">MASTER CONTROL</h2></div>
-        <div class="topbar-account" id="userEmail" style="color: #00E5FF; font-size: 0.9rem;">VERIFYING...</div>
+        <div class="menu-toggle" onclick="toggleSidebar()">
+            ☰ <span style="font-size: 0.9rem;">MENU</span>
+        </div>
+        <div class="topbar-logo">
+            <h2>MASTER CONTROL</h2>
+        </div>
+        <div class="topbar-account" id="userEmail" style="color: #00E5FF;">
+            VERIFYING...
+        </div>
     </header>
 
     <div class="app-layout">
         
+        <!-- TRUE POP-MENU SIDEBAR -->
         <nav class="sidebar" id="sidebar">
+            <div class="close-menu" onclick="toggleSidebar()">✖</div>
             <a href="dashboard.html">🏠 Main Dashboard</a>
             <a href="app-controls.html">🎛️ App Controls</a>
             <a href="app-location.html">📍 App Location</a>
@@ -32,6 +43,7 @@
             <a href="upload.html">📼 Tier-3 Vault</a>
         </nav>
 
+        <!-- MASTER CONTROL MENU CARDS (ROUTING TO SEPARATE PAGES) -->
         <main class="dashboard-content">
             
             <section class="glass-panel">
@@ -62,26 +74,19 @@
     </div>
 
     <footer>
-        <p>© 2026 Suryakant Chaudhary & S Jaya Kumar. Bangalore University BCA Project.</p>
+        <p>© 2026 Suryakant Chaudhary & S Jaya Kumar. Raksha-Suraksha Project.</p>
     </footer>
 
     <script>
-        const firebaseConfig = { 
-            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", 
-            authDomain: "sentinel-vault-fb4b7.firebaseapp.com", 
-            projectId: "sentinel-vault-fb4b7", 
-            storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", 
-            messagingSenderId: "192301825793", 
-            appId: "1:192301825793:web:734530705f4084608fe500" 
-        };
+        // Sidebar Toggle
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+
+        // Auth Check ONLY
+        const firebaseConfig = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
         firebase.initializeApp(firebaseConfig);
-        
         firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
-            } else {
-                window.location.href = 'index.html'; // Kick out if not logged in
-            }
+            if (user) document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
+            else window.location.href = 'index.html'; 
         });
     </script>
 </body>
