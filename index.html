@@ -29,6 +29,10 @@
 
     <!-- MASTER STYLESHEET LINK -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- LEAFLET MAP ENGINE -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 
@@ -40,74 +44,85 @@
         <p class="splash-loading"><span id="typing-text"></span><span class="blinking-cursor">_</span></p>
     </div>
 
-    <!-- 🌟 STICKY NAVIGATION 🌟 -->
-    <nav class="sticky-nav">
-        <a href="#deployment">Deployment</a>
-        <a href="#radar">Radar Data</a>
-        <a href="#vault">Intel Vault</a>
-        <a href="#defense">Defense Deck</a>
-    </nav>
-
-    <!-- 🌟 DASHBOARD HEADER 🌟 -->
-    <header>
-        <h1>RAKSHA-SURAKSHA</h1>
-        <p>Autonomous Guardian & Anti-Theft System</p>
+    <!-- 🌟 TOP HEADER (Scrolling Header) 🌟 -->
+    <header class="topbar">
+        <div class="topbar-logo">
+            <h1 style="margin: 0; font-size: 1.8rem; color: #00E5FF; text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);">RAKSHA-SURAKSHA</h1>
+        </div>
+        <div class="topbar-account">
+            <!-- Account / Login Button from Wireframe -->
+            <a href="master-control.html" class="btn-tactical" style="padding: 8px 15px; font-size: 0.9rem;">🟢 AGENT LOGIN</a>
+        </div>
     </header>
 
-    <!-- 🌟 MAIN CONTENT GRID 🌟 -->
-    <main class="dashboard-grid">
+    <!-- 🌟 MAIN APP LAYOUT 🌟 -->
+    <div class="app-layout">
         
-        <section id="deployment" class="glass-panel">
-            <h2>System Installation</h2>
-            <p class="subtitle">Deploy the 3-Tier Autonomous SOS System directly to your Android device.</p>
-            
-            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk" class="btn-tactical">
-                ⬇️ DOWNLOAD APK
-            </a>
-            <p class="warning-text">*Requires Android 8.0+. Enable "Install Unknown Apps".</p>
-        </section>
+        <!-- 🌟 SIDEBAR MENU (From Wireframe) 🌟 -->
+        <nav class="sidebar">
+            <a href="#deployment" class="active">📲 App Download</a>
+            <a href="#radar">🗺️ Offline Maps</a>
+            <a href="master-control.html">🎛️ Master Control</a>
+            <a href="#faqs">❓ FAQs & Guide</a>
+            <a href="#settings">⚙️ Settings</a>
+            <a href="privacy.html">🔒 Privacy Policy</a>
+            <a href="trai.html">📜 TRAI Rules</a>
+        </nav>
 
-        <section id="radar" class="glass-panel">
-            <h2>Offline Radar Data</h2>
-            <p class="subtitle">Extract routing data into your Downloads/RakshaSuraksha folder for off-grid survival.</p>
+        <!-- 🌟 DASHBOARD GRID CONTENT 🌟 -->
+        <main class="dashboard-content">
             
-            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/South_India_Pack.zip" class="btn-tactical">
-                🗺️ SOUTH INDIA (706 MB)
-            </a>
-            
-            <div class="btn-tactical btn-disabled">NORTH INDIA (PENDING)</div>
-        </section>
-
-        <section id="vault" class="glass-panel full-width">
-            <h3>Tier-3 Evidence Vault</h3>
-            <p class="subtitle">Authorized agents only. Access the secure Firebase portal to view uploaded threat intel and intruder captures.</p>
-            
-            <a href="upload.html" class="btn-tactical btn-destructive" style="width: 50%;">
-                🔒 ENTER SECURE VAULT
-            </a>
-        </section>
-
-        <section id="defense" class="glass-panel full-width">
-            <h3>Academic Defense Deck</h3>
-            <p class="subtitle">Access the official project presentation directly from the cloud or download the raw backup file.</p>
-            
-            <div style="display: flex; gap: 15px; width: 100%; justify-content: center; flex-wrap: wrap;">
-                <a href="FINALpptPro5.pdf" target="_blank" class="btn-tactical" style="width: 40%; min-width: 200px;">
-                    📄 VIEW PRESENTATION
+            <section id="deployment" class="glass-panel">
+                <h2>System Installation</h2>
+                <p class="subtitle">Deploy the 3-Tier Autonomous SOS System directly to your Android device.</p>
+                
+                <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk" class="btn-tactical">
+                    ⬇️ DOWNLOAD APK
                 </a>
+                <p class="warning-text">*Requires Android 8.0+. Enable "Install Unknown Apps".</p>
+            </section>
 
-                <a href="FINALpptPro5.pptx" download class="btn-tactical" style="width: 40%; min-width: 200px; border-color: #8892b0; color: #8892b0;">
-                    ⬇️ DOWNLOAD PPTX BACKUP
+            <section id="radar" class="glass-panel">
+                <h2>Offline Radar Data</h2>
+                <p class="subtitle">Extract routing data into your Downloads/RakshaSuraksha folder for off-grid survival.</p>
+                
+                <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/South_India_Pack.zip" class="btn-tactical">
+                    🗺️ SOUTH INDIA (706 MB)
                 </a>
-            </div>
-        </section>
+                
+                <div class="btn-tactical btn-disabled">NORTH INDIA (PENDING)</div>
+            </section>
 
-    </main>
+            <!-- MODULE: LIVE WEB RADAR (Full Width) -->
+            <section id="live-radar" class="glass-panel" style="grid-column: 1 / -1;">
+                <h3 style="color: #ff3366;">🔴 LIVE TACTICAL RADAR</h3>
+                <p class="subtitle">Real-time GPS exfiltration tracking. Simulated telemetry for Bengaluru.</p>
+                
+                <!-- The actual map container -->
+                <div id="web-map" style="height: 400px; width: 100%; border-radius: 8px; border: 1px solid #00E5FF; z-index: 1;"></div>
+            </section>
+
+            <section id="faqs" class="glass-panel" style="grid-column: 1 / -1;">
+                <h3>Academic Defense Deck & FAQs</h3>
+                <p class="subtitle">Access the official project presentation directly from the cloud or download the raw backup file.</p>
+                
+                <div style="display: flex; gap: 15px; width: 100%; justify-content: center; flex-wrap: wrap;">
+                    <a href="FINALpptPro5.pdf" target="_blank" class="btn-tactical" style="width: 40%; min-width: 200px;">
+                        📄 VIEW PRESENTATION
+                    </a>
+    
+                    <a href="FINALpptPro5.pptx" download class="btn-tactical" style="width: 40%; min-width: 200px; border-color: #8892b0; color: #8892b0;">
+                        ⬇️ DOWNLOAD PPTX BACKUP
+                    </a>
+                </div>
+            </section>
+
+        </main>
+    </div>
 
     <!-- 🌟 FOOTER 🌟 -->
-    <footer>
-        <p><a href="privacy.html">System Privacy Policy (GPS & SMS Data)</a></p>
-        <p>© 2026 Suryakant Chaudhary & S Jaya Kumar. All Rights Reserved.<br>Raksha-Suraksha Academic Project.</p>
+    <footer style="text-align: center; padding: 20px; border-top: 1px solid rgba(136,146,176,0.2); margin-top: 20px;">
+        <p style="color: #8892b0; font-size: 0.8rem;">© 2026 Suryakant Chaudhary & S Jaya Kumar. All Rights Reserved.<br>Raksha-Suraksha Academic Project. Authorized personnel only.</p>
     </footer>
 
     <!-- 🌟 MICRO-INTERACTIONS SCRIPT 🌟 -->
@@ -137,6 +152,28 @@
                     splash.style.display = 'none';
                 }, 1000);
             }, 3500); 
+        });
+
+        // 🌟 TACTICAL RADAR INITIALIZATION 🌟
+        document.addEventListener('DOMContentLoaded', function() {
+            // Center map on Bengaluru
+            var map = L.map('web-map').setView([12.9716, 77.5946], 12); 
+
+            // Load OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap | Sentinel Data',
+                maxZoom: 18
+            }).addTo(map);
+
+            // Add a pulsing red threat radius
+            var targetRadius = L.circle([12.9716, 77.5946], {
+                color: '#ff3366',
+                fillColor: '#ff3366',
+                fillOpacity: 0.4,
+                radius: 800
+            }).addTo(map);
+
+            targetRadius.bindPopup("<b style='color:black;'>📱 RAKSHA-SURAKSHA DEVICE</b><br><span style='color:red;'>STATUS: OFFLINE CACHE</span>").openPopup();
         });
     </script>
 
