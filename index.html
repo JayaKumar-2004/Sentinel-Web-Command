@@ -3,179 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <meta property="og:site_name" content="Raksha-Suraksha">
-    <meta name="application-name" content="Raksha-Suraksha">
-    
-    <title>Raksha-Suraksha | Advanced Anti-Theft & Personal Safety App</title>
-    <meta name="title" content="Raksha-Suraksha | Advanced Anti-Theft & Personal Safety App">
-    <meta name="description" content="Raksha-Suraksha is a military-grade personal safety and anti-theft Android application built for offline security, SOS exfiltration, and device tracking.">
-    <meta name="keywords" content="Raksha-Suraksha, safety app, anti-theft app, offline SOS, Android security, women safety app, fake switch off app, Bengaluru">
-    <meta name="author" content="S Jaya Kumar & Suryakant Chaudhary">
-
-    <link rel="icon" type="image/png" href="temp_logo.png">
-    <link rel="apple-touch-icon" href="temp_logo.png">
-
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jayakumar-2004.github.io/Sentinel-Web-Command/">
-    <meta property="og:title" content="Raksha-Suraksha | Personal Safety App">
-    <meta property="og:description" content="Military-grade personal safety and anti-theft application.">
-    <meta name="google-site-verification" content="h-iwzAF8UBxR-KMoV6O_aK9Npp2V4pObmgSO-uhKksw" />
-
-    <!-- Google Fonts for Tactical Aesthetic -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-
-    <!-- MASTER STYLESHEET LINK -->
+    <title>Raksha-Suraksha | Secure Login</title>
     <link rel="stylesheet" href="style.css">
-
-    <!-- LEAFLET MAP ENGINE -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
-<body>
+<body style="justify-content: center; align-items: center;">
 
-    <!-- 🌟 SPLASH SCREEN 🌟 -->
+    <!-- SPLASH SCREEN -->
     <div id="splash-screen">
-        <img src="temp_logo.png" alt="Raksha-Suraksha Logo" class="splash-logo">
-        <h1 class="splash-title">RAKSHA-SURAKSHA</h1>
-        <p class="splash-subtitle" style="font-family: 'Share Tech Mono', monospace; color: #8892b0; letter-spacing: 4px;">TACTICAL COMMAND SYSTEM</p>
-        <p class="splash-loading"><span id="typing-text"></span><span class="blinking-cursor">_</span></p>
+        <h1 class="splash-title" style="font-size: 3rem;">RAKSHA-SURAKSHA</h1>
+        <p class="splash-subtitle" style="font-family: 'Share Tech Mono'; color: #8892b0; letter-spacing: 4px;">INITIALIZING PROTOCOLS...</p>
     </div>
 
-    <!-- 🌟 TOP HEADER (Scrolling Header) 🌟 -->
-    <header class="topbar">
-        <div class="topbar-logo">
-            <h1 style="margin: 0; font-size: 1.8rem; color: #00E5FF; text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);">RAKSHA-SURAKSHA</h1>
-        </div>
-        <div class="topbar-account">
-            <!-- Account / Login Button from Wireframe -->
-            <a href="master-control.html" class="btn-tactical" style="padding: 8px 15px; font-size: 0.9rem;">🟢 AGENT LOGIN</a>
-        </div>
-    </header>
-
-    <!-- 🌟 MAIN APP LAYOUT 🌟 -->
-    <div class="app-layout">
-        
-        <!-- 🌟 SIDEBAR MENU (From Wireframe) 🌟 -->
-        <nav class="sidebar">
-            <a href="#deployment" class="active">📲 App Download</a>
-            <a href="#radar">🗺️ Offline Maps</a>
-            <a href="master-control.html">🎛️ Master Control</a>
-            <a href="#faqs">❓ FAQs & Guide</a>
-            <a href="#settings">⚙️ Settings</a>
-            <a href="privacy.html">🔒 Privacy Policy</a>
-            <a href="trai.html">📜 TRAI Rules</a>
-        </nav>
-
-        <!-- 🌟 DASHBOARD GRID CONTENT 🌟 -->
-        <main class="dashboard-content">
-            
-            <section id="deployment" class="glass-panel">
-                <h2>System Installation</h2>
-                <p class="subtitle">Deploy the 3-Tier Autonomous SOS System directly to your Android device.</p>
-                
-                <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk" class="btn-tactical">
-                    ⬇️ DOWNLOAD APK
-                </a>
-                <p class="warning-text">*Requires Android 8.0+. Enable "Install Unknown Apps".</p>
-            </section>
-
-            <section id="radar" class="glass-panel">
-                <h2>Offline Radar Data</h2>
-                <p class="subtitle">Extract routing data into your Downloads/RakshaSuraksha folder for off-grid survival.</p>
-                
-                <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/South_India_Pack.zip" class="btn-tactical">
-                    🗺️ SOUTH INDIA (706 MB)
-                </a>
-                
-                <div class="btn-tactical btn-disabled">NORTH INDIA (PENDING)</div>
-            </section>
-
-            <!-- MODULE: LIVE WEB RADAR (Full Width) -->
-            <section id="live-radar" class="glass-panel" style="grid-column: 1 / -1;">
-                <h3 style="color: #ff3366;">🔴 LIVE TACTICAL RADAR</h3>
-                <p class="subtitle">Real-time GPS exfiltration tracking. Simulated telemetry for Bengaluru.</p>
-                
-                <!-- The actual map container -->
-                <div id="web-map" style="height: 400px; width: 100%; border-radius: 8px; border: 1px solid #00E5FF; z-index: 1;"></div>
-            </section>
-
-            <section id="faqs" class="glass-panel" style="grid-column: 1 / -1;">
-                <h3>Academic Defense Deck & FAQs</h3>
-                <p class="subtitle">Access the official project presentation directly from the cloud or download the raw backup file.</p>
-                
-                <div style="display: flex; gap: 15px; width: 100%; justify-content: center; flex-wrap: wrap;">
-                    <a href="FINALpptPro5.pdf" target="_blank" class="btn-tactical" style="width: 40%; min-width: 200px;">
-                        📄 VIEW PRESENTATION
-                    </a>
-    
-                    <a href="FINALpptPro5.pptx" download class="btn-tactical" style="width: 40%; min-width: 200px; border-color: #8892b0; color: #8892b0;">
-                        ⬇️ DOWNLOAD PPTX BACKUP
-                    </a>
-                </div>
-            </section>
-
-        </main>
+    <!-- AUTH GATEWAY -->
+    <div id="authGate" class="auth-box glass-panel" style="max-width: 400px; display: none;">
+        <h3>IDENTITY REQUIRED</h3>
+        <p class="subtitle">Authentication required for System Access.</p>
+        <button id="btnGoogle">SIGN IN WITH GMAIL</button>
+        <p id="authError" class="warning-text"></p>
     </div>
 
-    <!-- 🌟 FOOTER 🌟 -->
-    <footer style="text-align: center; padding: 20px; border-top: 1px solid rgba(136,146,176,0.2); margin-top: 20px;">
-        <p style="color: #8892b0; font-size: 0.8rem;">© 2026 Suryakant Chaudhary & S Jaya Kumar. All Rights Reserved.<br>Raksha-Suraksha Academic Project. Authorized personnel only.</p>
-    </footer>
-
-    <!-- 🌟 MICRO-INTERACTIONS SCRIPT 🌟 -->
     <script>
-        // Splash Screen Typing Effect
-        window.addEventListener('load', function() {
-            const text = "INITIALIZING PROTOCOLS...";
-            let i = 0;
-            const speed = 75; // Typing speed in milliseconds
-            
-            function typeWriter() {
-                if (i < text.length) {
-                    document.getElementById("typing-text").innerHTML += text.charAt(i);
-                    i++;
-                    setTimeout(typeWriter, speed);
-                }
-            }
-            
-            // Start typing immediately
-            typeWriter();
+        setTimeout(() => {
+            document.getElementById('splash-screen').style.display = 'none';
+            document.getElementById('authGate').style.display = 'flex';
+        }, 2500);
 
-            // Fade out splash screen after 3.5 seconds
-            setTimeout(function() {
-                var splash = document.getElementById('splash-screen');
-                splash.style.opacity = '0'; 
-                setTimeout(function() {
-                    splash.style.display = 'none';
-                }, 1000);
-            }, 3500); 
+        const firebaseConfig = {
+            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI",
+            authDomain: "sentinel-vault-fb4b7.firebaseapp.com",
+            projectId: "sentinel-vault-fb4b7",
+            storageBucket: "sentinel-vault-fb4b7.firebasestorage.app",
+            messagingSenderId: "192301825793",
+            appId: "1:192301825793:web:734530705f4084608fe500"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        const authError = document.getElementById('authError');
+
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                window.location.href = 'dashboard.html'; // Route to Page 2
+            }
         });
 
-        // 🌟 TACTICAL RADAR INITIALIZATION 🌟
-        document.addEventListener('DOMContentLoaded', function() {
-            // Center map on Bengaluru
-            var map = L.map('web-map').setView([12.9716, 77.5946], 12); 
-
-            // Load OpenStreetMap tiles
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap | Sentinel Data',
-                maxZoom: 18
-            }).addTo(map);
-
-            // Add a pulsing red threat radius
-            var targetRadius = L.circle([12.9716, 77.5946], {
-                color: '#ff3366',
-                fillColor: '#ff3366',
-                fillOpacity: 0.4,
-                radius: 800
-            }).addTo(map);
-
-            targetRadius.bindPopup("<b style='color:black;'>📱 RAKSHA-SURAKSHA DEVICE</b><br><span style='color:red;'>STATUS: OFFLINE CACHE</span>").openPopup();
+        document.getElementById('btnGoogle').addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            authError.style.color = "#00E5FF";
+            authError.innerText = "Opening Secure Gate...";
+            firebase.auth().signInWithPopup(provider).catch((error) => {
+                authError.style.color = "#D32F2F";
+                authError.innerText = error.code === 'auth/popup-blocked' ? "⚠️ Popup blocked! Allow it at the bottom of your screen." : "Access Error: " + error.message;
+            });
         });
     </script>
-
 </body>
 </html>
