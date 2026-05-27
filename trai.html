@@ -3,100 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha-Suraksha | TRAI Compliance Protocols</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-
-    <!-- MASTER STYLESHEET -->
+    <title>Raksha-Suraksha | TRAI Protocols</title>
     <link rel="stylesheet" href="style.css">
-    
     <style>
-        /* Specific adjustments for the legal list */
-        .legal-list {
-            text-align: left;
-            width: 100%;
-            color: #8892b0;
-            line-height: 1.6;
-        }
-        .legal-list h4 {
-            color: #66FCF1;
-            margin-top: 25px;
-            margin-bottom: 5px;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.2rem;
-            letter-spacing: 1px;
-        }
-        .legal-list p {
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
+        .legal-list { text-align: left; width: 100%; color: #8892b0; line-height: 1.6; }
+        .legal-list h4 { color: #66FCF1; margin-top: 25px; font-size: 1.2rem; }
+        .legal-list p { font-size: 0.9rem; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <!-- 🌟 STICKY NAVIGATION 🌟 -->
-    <nav class="sticky-nav">
-        <a href="index.html">Command Hub</a>
-        <a href="privacy.html">Privacy Policy</a>
-    </nav>
-
-    <header>
-        <h1>TRAI COMPLIANCE</h1>
-        <p>Federal Telecom & Emergency System Protocols</p>
+    <header class="topbar" style="justify-content: center;">
+        <h1 style="color: #00E5FF; font-size: 1.8rem; margin: 0;">TRAI COMPLIANCE</h1>
     </header>
 
-    <main class="dashboard-grid" style="max-width: 900px;">
+    <main class="dashboard-content" style="max-width: 900px; margin: 0 auto;">
         <section class="glass-panel">
             <h2>Regulatory Framework</h2>
-            <p class="subtitle">Raksha-Suraksha adheres to the following guidelines set by the Telecom Regulatory Authority of India (TRAI) and the Department of Telecommunications (DoT).</p>
+            <p class="subtitle">Raksha-Suraksha adheres to the guidelines set by TRAI and the DoT.</p>
             
             <div class="legal-list">
-                <h4>1. P2P (Person-to-Person) SMS Routing</h4>
-                <p>SOS exfiltration utilizes native device-level SMS routing directly from the user's SIM to whitelisted contacts, classifying it as P2P communication rather than A2P (Application-to-Person).</p>
-
+                <h4>1. P2P SMS Routing</h4>
+                <p>SOS exfiltration utilizes native device-level SMS routing directly from the user's SIM, classifying it as P2P communication.</p>
                 <h4>2. DLT Registration Exemption</h4>
-                <p>Because the architecture avoids centralized 3rd-party bulk SMS servers (e.g., Twilio), the system is exempt from Distributed Ledger Technology (DLT) blockchain registration for commercial telemarketers.</p>
-
-                <h4>3. Anti-Spam & Fair Usage Policy</h4>
-                <p>The Context-Aware Auto-Responder operates strictly within the TRAI mandate of 100 SMS per day per SIM. High-value telemetry bursts ensure the network never flags the device for spam.</p>
-
+                <p>The system is exempt from DLT blockchain registration for commercial telemarketers.</p>
+                <h4>3. Anti-Spam Policy</h4>
+                <p>Operates strictly within the TRAI mandate of 100 SMS per day per SIM.</p>
                 <h4>4. ERSS (Rule 112) Alignment</h4>
-                <p>The software protocols are designed to complement the Ministry of Home Affairs' Rule 112 (Emergency Response Support System) mandate regarding physical hardware panic buttons on Indian mobile devices.</p>
-
-                <h4>5. NCPR / DND Override for Emergencies</h4>
-                <p>Emergency SMS alerts sent from a personal number to explicitly whitelisted contacts do not fall under Unsolicited Commercial Communications (UCC), bypassing Do Not Disturb (DND) registry blocks.</p>
-
-                <h4>6. Explicit Opt-In Telemetry</h4>
-                <p>Users must explicitly grant SMS, Call Log, and Background Location permissions at the OS level before the autonomous guardian system can interface with the telecom network.</p>
-
-                <h4>7. Localized Data Parsing</h4>
-                <p>Telephony and SMS logs are parsed locally on the device to determine threat contexts (e.g., fake switch-off detection). This raw telecom data is never exfiltrated to external servers.</p>
-
-                <h4>8. Data Localization Mandates</h4>
-                <p>All Tier-3 cloud operations and Firebase media evidence uploads are processed securely, ensuring alignment with Indian data localization preferences for sensitive telemetry.</p>
-
-                <h4>9. Misuse Prevention Protocols</h4>
-                <p>The system features strict cooldown timers on automated SOS dispatch to prevent accidental network flooding or denial-of-service (DoS) conditions on local cell towers.</p>
-
-                <h4>10. Transparent User Revocation</h4>
-                <p>Users maintain complete data sovereignty and can immediately revoke the app's ability to interface with the telecom network via standard Android permission settings.</p>
-
-                <h4>11. Carrier Agnostic Operation</h4>
-                <p>The system operates independently of specific Telecom Service Providers (TSPs) like Jio, Airtel, or Vi, ensuring universal functionality across all Indian telecom networks.</p>
-
-                <h4>12. Zero Interception Architecture</h4>
-                <p>Raksha-Suraksha does not intercept, modify, or block incoming calls or messages intended for the user, maintaining the integrity of standard telecom routing.</p>
+                <p>Designed to complement the Ministry of Home Affairs' Rule 112 regarding physical hardware panic buttons.</p>
+                <h4>5. NCPR / DND Override</h4>
+                <p>Emergency SMS alerts bypass Do Not Disturb (DND) registry blocks.</p>
+                <h4>6. Zero Interception Architecture</h4>
+                <p>Does not intercept or block standard telecom routing.</p>
             </div>
 
-            <a href="index.html" class="btn-tactical" style="margin-top: 30px;">⬅️ RETURN TO COMMAND HUB</a>
+            <a href="dashboard.html" class="btn-tactical" style="margin-top: 30px; width: auto;">⬅️ RETURN TO DASHBOARD</a>
         </section>
     </main>
 
     <footer>
-        <p>© 2026 Suryakant Chaudhary & S Jaya Kumar. All Rights Reserved.<br>Raksha-Suraksha Academic Project.</p>
+        <p>© 2026 Suryakant Chaudhary & S Jaya Kumar. Bangalore University BCA Project.</p>
     </footer>
 
 </body>
