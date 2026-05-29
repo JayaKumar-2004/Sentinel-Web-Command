@@ -3,53 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha-Suraksha | Free Satellite Radar</title>
+    <title>Raksha-Suraksha | Advanced Satellite Radar</title>
     <link rel="stylesheet" href="style.css">
     
     <!-- 1. LEAFLET CORE -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- 2. LEAFLET GEOCODER (Search) -->
+    <!-- 2. LEAFLET GEOCODER (For background searching) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
-    <!-- 3. LEAFLET ROUTING MACHINE -->
+    <!-- 3. LEAFLET ROUTING MACHINE (For drawing the path) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
     <style>
-        /* TACTICAL UI FIXES FOR OVERLAPS */
-        #google-map {
-            background-color: #020c1b; /* Prevents white flashes while satellite loads */
-        }
+        /* TACTICAL MAP & CUSTOM UI FIXES */
+        #google-map { background-color: #020c1b; height: calc(100vh - 90px); width: 100vw; z-index: 1; }
         
-        .leaflet-routing-container {
-            background-color: rgba(2, 12, 27, 0.95) !important;
-            color: #00E5FF !important;
-            border: 1px solid #00E5FF !important;
-            font-family: 'Share Tech Mono', monospace;
-            max-height: 50vh; /* Forces it to scroll instead of taking over the screen */
-            overflow-y: auto;
-            border-radius: 8px;
-        }
-        
-        /* Hides the default white background of the routing button */
-        .leaflet-routing-container.leaflet-routing-collapsible.leaflet-control {
-            background-color: rgba(2, 12, 27, 0.9) !important;
+        /* HIDDEN: We completely hide the ugly default routing box */
+        .leaflet-routing-container { display: none !important; }
+
+        /* Custom Floating Routing Panel */
+        .custom-routing-panel {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            z-index: 1000;
+            background: rgba(2, 12, 27, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid #00E5FF;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.8);
         }
 
-        .leaflet-control-geocoder {
-            background-color: rgba(2, 12, 27, 0.9) !important;
-            border: 2px solid #00E5FF !important;
-            border-radius: 8px !important;
+        .tactical-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(16, 24, 32, 0.8);
+            color: #00E5FF;
+            border: 1px solid rgba(0, 229, 255, 0.5);
+            border-radius: 6px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
         }
         
-        .leaflet-control-geocoder input {
-            background-color: transparent !important;
-            color: #FFF !important;
-            font-family: 'Share Tech Mono', monospace;
-        }
+        .tactical-input::placeholder { color: #8892b0; }
+        .tactical-input:focus { outline: none; border: 1px solid #00E5FF; }
+
+        .btn-row { display: flex; gap: 10px; width: 100%; margin-bottom: 10px; }
+        .btn-row button { margin-bottom: 0; padding: 10px 5px; font-size: 0.75rem; width: 50%; }
     </style>
 </head>
 <body class="no-scroll">
@@ -68,54 +77,62 @@
         <div class="topbar-account" style="color: #00E676;">GPS ACTIVE</div>
     </header>
 
+    <!-- CUSTOM TACTICAL ROUTING PANEL -->
+    <div class="custom-routing-panel">
+        <input type="text" id="originInput" placeholder="Origin Address / Area" class="tactical-input">
+        <input type="text" id="destInput" placeholder="Destination Address / Area" class="tactical-input">
+        
+        <div class="btn-row">
+            <button onclick="routeOriginToDest()" class="btn-tactical">📍 ORIGIN ➔ DEST</button>
+            <button onclick="routeGpsToDest()" class="btn-tactical" style="border-color: #ff3366; color: #ff3366;">🛰️ GPS ➔ DEST</button>
+        </div>
+        
+        <button id="btnTracker" onclick="toggleTracker()" class="btn-tactical" style="width: 100%; border-color: #00E676; color: #00E676; margin-bottom: 0;">
+            🟢 LIVE TRACKER: ON
+        </button>
+    </div>
+
     <!-- FULLSCREEN MAP CONTAINER -->
     <div id="google-map"></div>
 
     <script>
-        // Initialize Map centered on Bengaluru
-        var map = L.map('google-map').setView([12.9716, 77.5946], 12); 
+        // 1. INITIALIZE MAP (Clean Esri Satellite - No Labels)
+        var map = L.map('google-map', { zoomControl: false }).setView([12.9716, 77.5946], 12); 
+        L.control.zoom({ position: 'bottomright' }).addTo(map); // Move zoom out of the way
 
-        // TACTICAL SATELLITE LAYER (Esri)
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri',
-            maxZoom: 18
+            attribution: 'Tiles &copy; Esri', maxZoom: 18
         }).addTo(map);
 
-        // 1. ADD SEARCH BAR (Moved to 'topleft' under zoom to prevent overlap)
-        var geocoder = L.Control.geocoder({
-            defaultMarkGeocode: true,
-            position: 'topleft',
-            placeholder: "Search targets or areas..."
-        }).addTo(map);
-
-        // 2. ADD ROUTING MACHINE (Collapsed by default!)
-        var control = L.Routing.control({
-            waypoints: [
-                L.latLng(12.9716, 77.5946), // Start: Bengaluru Center
-                L.latLng(13.0279, 77.5409)  // End: Yeshwanthpur
-            ],
+        // 2. BACKGROUND GEOCODER & ROUTING ENGINE
+        var geocoder = L.Control.Geocoder.nominatim();
+        var routingControl = L.Routing.control({
+            waypoints: [],
             routeWhileDragging: true,
-            collapsible: true, // Allows it to be minimized into an icon
-            show: false,       // STARTS CLOSED SO IT DOES NOT BLOCK THE SCREEN
-            lineOptions: {
-                styles: [{color: '#ff3366', opacity: 0.8, weight: 5}]
-            }
+            show: false, // Prevents default UI from rendering
+            lineOptions: { styles: [{color: '#ff3366', opacity: 0.8, weight: 5}] },
+            createMarker: function() { return null; } // Hides default ugly A/B markers
         }).addTo(map);
 
-        // 3. LIVE DEVICE TRACKING
+        // 3. LIVE GPS TRACKING LOGIC
+        var isTracking = true;
+        var currentGpsLocation = null;
+        var liveMarker = null;
+        var liveCircle = null;
+
+        var customGpsIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149059.png', // Blue dot
+            iconSize: [25, 25]
+        });
+
         map.locate({setView: false, maxZoom: 16, watch: true, enableHighAccuracy: true});
 
-        var liveMarker, liveCircle;
-
         map.on('locationfound', function(e) {
+            currentGpsLocation = e.latlng;
             var radius = e.accuracy / 2;
             
             if (!liveMarker) {
-                var customIcon = L.icon({
-                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149059.png', 
-                    iconSize: [25, 25]
-                });
-                liveMarker = L.marker(e.latlng, {icon: customIcon}).addTo(map).bindPopup("<b style='color:black;'>📱 TARGET DEVICE LOCATED</b>");
+                liveMarker = L.marker(e.latlng, {icon: customGpsIcon}).addTo(map).bindPopup("<b style='color:black;'>📱 DEVICE LOCATED</b>");
                 liveCircle = L.circle(e.latlng, radius, {color: '#00E5FF', fillColor: '#00E5FF', fillOpacity: 0.2}).addTo(map);
             } else {
                 liveMarker.setLatLng(e.latlng);
@@ -124,9 +141,74 @@
             }
         });
 
-        map.on('locationerror', function(e) {
-            console.log("Hardware GPS Access Denied or Unavailable.");
-        });
+        // 4. TOGGLE TRACKER BUTTON LOGIC
+        function toggleTracker() {
+            var btn = document.getElementById('btnTracker');
+            if(isTracking) {
+                map.stopLocate();
+                isTracking = false;
+                btn.innerHTML = "⚪ LIVE TRACKER: OFF";
+                btn.style.color = "#8892b0";
+                btn.style.borderColor = "#8892b0";
+                if(liveMarker) map.removeLayer(liveMarker);
+                if(liveCircle) map.removeLayer(liveCircle);
+                liveMarker = null; liveCircle = null;
+            } else {
+                map.locate({setView: true, maxZoom: 16, watch: true, enableHighAccuracy: true});
+                isTracking = true;
+                btn.innerHTML = "🟢 LIVE TRACKER: ON";
+                btn.style.color = "#00E676";
+                btn.style.borderColor = "#00E676";
+            }
+        }
+
+        // 5. ROUTING LOGIC (Origin to Dest)
+        function routeOriginToDest() {
+            var origin = document.getElementById('originInput').value;
+            var dest = document.getElementById('destInput').value;
+            if(!origin || !dest) return alert("Please enter both Origin and Destination.");
+
+            document.getElementById('originInput').value = "Calculating...";
+            
+            geocoder.geocode(origin, function(resultsOrigin) {
+                if(resultsOrigin.length > 0) {
+                    geocoder.geocode(dest, function(resultsDest) {
+                        if(resultsDest.length > 0) {
+                            routingControl.setWaypoints([
+                                resultsOrigin[0].center,
+                                resultsDest[0].center
+                            ]);
+                            document.getElementById('originInput').value = origin;
+                        }
+                    });
+                } else {
+                    alert("Origin not found!");
+                    document.getElementById('originInput').value = origin;
+                }
+            });
+        }
+
+        // 6. ROUTING LOGIC (GPS to Dest)
+        function routeGpsToDest() {
+            var dest = document.getElementById('destInput').value;
+            if(!dest) return alert("Please enter a Destination.");
+            if(!currentGpsLocation) return alert("Waiting for GPS lock. Please ensure Tracker is ON and location permissions are granted.");
+
+            document.getElementById('destInput').value = "Calculating...";
+
+            geocoder.geocode(dest, function(resultsDest) {
+                if(resultsDest.length > 0) {
+                    routingControl.setWaypoints([
+                        currentGpsLocation,
+                        resultsDest[0].center
+                    ]);
+                    document.getElementById('destInput').value = dest;
+                } else {
+                    alert("Destination not found!");
+                    document.getElementById('destInput').value = dest;
+                }
+            });
+        }
     </script>
 </body>
 </html>
