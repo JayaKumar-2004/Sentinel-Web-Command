@@ -10,25 +10,36 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- 2. LEAFLET GEOCODER (For background searching) -->
+    <!-- 2. LEAFLET GEOCODER -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
-    <!-- 3. LEAFLET ROUTING MACHINE (For drawing the path) -->
+    <!-- 3. LEAFLET ROUTING MACHINE -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
     <style>
-        /* TACTICAL MAP & CUSTOM UI FIXES */
+        /* TACTICAL MAP FIXES */
         #google-map { background-color: #020c1b; height: calc(100vh - 90px); width: 100vw; z-index: 1; }
-        
-        /* HIDDEN: We completely hide the ugly default routing box */
         .leaflet-routing-container { display: none !important; }
 
-        /* Custom Floating Routing Panel */
-        .custom-routing-panel {
+        /* FLOATING TOGGLE BUTTON */
+        #panelToggleBtn {
             position: absolute;
             top: 100px;
+            right: 15px;
+            z-index: 1001;
+            width: auto;
+            background: rgba(2, 12, 27, 0.95);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+            margin: 0;
+            padding: 10px 15px;
+        }
+
+        /* CUSTOM ROUTING PANEL (Now with hide/show animations) */
+        .custom-routing-panel {
+            position: absolute;
+            top: 150px;
             left: 50%;
             transform: translateX(-50%);
             width: 90%;
@@ -40,20 +51,22 @@
             border-radius: 12px;
             padding: 15px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.8);
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Class to hide the panel smoothly */
+        .panel-closed {
+            opacity: 0;
+            visibility: hidden;
+            transform: translate(-50%, -20px);
         }
 
         .tactical-input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            background: rgba(16, 24, 32, 0.8);
-            color: #00E5FF;
-            border: 1px solid rgba(0, 229, 255, 0.5);
-            border-radius: 6px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.9rem;
+            width: 100%; padding: 10px; margin-bottom: 10px;
+            background: rgba(16, 24, 32, 0.8); color: #00E5FF;
+            border: 1px solid rgba(0, 229, 255, 0.5); border-radius: 6px;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.9rem;
         }
-        
         .tactical-input::placeholder { color: #8892b0; }
         .tactical-input:focus { outline: none; border: 1px solid #00E5FF; }
 
@@ -77,8 +90,13 @@
         <div class="topbar-account" style="color: #00E676;">GPS ACTIVE</div>
     </header>
 
-    <!-- CUSTOM TACTICAL ROUTING PANEL -->
-    <div class="custom-routing-panel">
+    <!-- TOGGLE BUTTON -->
+    <button id="panelToggleBtn" onclick="toggleRoutingPanel()" class="btn-tactical">
+        🗺️ COMMAND PANEL
+    </button>
+
+    <!-- CUSTOM TACTICAL ROUTING PANEL (Starts visible, can be toggled) -->
+    <div id="routingPanel" class="custom-routing-panel">
         <input type="text" id="originInput" placeholder="Origin Address / Area" class="tactical-input">
         <input type="text" id="destInput" placeholder="Destination Address / Area" class="tactical-input">
         
@@ -96,32 +114,38 @@
     <div id="google-map"></div>
 
     <script>
-        // 1. INITIALIZE MAP (Clean Esri Satellite - No Labels)
+        // 1. INITIALIZE MAP (Esri Satellite)
         var map = L.map('google-map', { zoomControl: false }).setView([12.9716, 77.5946], 12); 
-        L.control.zoom({ position: 'bottomright' }).addTo(map); // Move zoom out of the way
+        L.control.zoom({ position: 'bottomright' }).addTo(map); 
 
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri', maxZoom: 18
         }).addTo(map);
 
-        // 2. BACKGROUND GEOCODER & ROUTING ENGINE
+        // 2. TOGGLE PANEL LOGIC
+        function toggleRoutingPanel() {
+            var panel = document.getElementById('routingPanel');
+            panel.classList.toggle('panel-closed');
+        }
+
+        // 3. BACKGROUND GEOCODER & ROUTING ENGINE
         var geocoder = L.Control.Geocoder.nominatim();
         var routingControl = L.Routing.control({
             waypoints: [],
             routeWhileDragging: true,
-            show: false, // Prevents default UI from rendering
+            show: false, 
             lineOptions: { styles: [{color: '#ff3366', opacity: 0.8, weight: 5}] },
-            createMarker: function() { return null; } // Hides default ugly A/B markers
+            createMarker: function() { return null; } 
         }).addTo(map);
 
-        // 3. LIVE GPS TRACKING LOGIC
+        // 4. LIVE GPS TRACKING LOGIC
         var isTracking = true;
         var currentGpsLocation = null;
         var liveMarker = null;
         var liveCircle = null;
 
         var customGpsIcon = L.icon({
-            iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149059.png', // Blue dot
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149059.png',
             iconSize: [25, 25]
         });
 
@@ -141,7 +165,11 @@
             }
         });
 
-        // 4. TOGGLE TRACKER BUTTON LOGIC
+        map.on('locationerror', function(e) {
+            console.log("Hardware GPS Access Denied or Unavailable.");
+        });
+
+        // 5. TOGGLE TRACKER BUTTON LOGIC
         function toggleTracker() {
             var btn = document.getElementById('btnTracker');
             if(isTracking) {
@@ -162,7 +190,7 @@
             }
         }
 
-        // 5. ROUTING LOGIC (Origin to Dest)
+        // 6. ROUTING LOGIC (Origin to Dest)
         function routeOriginToDest() {
             var origin = document.getElementById('originInput').value;
             var dest = document.getElementById('destInput').value;
@@ -179,6 +207,8 @@
                                 resultsDest[0].center
                             ]);
                             document.getElementById('originInput').value = origin;
+                            // Optionally hide panel after routing so they can see the map
+                            toggleRoutingPanel(); 
                         }
                     });
                 } else {
@@ -188,7 +218,7 @@
             });
         }
 
-        // 6. ROUTING LOGIC (GPS to Dest)
+        // 7. ROUTING LOGIC (GPS to Dest)
         function routeGpsToDest() {
             var dest = document.getElementById('destInput').value;
             if(!dest) return alert("Please enter a Destination.");
@@ -203,6 +233,8 @@
                         resultsDest[0].center
                     ]);
                     document.getElementById('destInput').value = dest;
+                    // Hide panel after routing
+                    toggleRoutingPanel();
                 } else {
                     alert("Destination not found!");
                     document.getElementById('destInput').value = dest;
