@@ -6,15 +6,12 @@
     <title>Raksha-Suraksha | Advanced Satellite Radar</title>
     <link rel="stylesheet" href="style.css">
     
-    <!-- 1. LEAFLET CORE -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- 2. LEAFLET GEOCODER -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
-    <!-- 3. LEAFLET ROUTING MACHINE -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
@@ -25,41 +22,22 @@
 
         /* FLOATING TOGGLE BUTTON */
         #panelToggleBtn {
-            position: absolute;
-            top: 100px;
-            right: 15px;
-            z-index: 1001;
-            width: auto;
-            background: rgba(2, 12, 27, 0.95);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
-            margin: 0;
-            padding: 10px 15px;
+            position: absolute; top: 100px; right: 15px; z-index: 1001;
+            width: auto; background: rgba(2, 12, 27, 0.95);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8); margin: 0; padding: 10px 15px;
         }
 
-        /* CUSTOM ROUTING PANEL (Now with hide/show animations) */
+        /* CUSTOM ROUTING PANEL */
         .custom-routing-panel {
-            position: absolute;
-            top: 150px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 400px;
-            z-index: 1000;
-            background: rgba(2, 12, 27, 0.85);
-            backdrop-filter: blur(8px);
-            border: 1px solid #00E5FF;
-            border-radius: 12px;
-            padding: 15px;
+            position: absolute; top: 150px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 400px; z-index: 1000;
+            background: rgba(2, 12, 27, 0.9); backdrop-filter: blur(8px);
+            border: 1px solid #00E5FF; border-radius: 12px; padding: 15px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.8);
             transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
         }
 
-        /* Class to hide the panel smoothly */
-        .panel-closed {
-            opacity: 0;
-            visibility: hidden;
-            transform: translate(-50%, -20px);
-        }
+        .panel-closed { opacity: 0; visibility: hidden; transform: translate(-50%, -20px); }
 
         .tactical-input {
             width: 100%; padding: 10px; margin-bottom: 10px;
@@ -76,26 +54,22 @@
 </head>
 <body class="no-scroll">
 
-    <!-- ROLLING HEADER -->
     <div class="rolling-header">
         <marquee behavior="scroll" direction="left" scrollamount="6">
             🔴 RAKSHA-SURAKSHA : OPEN-SOURCE SATELLITE TRACKING & ROUTING ACTIVE 🔴
         </marquee>
     </div>
 
-    <!-- FLUID TOPBAR -->
     <header class="topbar">
         <a href="dashboard.html" class="btn-tactical" style="width: auto; padding: 5px 10px; margin: 0; max-width: none;">⬅️ BACK</a>
         <div class="topbar-logo"><h2>SATELLITE RADAR</h2></div>
         <div class="topbar-account" style="color: #00E676;">GPS ACTIVE</div>
     </header>
 
-    <!-- TOGGLE BUTTON -->
     <button id="panelToggleBtn" onclick="toggleRoutingPanel()" class="btn-tactical">
         🗺️ COMMAND PANEL
     </button>
 
-    <!-- CUSTOM TACTICAL ROUTING PANEL (Starts visible, can be toggled) -->
     <div id="routingPanel" class="custom-routing-panel">
         <input type="text" id="originInput" placeholder="Origin Address / Area" class="tactical-input">
         <input type="text" id="destInput" placeholder="Destination Address / Area" class="tactical-input">
@@ -105,16 +79,16 @@
             <button onclick="routeGpsToDest()" class="btn-tactical" style="border-color: #ff3366; color: #ff3366;">🛰️ GPS ➔ DEST</button>
         </div>
         
-        <button id="btnTracker" onclick="toggleTracker()" class="btn-tactical" style="width: 100%; border-color: #00E676; color: #00E676; margin-bottom: 0;">
-            🟢 LIVE TRACKER: ON
-        </button>
+        <div class="btn-row" style="margin-top: 10px;">
+            <button id="btnTracker" onclick="toggleTracker()" class="btn-tactical" style="border-color: #00E676; color: #00E676;">🟢 TRACKER: ON</button>
+            <button onclick="centerMapOnGPS()" class="btn-tactical" style="border-color: #00E5FF; color: #00E5FF;">🎯 CENTER ON ME</button>
+        </div>
     </div>
 
-    <!-- FULLSCREEN MAP CONTAINER -->
     <div id="google-map"></div>
 
     <script>
-        // 1. INITIALIZE MAP (Esri Satellite)
+        // 1. MAP SETUP
         var map = L.map('google-map', { zoomControl: false }).setView([12.9716, 77.5946], 12); 
         L.control.zoom({ position: 'bottomright' }).addTo(map); 
 
@@ -122,34 +96,32 @@
             attribution: 'Tiles &copy; Esri', maxZoom: 18
         }).addTo(map);
 
-        // 2. TOGGLE PANEL LOGIC
         function toggleRoutingPanel() {
-            var panel = document.getElementById('routingPanel');
-            panel.classList.toggle('panel-closed');
+            document.getElementById('routingPanel').classList.toggle('panel-closed');
         }
 
-        // 3. BACKGROUND GEOCODER & ROUTING ENGINE
+        // 2. ROUTING ENGINE SETUP
         var geocoder = L.Control.Geocoder.nominatim();
         var routingControl = L.Routing.control({
-            waypoints: [],
-            routeWhileDragging: true,
-            show: false, 
+            waypoints: [], routeWhileDragging: true, show: false, 
             lineOptions: { styles: [{color: '#ff3366', opacity: 0.8, weight: 5}] },
             createMarker: function() { return null; } 
         }).addTo(map);
 
-        // 4. LIVE GPS TRACKING LOGIC
-        var isTracking = true;
-        var currentGpsLocation = null;
-        var liveMarker = null;
-        var liveCircle = null;
-
-        var customGpsIcon = L.icon({
-            iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149059.png',
-            iconSize: [25, 25]
+        // Catch routing server errors so it doesn't freeze
+        routingControl.on('routingerror', function() {
+            alert("Routing Server Error: The free public server is busy. Please try again.");
+            document.getElementById('originInput').value = "";
+            document.getElementById('destInput').value = "";
         });
 
-        map.locate({setView: false, maxZoom: 16, watch: true, enableHighAccuracy: true});
+        // 3. LIVE GPS TRACKING
+        var isTracking = true;
+        var currentGpsLocation = null;
+        var liveMarker = null, liveCircle = null;
+        var customGpsIcon = L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149059.png', iconSize: [25, 25] });
+
+        map.locate({setView: true, maxZoom: 16, watch: true, enableHighAccuracy: true});
 
         map.on('locationfound', function(e) {
             currentGpsLocation = e.latlng;
@@ -165,78 +137,80 @@
             }
         });
 
-        map.on('locationerror', function(e) {
-            console.log("Hardware GPS Access Denied or Unavailable.");
-        });
-
-        // 5. TOGGLE TRACKER BUTTON LOGIC
         function toggleTracker() {
             var btn = document.getElementById('btnTracker');
             if(isTracking) {
-                map.stopLocate();
-                isTracking = false;
-                btn.innerHTML = "⚪ LIVE TRACKER: OFF";
-                btn.style.color = "#8892b0";
-                btn.style.borderColor = "#8892b0";
-                if(liveMarker) map.removeLayer(liveMarker);
-                if(liveCircle) map.removeLayer(liveCircle);
+                map.stopLocate(); isTracking = false;
+                btn.innerHTML = "⚪ TRACKER: OFF"; btn.style.color = "#8892b0"; btn.style.borderColor = "#8892b0";
+                if(liveMarker) map.removeLayer(liveMarker); if(liveCircle) map.removeLayer(liveCircle);
                 liveMarker = null; liveCircle = null;
             } else {
                 map.locate({setView: true, maxZoom: 16, watch: true, enableHighAccuracy: true});
                 isTracking = true;
-                btn.innerHTML = "🟢 LIVE TRACKER: ON";
-                btn.style.color = "#00E676";
-                btn.style.borderColor = "#00E676";
+                btn.innerHTML = "🟢 TRACKER: ON"; btn.style.color = "#00E676"; btn.style.borderColor = "#00E676";
             }
         }
 
-        // 6. ROUTING LOGIC (Origin to Dest)
+        // NEW: Center Map Button Logic
+        function centerMapOnGPS() {
+            if (currentGpsLocation) {
+                map.setView(currentGpsLocation, 16);
+                toggleRoutingPanel(); // Hide panel to see the map
+            } else {
+                alert("GPS lock not found yet. Ensure location permissions are granted.");
+            }
+        }
+
+        // 4. ROUTING LOGIC (Origin to Dest with Anti-Spam Delay)
         function routeOriginToDest() {
             var origin = document.getElementById('originInput').value;
             var dest = document.getElementById('destInput').value;
             if(!origin || !dest) return alert("Please enter both Origin and Destination.");
 
-            document.getElementById('originInput').value = "Calculating...";
+            document.getElementById('originInput').value = "Searching Origin...";
             
             geocoder.geocode(origin, function(resultsOrigin) {
-                if(resultsOrigin.length > 0) {
-                    geocoder.geocode(dest, function(resultsDest) {
-                        if(resultsDest.length > 0) {
-                            routingControl.setWaypoints([
-                                resultsOrigin[0].center,
-                                resultsDest[0].center
-                            ]);
-                            document.getElementById('originInput').value = origin;
-                            // Optionally hide panel after routing so they can see the map
-                            toggleRoutingPanel(); 
-                        }
-                    });
+                if(resultsOrigin && resultsOrigin.length > 0) {
+                    document.getElementById('originInput').value = "Waiting for Server...";
+                    
+                    // 1-second delay to prevent free server block
+                    setTimeout(function() {
+                        document.getElementById('destInput').value = "Searching Dest...";
+                        geocoder.geocode(dest, function(resultsDest) {
+                            if(resultsDest && resultsDest.length > 0) {
+                                document.getElementById('originInput').value = origin;
+                                document.getElementById('destInput').value = dest;
+                                routingControl.setWaypoints([resultsOrigin[0].center, resultsDest[0].center]);
+                                toggleRoutingPanel(); 
+                            } else {
+                                alert("Destination not found!");
+                                document.getElementById('originInput').value = origin;
+                                document.getElementById('destInput').value = dest;
+                            }
+                        });
+                    }, 1000); 
                 } else {
-                    alert("Origin not found!");
+                    alert("Origin not found! Try adding 'Bengaluru' to the search.");
                     document.getElementById('originInput').value = origin;
                 }
             });
         }
 
-        // 7. ROUTING LOGIC (GPS to Dest)
+        // 5. ROUTING LOGIC (GPS to Dest with Error Handling)
         function routeGpsToDest() {
             var dest = document.getElementById('destInput').value;
             if(!dest) return alert("Please enter a Destination.");
-            if(!currentGpsLocation) return alert("Waiting for GPS lock. Please ensure Tracker is ON and location permissions are granted.");
+            if(!currentGpsLocation) return alert("Waiting for GPS lock.");
 
-            document.getElementById('destInput').value = "Calculating...";
+            document.getElementById('destInput').value = "Searching Dest...";
 
             geocoder.geocode(dest, function(resultsDest) {
-                if(resultsDest.length > 0) {
-                    routingControl.setWaypoints([
-                        currentGpsLocation,
-                        resultsDest[0].center
-                    ]);
+                if(resultsDest && resultsDest.length > 0) {
                     document.getElementById('destInput').value = dest;
-                    // Hide panel after routing
+                    routingControl.setWaypoints([currentGpsLocation, resultsDest[0].center]);
                     toggleRoutingPanel();
                 } else {
-                    alert("Destination not found!");
+                    alert("Destination not found! Try adding 'Bengaluru' to the search.");
                     document.getElementById('destInput').value = dest;
                 }
             });
