@@ -6,30 +6,45 @@
     <title>Raksha-Suraksha | Free Satellite Radar</title>
     <link rel="stylesheet" href="style.css">
     
-    <!-- 1. LEAFLET CORE (For the Map) -->
+    <!-- 1. LEAFLET CORE -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- 2. LEAFLET GEOCODER (For Area Searching) -->
+    <!-- 2. LEAFLET GEOCODER (Search) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
-    <!-- 3. LEAFLET ROUTING MACHINE (For Navigation/Routing) -->
+    <!-- 3. LEAFLET ROUTING MACHINE -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
     <style>
-        /* Custom tweaks to make the free plugins look tactical */
+        /* TACTICAL UI FIXES FOR OVERLAPS */
+        #google-map {
+            background-color: #020c1b; /* Prevents white flashes while satellite loads */
+        }
+        
         .leaflet-routing-container {
-            background-color: rgba(2, 12, 27, 0.9) !important;
+            background-color: rgba(2, 12, 27, 0.95) !important;
             color: #00E5FF !important;
             border: 1px solid #00E5FF !important;
             font-family: 'Share Tech Mono', monospace;
+            max-height: 50vh; /* Forces it to scroll instead of taking over the screen */
+            overflow-y: auto;
+            border-radius: 8px;
         }
+        
+        /* Hides the default white background of the routing button */
+        .leaflet-routing-container.leaflet-routing-collapsible.leaflet-control {
+            background-color: rgba(2, 12, 27, 0.9) !important;
+        }
+
         .leaflet-control-geocoder {
             background-color: rgba(2, 12, 27, 0.9) !important;
             border: 2px solid #00E5FF !important;
+            border-radius: 8px !important;
         }
+        
         .leaflet-control-geocoder input {
             background-color: transparent !important;
             color: #FFF !important;
@@ -54,38 +69,40 @@
     </header>
 
     <!-- FULLSCREEN MAP CONTAINER -->
-    <div id="google-map"></div> <!-- Reusing the same CSS ID for sizing -->
+    <div id="google-map"></div>
 
     <script>
         // Initialize Map centered on Bengaluru
         var map = L.map('google-map').setView([12.9716, 77.5946], 12); 
 
-        // TACTICAL SATELLITE LAYER (Esri - 100% Free, No API Key)
+        // TACTICAL SATELLITE LAYER (Esri)
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri',
             maxZoom: 18
         }).addTo(map);
 
-        // 1. ADD SEARCH BAR (Free Nominatim Geocoder)
+        // 1. ADD SEARCH BAR (Moved to 'topleft' under zoom to prevent overlap)
         var geocoder = L.Control.geocoder({
             defaultMarkGeocode: true,
+            position: 'topleft',
             placeholder: "Search targets or areas..."
         }).addTo(map);
 
-        // 2. ADD ROUTING MACHINE (Free OSRM Server)
-        // To use this, you can drag the routing markers on the map!
+        // 2. ADD ROUTING MACHINE (Collapsed by default!)
         var control = L.Routing.control({
             waypoints: [
                 L.latLng(12.9716, 77.5946), // Start: Bengaluru Center
-                L.latLng(13.0279, 77.5409)  // End: Example location (Yeshwanthpur)
+                L.latLng(13.0279, 77.5409)  // End: Yeshwanthpur
             ],
             routeWhileDragging: true,
+            collapsible: true, // Allows it to be minimized into an icon
+            show: false,       // STARTS CLOSED SO IT DOES NOT BLOCK THE SCREEN
             lineOptions: {
                 styles: [{color: '#ff3366', opacity: 0.8, weight: 5}]
             }
         }).addTo(map);
 
-        // 3. LIVE DEVICE TRACKING (HTML5 GPS Chip)
+        // 3. LIVE DEVICE TRACKING
         map.locate({setView: false, maxZoom: 16, watch: true, enableHighAccuracy: true});
 
         var liveMarker, liveCircle;
@@ -94,15 +111,13 @@
             var radius = e.accuracy / 2;
             
             if (!liveMarker) {
-                // Initial ping - create icon
                 var customIcon = L.icon({
-                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149059.png', // Simple blue dot
-                    iconSize: [20, 20]
+                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149059.png', 
+                    iconSize: [25, 25]
                 });
                 liveMarker = L.marker(e.latlng, {icon: customIcon}).addTo(map).bindPopup("<b style='color:black;'>📱 TARGET DEVICE LOCATED</b>");
                 liveCircle = L.circle(e.latlng, radius, {color: '#00E5FF', fillColor: '#00E5FF', fillOpacity: 0.2}).addTo(map);
             } else {
-                // Update position
                 liveMarker.setLatLng(e.latlng);
                 liveCircle.setLatLng(e.latlng);
                 liveCircle.setRadius(radius);
