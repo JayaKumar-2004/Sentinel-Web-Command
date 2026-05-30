@@ -10,7 +10,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
     <style>
-        /* TACTICAL INPUT STYLING */
         .tactical-input {
             width: 100%; padding: 12px; margin-bottom: 15px;
             background: rgba(16, 24, 32, 0.8); color: #00E5FF;
@@ -21,7 +20,6 @@
         .tactical-input::placeholder { color: #8892b0; letter-spacing: normal; }
         .tactical-input:focus { outline: none; border: 1px solid #00E5FF; box-shadow: 0 0 10px rgba(0,229,255,0.3); }
 
-        /* DEVICE CARDS */
         .device-card {
             background: rgba(0, 229, 255, 0.05);
             border: 1px solid rgba(0, 229, 255, 0.2);
@@ -77,14 +75,12 @@
         <section class="glass-panel" style="display: block;">
             <h3 style="text-align: center; margin-bottom: 20px;">📱 MANAGED DEVICES</h3>
             
-            <div id="deviceContainer">
-                </div>
+            <div id="deviceContainer"></div>
         </section>
 
     </main>
 
     <script>
-        // --- FIREBASE AUTHENTICATION ---
         const firebaseConfig = { 
             apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", 
             authDomain: "sentinel-vault-fb4b7.firebaseapp.com", 
@@ -103,18 +99,14 @@
             }
         });
 
-        // --- DEVICE MANAGEMENT LOGIC (UI Simulation for Presentation) ---
-        
-        // Initial Mock Database State
+        // ONLY THE REAL MASTER NODE
         let linkedDevices = [
-            { id: 1, name: "Samsung Galaxy A07 5G", os: "Android 14", sync: "Just now", status: "active" },
-            { id: 2, name: "Redmi Y3", os: "Android 9.0", sync: "2 hours ago", status: "suspended" }
+            { id: 1, name: "Redmi Y3 (Master Node)", os: "Android", sync: "LIVE", status: "active" }
         ];
 
-        // Function to render the devices to the screen
         function renderDevices() {
             const container = document.getElementById('deviceContainer');
-            container.innerHTML = ""; // Clear current list
+            container.innerHTML = ""; 
 
             if (linkedDevices.length === 0) {
                 container.innerHTML = "<p style='text-align:center; color:#8892b0;'>No devices linked to this account.</p>";
@@ -152,31 +144,27 @@
             });
         }
 
-        // Toggle Suspend / Restore (Unlink/Link)
         function toggleDeviceStatus(id) {
             const device = linkedDevices.find(d => d.id === id);
             if (device) {
                 device.status = device.status === 'active' ? 'suspended' : 'active';
-                renderDevices(); // Re-draw UI
+                renderDevices(); 
             }
         }
 
-        // Permanently Delete Device Access
         function deleteDevice(id) {
             const confirmDelete = confirm("CRITICAL WARNING: Are you sure you want to permanently revoke this device's access to the Sentinel network?");
             if (confirmDelete) {
                 linkedDevices = linkedDevices.filter(d => d.id !== id);
-                renderDevices(); // Re-draw UI
+                renderDevices(); 
             }
         }
 
-        // Link New Device via Pairing Code
         function linkNewDevice() {
             const codeInput = document.getElementById('pairingCode').value;
             const msg = document.getElementById('linkMessage');
 
             if (codeInput.length >= 6) {
-                // Simulate pairing process
                 const newDevice = {
                     id: Date.now(),
                     name: "Unknown Android Node",
@@ -185,11 +173,10 @@
                     status: "active"
                 };
                 
-                linkedDevices.unshift(newDevice); // Add to top of list
-                document.getElementById('pairingCode').value = ""; // Clear input
-                renderDevices(); // Re-draw UI
+                linkedDevices.unshift(newDevice); 
+                document.getElementById('pairingCode').value = ""; 
+                renderDevices(); 
 
-                // Show success message briefly
                 msg.style.display = "block";
                 setTimeout(() => msg.style.display = "none", 3000);
             } else {
@@ -197,9 +184,7 @@
             }
         }
 
-        // Initial Render on page load
         renderDevices();
     </script>
 </body>
 </html>
-
