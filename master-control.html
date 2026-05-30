@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raksha-Suraksha | Master Control Hub</title>
     <link rel="stylesheet" href="style.css">
+    
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 
-    <!-- ROLLING HEADER WITH LOGO -->
     <div class="rolling-header">
         <marquee behavior="scroll" direction="left" scrollamount="6">
             <img src="temp_logo.png" alt="Logo" style="height: 14px; vertical-align: middle; margin-right: 10px;">
@@ -18,7 +18,6 @@
         </marquee>
     </div>
 
-    <!-- MAIN NAV -->
     <header class="topbar">
         <div class="menu-toggle" onclick="toggleSidebar()">
             ☰ <span style="font-size: 0.9rem;">MENU</span>
@@ -33,7 +32,6 @@
 
     <div class="app-layout">
         
-        <!-- TRUE POP-MENU SIDEBAR -->
         <nav class="sidebar" id="sidebar">
             <div class="close-menu" onclick="toggleSidebar()">✖</div>
             <a href="dashboard.html">🏠 Main Dashboard</a>
@@ -43,7 +41,6 @@
             <a href="upload.html">📼 Tier-3 Vault</a>
         </nav>
 
-        <!-- MASTER CONTROL MENU CARDS (ROUTING TO SEPARATE PAGES) -->
         <main class="dashboard-content">
             
             <section class="glass-panel">
@@ -82,8 +79,16 @@
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
 
         // Auth Check ONLY
-        const firebaseConfig = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", 
+            authDomain: "sentinel-vault-fb4b7.firebaseapp.com", 
+            projectId: "sentinel-vault-fb4b7", 
+            storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", 
+            messagingSenderId: "192301825793", 
+            appId: "1:192301825793:web:734530705f4084608fe500" 
+        };
         firebase.initializeApp(firebaseConfig);
+        
         firebase.auth().onAuthStateChanged((user) => {
             if (user) document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
             else window.location.href = 'index.html'; 
