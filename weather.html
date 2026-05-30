@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raksha-Suraksha | Tactical Weather</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+    <style>
+        .weather-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .data-box {
+            background: rgba(0, 229, 255, 0.05);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+        }
+        .data-box h4 {
+            color: #8892b0;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+        .data-box p {
+            color: #00E5FF;
+            font-size: 1.5rem;
+            font-weight: bold;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        #radarTerminal {
+            width: 100%;
+            background: #101820;
+            color: #00E676;
+            font-family: 'Share Tech Mono', monospace;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #00E676;
+            margin-top: 20px;
+            text-align: left;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        .warning-text { color: #FF9800; }
+        .danger-text { color: #ff3366; }
+    </style>
+</head>
+<body>
+
+    <div class="rolling-header">
+        <marquee behavior="scroll" direction="left" scrollamount="6">
+            ⛈️ RAKSHA-SURAKSHA : TACTICAL ATMOSPHERIC ROUTING AND RADAR ACTIVE ⛈️
+        </marquee>
+    </div>
+
+    <header class="topbar">
+        <a href="dashboard.html" class="btn-tactical" style="width: auto; padding: 5px 10px; margin: 0; max-width: none;">⬅️ BACK</a>
+        <div class="topbar-logo"><h2>TACTICAL WEATHER</h2></div>
+        <div class="topbar-account" id="userEmail" style="color: #00E5FF;">VERIFYING...</div>
+    </header>
+
+    <main class="dashboard-content" style="max-width: 800px;">
+        
+        <section class="glass-panel">
+            <h3>📡 ATMOSPHERIC SCANNER</h3>
+            <p class="subtitle">Access local environmental data to ensure safe agent routing.</p>
+            
+            <button onclick="initiateScan()" class="btn-tactical" id="scanBtn" style="width: 100%; max-width: 100%;">
+                INITIATE SATELLITE UPLINK
+            </button>
+
+            <div class="weather-grid" id="weatherData" style="display: none;">
+                <div class="data-box">
+                    <h4>TEMPERATURE</h4>
+                    <p id="tempOut">-- °C</p>
+                </div>
+                <div class="data-box">
+                    <h4>WIND SPEED</h4>
+                    <p id="windOut">-- km/h</p>
+                </div>
+                <div class="data-box">
+                    <h4>LATITUDE</h4>
+                    <p id="latOut">--</p>
+                </div>
+                <div class="data-box">
+                    <h4>LONGITUDE</h4>
+                    <p id="lonOut">--</p>
+                </div>
+            </div>
+
+            <div id="radarTerminal">
+                > WAITING FOR SATELLITE UPLINK...<br>> GPS MODULE STANDBY.
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- FIREBASE AUTHENTICATION ---
+        const firebaseConfig = { 
+            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", 
+            authDomain: "sentinel-vault-fb4b7.firebaseapp.com", 
+            projectId: "sentinel-vault-fb4b7", 
+            storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", 
+            messagingSenderId: "192301825793", 
+            appId: "1:192301825793:web:734530705f4084608fe500" 
+        };
+        firebase.initializeApp(firebaseConfig);
+        
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
+            } else {
+                window.location.href = 'index.html'; 
+            }
+        });
+
+        // --- TACTICAL WEATHER LOGIC ---
+        const terminal = document.getElementById('radarTerminal');
+        const grid = document.getElementById('weatherData');
+
+        function initiateScan() {
+            document.getElementById('scanBtn').innerText = "SCANNING...";
+            terminal.innerHTML = "> REQUESTING GPS COORDINATES...<br>";
+            terminal.style.color = "#FF9800"; // Orange during scan
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(fetchWeatherData, showError);
+            } else {
+                terminal.innerHTML += "> [ERR] GEOLOCATION NOT SUPPORTED BY BROWSER.";
+            }
+        }
+
+        async function fetchWeatherData(position) {
+            const lat = position.coords.latitude.toFixed(4);
+            const lon = position.coords.longitude.toFixed(4);
+            
+            terminal.innerHTML += `> TARGET LOCKED: LAT ${lat}, LON ${lon}<br>> PINGING OPEN-METEO SATELLITE...<br>`;
+
+            // Update UI Grid
+            document.getElementById('latOut').innerText = lat;
+            document.getElementById('lonOut').innerText = lon;
+
+            try {
+                // Free, No-Key Weather API
+                const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+                const data = await response.json();
+                
+                const temp = data.current_weather.temperature;
+                const wind = data.current_weather.windspeed;
+
+                // Update UI Grid
+                document.getElementById('tempOut').innerText = `${temp} °C`;
+                document.getElementById('windOut').innerText = `${wind} km/h`;
+                grid.style.display = "grid";
+
+                // Analyze Threat Level based on Wind Speed
+                let threatLevel = "> STATUS: CLEAR FOR ROUTING.";
+                if (wind > 40) {
+                    threatLevel = "<span class='warning-text'>> STATUS: MODERATE WIND ADVISORY. PROCEED WITH CAUTION.</span>";
+                }
+                if (wind > 70) {
+                    threatLevel = "<span class='danger-text'>> STATUS: SEVERE WEATHER DETECTED. SHELTER IN PLACE.</span>";
+                }
+
+                terminal.innerHTML += `> DATA ACQUIRED.<br>${threatLevel}`;
+                terminal.style.color = "#00E676"; // Back to green
+                document.getElementById('scanBtn').innerText = "REFRESH DATA";
+
+            } catch (error) {
+                terminal.innerHTML += `> <span class='danger-text'>[ERR] SATELLITE CONNECTION FAILED.</span>`;
+            }
+        }
+
+        function showError(error) {
+            let msg = "";
+            switch(error.code) {
+                case error.PERMISSION_DENIED: msg = "AGENT DENIED LOCATION ACCESS."; break;
+                case error.POSITION_UNAVAILABLE: msg = "LOCATION INFORMATION UNAVAILABLE."; break;
+                case error.TIMEOUT: msg = "REQUEST TIMED OUT."; break;
+                default: msg = "UNKNOWN ERROR OCCURRED."; break;
+            }
+            terminal.innerHTML += `> <span class='danger-text'>[ERR] ${msg}</span>`;
+            document.getElementById('scanBtn').innerText = "INITIATE SATELLITE UPLINK";
+        }
+    </script>
+</body>
+</html>
