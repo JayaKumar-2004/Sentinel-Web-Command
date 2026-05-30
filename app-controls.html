@@ -11,7 +11,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <style>
-        /* Custom grid for control buttons to prevent overlaps */
         .control-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -78,14 +77,13 @@
             </div>
 
             <div id="statusTerminal">
-                > CONNECTION ESTABLISHED...<br>> WAITING FOR COMMAND...
+                > WAITING FOR USER CACHE...
             </div>
         </section>
 
     </main>
 
     <script>
-        // 1. Firebase Configuration (Added databaseURL for Realtime DB)
         const firebaseConfig = { 
             apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", 
             authDomain: "sentinel-vault-fb4b7.firebaseapp.com", 
@@ -98,37 +96,41 @@
         
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        let currentUserUid = null;
 
-        // 2. Auth Check
+        // TRACK AUTHENTICATED ACCOUNT
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
+                currentUserUid = user.uid; // Dynamically grab user's specific system ID
                 document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
+                document.getElementById('statusTerminal').innerHTML = `> UPLINK ESTABLISHED WITH UID: ${currentUserUid}<br>> SYSTEM SECURE AND READY.`;
             } else {
-                window.location.href = 'index.html'; // Kick out if not logged in
+                window.location.href = 'index.html'; 
             }
         });
 
-        // 3. Command Exfiltration Logic
         function sendCommand(cmdString) {
+            if (!currentUserUid) {
+                alert("Error: No authenticated node session established.");
+                return;
+            }
+
             const terminal = document.getElementById('statusTerminal');
             terminal.innerHTML = `> UPLOADING PAYLOAD: ${cmdString}...`;
-            terminal.style.color = "#FF9800"; // Orange warning color during upload
+            terminal.style.color = "#FF9800"; 
 
-            // Push to the exact node the Android app is listening to
-            database.ref('RakshaLink/CurrentCommand').set({
+            // PATH MODIFICATION: Routes directly to this specific user's pocket space
+            database.ref(`users/${currentUserUid}/CurrentCommand`).set({
                 command: cmdString,
                 timestamp: Date.now()
             }).then(() => {
-                // Success Callback
-                terminal.innerHTML = `> PAYLOAD SECURED.<br>> EXECUTED: ${cmdString}`;
-                terminal.style.color = "#00E676"; // Green success color
+                terminal.innerHTML = `> PAYLOAD SECURED AT target node: users/${currentUserUid}/CurrentCommand<br>> EXECUTED: ${cmdString}`;
+                terminal.style.color = "#00E676"; 
             }).catch((error) => {
-                // Error Callback
                 terminal.innerHTML = `> UPLOAD FAILED.<br>> ERR: ${error.message}`;
-                terminal.style.color = "#ff3366"; // Red error color
+                terminal.style.color = "#ff3366"; 
             });
         }
     </script>
 </body>
 </html>
-
