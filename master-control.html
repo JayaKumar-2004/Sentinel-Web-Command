@@ -8,77 +8,95 @@
     
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+    <style>
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .glass-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%; /* Ensures cards stretch equally */
+        }
+        
+        .btn-danger { border-color: #ff3366 !important; color: #ff3366 !important; }
+
+        .footer {
+            text-align: left;
+            padding: 20px;
+            font-family: 'Share Tech Mono', monospace;
+            color: #8892b0;
+            font-size: 0.75rem;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="rolling-header">
+    <div class="rolling-header" style="background: #ff3366; color: #020c1b; padding: 5px; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;">
         <marquee behavior="scroll" direction="left" scrollamount="6">
-            <img src="temp_logo.png" alt="Logo" style="height: 14px; vertical-align: middle; margin-right: 10px;">
             🛡️ RAKSHA-SURAKSHA : MASTER CONTROL HUB ACTIVE 🛡️
         </marquee>
     </div>
 
     <header class="topbar">
-        <div class="menu-toggle" onclick="toggleSidebar()">
-            ☰ <span style="font-size: 0.9rem;">MENU</span>
+        <div class="menu-toggle" style="cursor: pointer;">
+            ☰ <span style="font-size: 0.8rem; letter-spacing: 1px;">MENU</span>
         </div>
         <div class="topbar-logo">
             <h2>MASTER CONTROL</h2>
         </div>
-        <div class="topbar-account" id="userEmail" style="color: #00E5FF;">
-            VERIFYING...
+        
+        <div class="topbar-account" style="display: flex; gap: 15px; align-items: center;">
+            <span id="userEmail" style="color: #00E5FF; font-size: 0.75rem;">AGENT: VERIFYING...</span>
+            <button onclick="terminateSession()" style="background: transparent; border: 1px solid #ff3366; color: #ff3366; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">LOGOUT</button>
         </div>
     </header>
 
-    <div class="app-layout">
+    <main class="dashboard-content" style="padding-top: 20px;">
         
-        <nav class="sidebar" id="sidebar">
-            <div class="close-menu" onclick="toggleSidebar()">✖</div>
-            <a href="dashboard.html">🏠 Main Dashboard</a>
-            <a href="app-controls.html">🎛️ App Controls</a>
-            <a href="app-location.html">📍 App Location</a>
-            <a href="messages.html">💬 Message Control</a>
-            <a href="upload.html">📼 Tier-3 Vault</a>
-        </nav>
-
-        <main class="dashboard-content">
+        <div class="module-grid">
             
             <section class="glass-panel">
-                <h3>🎛️ App Controls</h3>
-                <p class="subtitle">Remote device locking and system parameter modification.</p>
-                <a href="app-controls.html" class="btn-tactical">OPEN MODULE</a>
+                <h3>🎛️ APP CONTROLS</h3>
+                <p class="subtitle" style="flex-grow: 1;">Remote device locking and system parameter modification.</p>
+                <a href="app-controls.html" class="btn-tactical" style="margin-top: 15px;">OPEN MODULE</a>
             </section>
 
             <section class="glass-panel">
-                <h3>📍 App Location</h3>
-                <p class="subtitle">Access precision GPS coordinates and device tracking.</p>
-                <a href="app-location.html" class="btn-tactical">OPEN MODULE</a>
+                <h3>📍 APP LOCATION</h3>
+                <p class="subtitle" style="flex-grow: 1;">Access precision GPS coordinates and device tracking.</p>
+                <a href="map.html" class="btn-tactical" style="margin-top: 15px;">OPEN MODULE</a>
             </section>
 
             <section class="glass-panel">
-                <h3>💬 Message Control</h3>
-                <p class="subtitle">Manage SMS routing, Auto-Responder settings, and trusted contacts.</p>
-                <a href="messages.html" class="btn-tactical">OPEN MODULE</a>
+                <h3>💬 MESSAGE CONTROL</h3>
+                <p class="subtitle" style="flex-grow: 1;">Manage SMS routing, Auto-Responder settings, and trusted contacts.</p>
+                <a href="message-control.html" class="btn-tactical" style="margin-top: 15px;">OPEN MODULE</a>
             </section>
 
             <section class="glass-panel">
-                <h3>🛡️ Tier-3 Evidence Vault</h3>
-                <p class="subtitle">Authorized agents only. Access the secure cloud video portal.</p>
-                <a href="upload.html" class="btn-tactical" style="border-color: #ff3366; color: #ff3366;">ENTER VAULT</a>
+                <h3>🛡️ TIER-3 EVIDENCE VAULT</h3>
+                <p class="subtitle" style="flex-grow: 1;">Authorized agents only. Access the secure cloud video portal.</p>
+                <a href="#" class="btn-tactical btn-danger" style="margin-top: 15px;">ENTER VAULT</a>
             </section>
+            
+        </div>
 
-        </main>
-    </div>
-
-    <footer>
-        <p>© 2026 Suryakant Chaudhary & S Jaya Kumar. Raksha-Suraksha Project.</p>
-    </footer>
+        <div class="footer">
+            © 2026 Suryakant Chaudhary & S Jaya Kumar. Raksha-Suraksha Project.
+        </div>
+        
+    </main>
 
     <script>
-        // Sidebar Toggle
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
-
-        // Auth Check ONLY
         const firebaseConfig = { 
             apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", 
             authDomain: "sentinel-vault-fb4b7.firebaseapp.com", 
@@ -90,9 +108,20 @@
         firebase.initializeApp(firebaseConfig);
         
         firebase.auth().onAuthStateChanged((user) => {
-            if (user) document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
-            else window.location.href = 'index.html'; 
+            if (user) {
+                document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
+            } else {
+                window.location.href = 'index.html';
+            }
         });
+
+        function terminateSession() {
+            firebase.auth().signOut().then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error("Logout Error:", error);
+            });
+        }
     </script>
 </body>
 </html>
