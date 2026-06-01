@@ -17,10 +17,12 @@
         .btn-danger { border-color: #ff3366 !important; color: #ff3366 !important; }
         .btn-warning { border-color: #FF9800 !important; color: #FF9800 !important; }
         
-        /* Contact Form Styles */
-        .contact-form { display: flex; gap: 10px; margin-bottom: 15px; }
-        .contact-form input { flex: 1; padding: 8px; background: rgba(0,0,0,0.5); color: #00E5FF; border: 1px solid #8892b0; border-radius: 4px; }
-        .contact-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,229,255,0.1); padding: 10px; border-radius: 4px; margin-bottom: 5px; border-left: 3px solid #00E676; }
+        /* Contact Form Styles - MOBILE RESPONSIVE FIX */
+        .contact-form { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        .contact-form input { flex: 1 1 120px; padding: 8px; background: rgba(0,0,0,0.5); color: #00E5FF; border: 1px solid #8892b0; border-radius: 4px; box-sizing: border-box; }
+        .contact-form button { flex: 1 1 100%; }
+        
+        .contact-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,229,255,0.1); padding: 10px; border-radius: 4px; margin-bottom: 5px; border-left: 3px solid #00E676; flex-wrap: wrap; gap: 10px;}
         .contact-info { color: #FFF; font-size: 0.9rem; }
     </style>
 </head>
@@ -35,7 +37,7 @@
         </div>
     </header>
 
-    <main class="dashboard-content" style="max-width: 800px;">
+    <main class="dashboard-content" style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
         
         <section class="glass-panel">
             <h3>🎛️ HARDWARE OVERRIDE</h3>
@@ -78,7 +80,7 @@
             <div id="statusTerminal">> WAITING FOR USER CACHE...</div>
         </section>
 
-        <section class="glass-panel" style="margin-top: 20px;">
+        <section class="glass-panel">
             <h3>🚨 EMERGENCY COMMUNICATIONS</h3>
             <p class="subtitle">Force target device to auto-dial critical numbers.</p>
 
@@ -102,7 +104,6 @@
             <div id="customContactsList">
                 <p style="color:#8892b0; font-size: 0.8rem;">Loading secured contacts from Firebase...</p>
             </div>
-
         </section>
 
     </main>
@@ -127,13 +128,12 @@
                 currentUserUid = user.uid; 
                 document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
                 document.getElementById('statusTerminal').innerHTML = `> UPLINK ESTABLISHED.<br>> SYSTEM SECURE AND READY.`;
-                loadContacts(); // Load user's saved contacts
+                loadContacts(); 
             } else {
                 window.location.href = 'index.html'; 
             }
         });
 
-        // STANDARD COMMAND SENDER
         function sendCommand(cmdString) {
             if (!currentUserUid) return;
             document.getElementById('statusTerminal').innerHTML = `> UPLOADING: ${cmdString}...`;
@@ -144,7 +144,6 @@
             });
         }
 
-        // DYNAMIC DIAL COMMAND SENDER
         function sendDialCommand(phoneNumber) {
             if (!currentUserUid) return;
             const payload = "CALL_NUM:" + phoneNumber;
@@ -154,20 +153,15 @@
             });
         }
 
-        // --- CONTACT MANAGEMENT SYSTEM ---
         function addContact() {
             const name = document.getElementById('contactName').value.trim();
             const phone = document.getElementById('contactPhone').value.trim();
             
             if (!name || !phone) return alert("Please enter both Name and Phone Number.");
             
-            // Check limits (Max 10)
             database.ref(`users/${currentUserUid}/contacts`).once('value', snapshot => {
-                if (snapshot.numChildren() >= 10) {
-                    alert("SOS Vault is full! Maximum 10 custom contacts allowed.");
-                    return;
-                }
-                // Save to Firebase
+                if (snapshot.numChildren() >= 10) return alert("SOS Vault is full! Maximum 10 custom contacts allowed.");
+                
                 const newContactRef = database.ref(`users/${currentUserUid}/contacts`).push();
                 newContactRef.set({ name: name, phone: phone }).then(() => {
                     document.getElementById('contactName').value = "";
@@ -179,7 +173,7 @@
         function loadContacts() {
             database.ref(`users/${currentUserUid}/contacts`).on('value', (snapshot) => {
                 const listDiv = document.getElementById('customContactsList');
-                listDiv.innerHTML = ""; // Clear current list
+                listDiv.innerHTML = ""; 
                 
                 if (!snapshot.exists()) {
                     listDiv.innerHTML = '<p style="color:#8892b0; font-size: 0.8rem;">No custom contacts saved yet.</p>';
