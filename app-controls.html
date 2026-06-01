@@ -12,18 +12,26 @@
 
     <style>
         .control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; width: 100%; margin-top: 10px; margin-bottom: 20px; }
-        .control-grid button { width: 100%; margin: 0; }
+        .control-grid button { width: 100%; margin: 0; transition: 0.3s; }
         #statusTerminal { width: 100%; background: #101820; color: #00E676; font-family: 'Share Tech Mono', monospace; padding: 10px; border-radius: 6px; border: 1px solid #00E676; margin-top: 20px; text-align: left; font-size: 0.85rem; }
         .btn-danger { border-color: #ff3366 !important; color: #ff3366 !important; }
         .btn-warning { border-color: #FF9800 !important; color: #FF9800 !important; }
         
-        /* Contact Form Styles - MOBILE RESPONSIVE FIX */
+        /* Contact Form Styles */
         .contact-form { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
         .contact-form input { flex: 1 1 120px; padding: 8px; background: rgba(0,0,0,0.5); color: #00E5FF; border: 1px solid #8892b0; border-radius: 4px; box-sizing: border-box; }
         .contact-form button { flex: 1 1 100%; }
         
         .contact-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,229,255,0.1); padding: 10px; border-radius: 4px; margin-bottom: 5px; border-left: 3px solid #00E676; flex-wrap: wrap; gap: 10px;}
         .contact-info { color: #FFF; font-size: 0.9rem; }
+
+        /* Tactical Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 44px; height: 22px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #101820; border: 1px solid #ff3366; transition: .4s; border-radius: 22px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: #ff3366; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #ff3366; }
+        input:checked + .slider:before { transform: translateX(22px); background-color: #101820; }
     </style>
 </head>
 <body>
@@ -84,13 +92,20 @@
             <h3>🚨 EMERGENCY COMMUNICATIONS</h3>
             <p class="subtitle">Force target device to auto-dial critical numbers.</p>
 
-            <h4 style="color: #ff3366; width: 100%; text-align: left;">Locked Global Services (India)</h4>
-            <div class="control-grid">
-                <button onclick="sendDialCommand('112')" class="btn-tactical btn-danger">POLICE (112)</button>
-                <button onclick="sendDialCommand('108')" class="btn-tactical btn-danger">AMBULANCE (108)</button>
-                <button onclick="sendDialCommand('101')" class="btn-tactical btn-danger">FIRE (101)</button>
-                <button onclick="sendDialCommand('1091')" class="btn-tactical btn-danger">WOMEN HELP (1091)</button>
-                <button onclick="sendDialCommand('1930')" class="btn-tactical btn-danger">CYBER CRIME (1930)</button>
+            <div style="display: flex; align-items: center; gap: 12px; margin-top: 20px; margin-bottom: 10px; background: rgba(255,51,102,0.1); padding: 10px; border-radius: 4px; border-left: 3px solid #ff3366;">
+                <label class="switch">
+                    <input type="checkbox" id="globalToggle" onchange="toggleGlobalServices()">
+                    <span class="slider"></span>
+                </label>
+                <span style="color: #ff3366; font-size: 0.9rem; font-weight: bold; letter-spacing: 1px;">UNLOCK GLOBAL SERVICES</span>
+            </div>
+
+            <div class="control-grid" id="globalServicesGrid">
+                <button onclick="sendDialCommand('112', true)" class="btn-tactical btn-danger global-btn" disabled style="opacity: 0.4; cursor: not-allowed;">POLICE (112)</button>
+                <button onclick="sendDialCommand('108', true)" class="btn-tactical btn-danger global-btn" disabled style="opacity: 0.4; cursor: not-allowed;">AMBULANCE (108)</button>
+                <button onclick="sendDialCommand('101', true)" class="btn-tactical btn-danger global-btn" disabled style="opacity: 0.4; cursor: not-allowed;">FIRE (101)</button>
+                <button onclick="sendDialCommand('1091', true)" class="btn-tactical btn-danger global-btn" disabled style="opacity: 0.4; cursor: not-allowed;">WOMEN HELP (1091)</button>
+                <button onclick="sendDialCommand('1930', true)" class="btn-tactical btn-danger global-btn" disabled style="opacity: 0.4; cursor: not-allowed;">CYBER CRIME (1930)</button>
             </div>
 
             <h4 style="color: #00E676; margin-top: 20px; width: 100%; text-align: left;">Custom SOS Vault (Max 10)</h4>
@@ -103,6 +118,22 @@
 
             <div id="customContactsList">
                 <p style="color:#8892b0; font-size: 0.8rem;">Loading secured contacts from Firebase...</p>
+            </div>
+        </section>
+
+        <section class="glass-panel" style="border-color: #FF9800;">
+            <h3 style="color: #FF9800;">📡 OFFLINE SMS PAYLOAD GENERATOR</h3>
+            <p class="subtitle">Generate encrypted SMS commands if the target device loses internet connectivity.</p>
+
+            <div class="contact-form" style="margin-bottom: 15px;">
+                <input type="number" id="offlineTargetPhone" placeholder="Target Phone Number (e.g., your lost phone)" style="width: 100%;">
+            </div>
+
+            <div class="control-grid">
+                <button onclick="generateSMS('GET_LOCATION')" class="btn-tactical" style="border-color: #00E5FF; color: #00E5FF;">📍 SMS: PING RADAR</button>
+                <button onclick="generateSMS('ALARM_ON')" class="btn-tactical btn-warning">SMS: TRIGGER SIREN</button>
+                <button onclick="generateSMS('LOCK_ACCESSIBILITY')" class="btn-tactical btn-warning">SMS: INSTANT LOCK</button>
+                <button onclick="generateSMS('FLASH_BLINK')" class="btn-tactical btn-warning">SMS: STROBE FLASH</button>
             </div>
         </section>
 
@@ -134,6 +165,24 @@
             }
         });
 
+        // --- NEW: TOGGLE LOGIC FOR GLOBAL BUTTONS ---
+        function toggleGlobalServices() {
+            const isUnlocked = document.getElementById('globalToggle').checked;
+            const globalButtons = document.querySelectorAll('.global-btn');
+            
+            globalButtons.forEach(btn => {
+                btn.disabled = !isUnlocked;
+                btn.style.opacity = isUnlocked ? "1" : "0.4";
+                btn.style.cursor = isUnlocked ? "pointer" : "not-allowed";
+            });
+            
+            if(isUnlocked) {
+                document.getElementById('statusTerminal').innerHTML = `> WARNING: GLOBAL EMERGENCY SERVICES UNLOCKED. USE WITH CAUTION.`;
+            } else {
+                document.getElementById('statusTerminal').innerHTML = `> GLOBAL SERVICES LOCKED.`;
+            }
+        }
+
         function sendCommand(cmdString) {
             if (!currentUserUid) return;
             document.getElementById('statusTerminal').innerHTML = `> UPLOADING: ${cmdString}...`;
@@ -144,13 +193,27 @@
             });
         }
 
-        function sendDialCommand(phoneNumber) {
+        // --- NEW: DOUBLE CONFIRMATION DIALOG FOR DIALING ---
+        function sendDialCommand(phoneNumber, isGlobal = false) {
             if (!currentUserUid) return;
-            const payload = "CALL_NUM:" + phoneNumber;
-            document.getElementById('statusTerminal').innerHTML = `> OVERRIDING COMMS... DIALING ${phoneNumber}`;
-            database.ref(`users/${currentUserUid}/CurrentCommand`).set({
-                command: payload, timestamp: Date.now()
-            });
+            
+            let confirmationMessage = `Confirm auto-dial to: ${phoneNumber}?`;
+            
+            // Display a much stricter warning if it is a police/ambulance number
+            if (isGlobal) {
+                confirmationMessage = `🚨 CRITICAL WARNING 🚨\n\nYou are about to command the target device to dial a GLOBAL EMERGENCY SERVICE (${phoneNumber}).\n\nFalse emergency calls may result in severe legal action.\n\nAre you absolutely sure you want to proceed?`;
+            }
+
+            // The browser's native confirm() box stops the code until the user clicks OK or Cancel
+            if (window.confirm(confirmationMessage)) {
+                const payload = "CALL_NUM:" + phoneNumber;
+                document.getElementById('statusTerminal').innerHTML = `> OVERRIDING COMMS... DIALING ${phoneNumber}`;
+                database.ref(`users/${currentUserUid}/CurrentCommand`).set({
+                    command: payload, timestamp: Date.now()
+                });
+            } else {
+                document.getElementById('statusTerminal').innerHTML = `> DIAL COMMAND ABORTED BY AGENT.`;
+            }
         }
 
         function addContact() {
@@ -200,6 +263,14 @@
 
         function deleteContact(key) {
             database.ref(`users/${currentUserUid}/contacts/${key}`).remove();
+        }
+        
+        function generateSMS(command) {
+            const targetPhone = document.getElementById('offlineTargetPhone').value.trim();
+            if (!targetPhone) return alert("Enter the target device's phone number first!");
+            const secretPin = "1234"; 
+            const payload = `RAKSHA:${secretPin}:${command}`;
+            window.location.href = `sms:${targetPhone}?body=${encodeURIComponent(payload)}`;
         }
 
         function terminateSession() {
