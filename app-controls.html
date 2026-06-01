@@ -33,6 +33,9 @@
             text-align: left;
             font-size: 0.85rem;
         }
+        
+        .btn-danger { border-color: #ff3366 !important; color: #ff3366 !important; }
+        .btn-warning { border-color: #FF9800 !important; color: #FF9800 !important; }
     </style>
 </head>
 <body>
@@ -46,7 +49,11 @@
     <header class="topbar">
         <a href="master-control.html" class="btn-tactical" style="width: auto; padding: 5px 10px; margin: 0; max-width: none;">⬅️ BACK</a>
         <div class="topbar-logo"><h2>APP CONTROLS</h2></div>
-        <div class="topbar-account" id="userEmail" style="color: #00E5FF;">VERIFYING...</div>
+        
+        <div class="topbar-account" style="display: flex; gap: 15px; align-items: center;">
+            <span id="userEmail" style="color: #00E5FF;">VERIFYING...</span>
+            <button onclick="terminateSession()" style="background: transparent; border: 1px solid #ff3366; color: #ff3366; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">LOGOUT</button>
+        </div>
     </header>
 
     <main class="dashboard-content" style="max-width: 800px;">
@@ -55,24 +62,43 @@
             <h3>🎛️ HARDWARE OVERRIDE</h3>
             <p class="subtitle">Push execution payloads directly to the target device.</p>
             
-            <button onclick="sendCommand('LOCK_ACCESSIBILITY')" class="btn-tactical" style="border-color: #ff3366; color: #ff3366; width: 100%; max-width: 100%;">
+            <button onclick="sendCommand('LOCK_ACCESSIBILITY')" class="btn-tactical btn-danger" style="width: 100%; max-width: 100%;">
                 🔒 INSTANT LOCK (Accessibility Override)
             </button>
 
-            <h4 style="color: #66FCF1; margin-top: 20px; width: 100%; text-align: left;">Screen Timeout</h4>
+            <!-- TACTICAL ACOUSTICS & ALARM -->
+            <h4 style="color: #66FCF1; margin-top: 20px; width: 100%; text-align: left;">Media Volume Override</h4>
             <div class="control-grid">
-                <button onclick="sendCommand('TIMEOUT_1S')" class="btn-tactical">1 SEC</button>
-                <button onclick="sendCommand('TIMEOUT_10S')" class="btn-tactical">10 SEC</button>
-                <button onclick="sendCommand('TIMEOUT_1M')" class="btn-tactical">1 MIN</button>
-                <button onclick="sendCommand('TIMEOUT_5M')" class="btn-tactical">5 MIN</button>
+                <button onclick="sendCommand('VOL_0')" class="btn-tactical">0%</button>
+                <button onclick="sendCommand('VOL_30')" class="btn-tactical">30%</button>
+                <button onclick="sendCommand('VOL_60')" class="btn-tactical">60%</button>
+                <button onclick="sendCommand('VOL_80')" class="btn-tactical">80%</button>
+                <button onclick="sendCommand('VOL_100')" class="btn-tactical">100%</button>
             </div>
 
+            <h4 style="color: #ff3366; margin-top: 10px; width: 100%; text-align: left;">Anti-Theft Siren & Strobe</h4>
+            <div class="control-grid">
+                <button onclick="sendCommand('ALARM_ON')" class="btn-tactical btn-danger">🚨 TRIGGER SIREN</button>
+                <button onclick="sendCommand('ALARM_OFF')" class="btn-tactical">🔇 DISARM SIREN</button>
+                <button onclick="sendCommand('FLASH_BLINK')" class="btn-tactical btn-warning">🔦 STROBE FLASH</button>
+                <button onclick="sendCommand('FLASH_OFF')" class="btn-tactical">🔦 FLASH OFF</button>
+            </div>
+
+            <!-- EMERGENCY COMMS -->
+            <h4 style="color: #00E676; margin-top: 10px; width: 100%; text-align: left;">Emergency SOS Auto-Dial</h4>
+            <div class="control-grid">
+                <button onclick="sendCommand('CALL_C1')" class="btn-tactical">CALL MOM</button>
+                <button onclick="sendCommand('CALL_C2')" class="btn-tactical">CALL DAD</button>
+                <button onclick="sendCommand('CALL_C3')" class="btn-tactical">CALL BROTHER</button>
+                <button onclick="sendCommand('CALL_C4')" class="btn-tactical">CALL POLICE (112)</button>
+                <button onclick="sendCommand('CALL_C5')" class="btn-tactical">CALL FRIEND</button>
+            </div>
+
+            <!-- SCREEN CONTROLS -->
             <h4 style="color: #66FCF1; margin-top: 10px; width: 100%; text-align: left;">Display Brightness</h4>
             <div class="control-grid">
                 <button onclick="sendCommand('BRIGHTNESS_0')" class="btn-tactical">0%</button>
-                <button onclick="sendCommand('BRIGHTNESS_30')" class="btn-tactical">30%</button>
                 <button onclick="sendCommand('BRIGHTNESS_50')" class="btn-tactical">50%</button>
-                <button onclick="sendCommand('BRIGHTNESS_80')" class="btn-tactical">80%</button>
                 <button onclick="sendCommand('BRIGHTNESS_100')" class="btn-tactical">100%</button>
             </div>
 
@@ -98,10 +124,9 @@
         const database = firebase.database();
         let currentUserUid = null;
 
-        // TRACK AUTHENTICATED ACCOUNT
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                currentUserUid = user.uid; // Dynamically grab user's specific system ID
+                currentUserUid = user.uid; 
                 document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
                 document.getElementById('statusTerminal').innerHTML = `> UPLINK ESTABLISHED WITH UID: ${currentUserUid}<br>> SYSTEM SECURE AND READY.`;
             } else {
@@ -110,26 +135,26 @@
         });
 
         function sendCommand(cmdString) {
-            if (!currentUserUid) {
-                alert("Error: No authenticated node session established.");
-                return;
-            }
+            if (!currentUserUid) return alert("Error: No authenticated node session established.");
 
             const terminal = document.getElementById('statusTerminal');
             terminal.innerHTML = `> UPLOADING PAYLOAD: ${cmdString}...`;
             terminal.style.color = "#FF9800"; 
 
-            // PATH MODIFICATION: Routes directly to this specific user's pocket space
             database.ref(`users/${currentUserUid}/CurrentCommand`).set({
                 command: cmdString,
                 timestamp: Date.now()
             }).then(() => {
-                terminal.innerHTML = `> PAYLOAD SECURED AT target node: users/${currentUserUid}/CurrentCommand<br>> EXECUTED: ${cmdString}`;
+                terminal.innerHTML = `> PAYLOAD SECURED AT target node.<br>> EXECUTED: ${cmdString}`;
                 terminal.style.color = "#00E676"; 
             }).catch((error) => {
                 terminal.innerHTML = `> UPLOAD FAILED.<br>> ERR: ${error.message}`;
                 terminal.style.color = "#ff3366"; 
             });
+        }
+
+        function terminateSession() {
+            firebase.auth().signOut().then(() => window.location.href = 'index.html');
         }
     </script>
 </body>
