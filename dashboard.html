@@ -25,8 +25,10 @@
         <div class="topbar-logo">
             <h2>GUARDIAN & TRACKING SYSTEM</h2>
         </div>
-        <div class="topbar-account" id="userEmail" style="color: #00E5FF;">
-            VERIFYING...
+        
+        <div class="topbar-account" style="display: flex; gap: 15px; align-items: center;">
+            <span id="userEmail" style="color: #00E5FF;">VERIFYING...</span>
+            <button onclick="terminateSession()" style="background: transparent; border: 1px solid #ff3366; color: #ff3366; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">LOGOUT</button>
         </div>
     </header>
 
@@ -93,6 +95,15 @@
                 window.location.href = 'index.html';
             }
         });
+
+        // SECURE LOGOUT PROTOCOL
+        function terminateSession() {
+            firebase.auth().signOut().then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error("Logout Error:", error);
+            });
+        }
     </script>
 </body>
 </html>
