@@ -68,9 +68,9 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // Redirect if already logged in
+        // ROUTING UPDATE: Now redirects directly to the Architecture Flowchart
         auth.onAuthStateChanged(user => {
-            if (user) window.location.href = 'dashboard.html';
+            if (user) window.location.href = 'flow.html';
         });
 
         const msgBox = document.getElementById('sysMessage');
