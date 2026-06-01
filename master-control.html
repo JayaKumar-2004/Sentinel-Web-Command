@@ -47,7 +47,7 @@
     </div>
 
     <header class="topbar">
-        <div class="menu-toggle" style="cursor: pointer;">
+        <div class="menu-toggle" onclick="toggleSidebar()" style="cursor: pointer;">
             ☰ <span style="font-size: 0.8rem; letter-spacing: 1px;">MENU</span>
         </div>
         <div class="topbar-logo">
@@ -60,43 +60,61 @@
         </div>
     </header>
 
-    <main class="dashboard-content" style="padding-top: 20px;">
+    <div class="app-layout">
         
-        <div class="module-grid">
+        <nav class="sidebar" id="sidebar">
+            <div class="close-menu" onclick="toggleSidebar()">✖</div>
+            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk">📲 App Download</a>
+            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/South_India_Pack.zip">🗺️ Map Download</a>
+            <a href="FINALpptPro5.pdf" target="_blank">❓ Full Guide</a>
+            <a href="settings.html">⚙️ Settings</a>
+            <a href="privacy.html">🔒 Policy</a>
+            <a href="trai.html">📜 TRAI Rules</a>
+        </nav>
+
+        <main class="dashboard-content" style="padding-top: 20px; width: 100%;">
             
-            <section class="glass-panel">
-                <h3>🎛️ APP CONTROLS</h3>
-                <p class="subtitle" style="flex-grow: 1;">Remote device locking and system parameter modification.</p>
-                <a href="app-controls.html" class="btn-tactical" style="margin-top: 15px;">OPEN MODULE</a>
-            </section>
+            <div class="module-grid">
+                
+                <section class="glass-panel">
+                    <h3>🎛️ APP CONTROLS</h3>
+                    <p class="subtitle" style="flex-grow: 1;">Remote device locking and system parameter modification.</p>
+                    <a href="app-controls.html" class="btn-tactical" style="margin-top: 15px;">OPEN MODULE</a>
+                </section>
 
-            <section class="glass-panel">
-                <h3>📍 APP LOCATION</h3>
-                <p class="subtitle" style="flex-grow: 1;">Access precision GPS coordinates and device tracking.</p>
-                <a href="map.html" class="btn-tactical" style="margin-top: 15px;">OPEN MODULE</a>
-            </section>
+                <section class="glass-panel">
+                    <h3>📍 APP LOCATION</h3>
+                    <p class="subtitle" style="flex-grow: 1;">Access precision GPS coordinates and device tracking.</p>
+                    <a href="map.html" class="btn-tactical" style="margin-top: 15px;">OPEN MODULE</a>
+                </section>
 
-            <section class="glass-panel">
-                <h3>💬 MESSAGE CONTROL</h3>
-                <p class="subtitle" style="flex-grow: 1;">Manage SMS routing, Auto-Responder settings, and trusted contacts.</p>
-                <a href="message-control.html" class="btn-tactical" style="margin-top: 15px;">OPEN MODULE</a>
-            </section>
+                <section class="glass-panel">
+                    <h3>💬 MESSAGE CONTROL</h3>
+                    <p class="subtitle" style="flex-grow: 1;">Manage SMS routing, Auto-Responder settings, and trusted contacts.</p>
+                    <a href="message-control.html" class="btn-tactical" style="margin-top: 15px;">OPEN MODULE</a>
+                </section>
 
-            <section class="glass-panel">
-                <h3>🛡️ TIER-3 EVIDENCE VAULT</h3>
-                <p class="subtitle" style="flex-grow: 1;">Authorized agents only. Access the secure cloud video portal.</p>
-                <a href="#" class="btn-tactical btn-danger" style="margin-top: 15px;">ENTER VAULT</a>
-            </section>
+                <section class="glass-panel">
+                    <h3>🛡️ TIER-3 EVIDENCE VAULT</h3>
+                    <p class="subtitle" style="flex-grow: 1;">Authorized agents only. Access the secure cloud video portal.</p>
+                    <a href="#" class="btn-tactical btn-danger" style="margin-top: 15px;">ENTER VAULT</a>
+                </section>
+                
+            </div>
+
+            <div class="footer">
+                © 2026 Suryakant Chaudhary & S Jaya Kumar. Raksha-Suraksha Project.
+            </div>
             
-        </div>
-
-        <div class="footer">
-            © 2026 Suryakant Chaudhary & S Jaya Kumar. Raksha-Suraksha Project.
-        </div>
-        
-    </main>
+        </main>
+    </div>
 
     <script>
+        // FIXED: Added the toggle function back
+        function toggleSidebar() { 
+            document.getElementById('sidebar').classList.toggle('active'); 
+        }
+
         const firebaseConfig = { 
             apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", 
             authDomain: "sentinel-vault-fb4b7.firebaseapp.com", 
