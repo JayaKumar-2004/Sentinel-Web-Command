@@ -23,18 +23,87 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 100%; /* Ensures cards stretch equally */
+            height: 100%;
         }
         
         .btn-danger { border-color: #ff3366 !important; color: #ff3366 !important; }
 
         .footer {
-            text-align: left;
+            text-align: center; /* Centered for better UI */
             padding: 20px;
             font-family: 'Share Tech Mono', monospace;
             color: #8892b0;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             margin-top: 20px;
+            border-top: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* --- EPIC ROTATING NEON DASHED BUTTON --- */
+        .neon-center-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0 20px 0;
+            width: 100%;
+        }
+
+        .rotating-neon-btn {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 320px;
+            height: 65px;
+            background: #020c1b;
+            text-decoration: none;
+            overflow: hidden;
+            border-radius: 35px;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.3), 0 0 30px rgba(255, 51, 102, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .rotating-neon-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* The Rotating Multi-Color Gradient */
+        .rotating-neon-btn::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 500%;
+            background: conic-gradient(
+                #020c1b, #020c1b, 
+                #ff3366, #00E5FF, #00E676, #FF9800, #ff3366
+            );
+            animation: spin 3s linear infinite;
+        }
+        
+        /* The Dashed Border Mask */
+        .rotating-neon-btn::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            background: #020c1b;
+            border-radius: 32px;
+            border: 2px dashed rgba(0, 229, 255, 0.8);
+        }
+
+        /* The Button Text */
+        .rotating-neon-btn .btn-text {
+            position: relative;
+            z-index: 10;
+            color: #FFF;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px #00E5FF;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -64,6 +133,8 @@
         
         <nav class="sidebar" id="sidebar">
             <div class="close-menu" onclick="toggleSidebar()">✖</div>
+            <a href="dashboard.html" style="color: #00E5FF;">🏠 Main Dashboard</a>
+            <hr style="border-color: #1a2a42; margin: 10px 0;">
             <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk">📲 App Download</a>
             <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/South_India_Pack.zip">🗺️ Map Download</a>
             <a href="FINALpptPro5.pdf" target="_blank">❓ Full Guide</a>
@@ -102,15 +173,20 @@
                 
             </div>
 
+            <div class="neon-center-wrapper">
+                <a href="dashboard.html" class="rotating-neon-btn">
+                    <span class="btn-text">⟸ MAIN DASHBOARD</span>
+                </a>
+            </div>
+
             <div class="footer">
-                © 2026 Suryakant Chaudhary & S Jaya Kumar. Raksha-Suraksha Project.
+                © 2026 Suryakant Chaudhary & S Jaya Kumar.<br>Raksha-Suraksha Tactical Project.
             </div>
             
         </main>
     </div>
 
     <script>
-        // FIXED: Added the toggle function back
         function toggleSidebar() { 
             document.getElementById('sidebar').classList.toggle('active'); 
         }
