@@ -11,45 +11,24 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <style>
-        .control-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 10px;
-            width: 100%;
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
+        .control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; width: 100%; margin-top: 10px; margin-bottom: 20px; }
         .control-grid button { width: 100%; margin: 0; }
-        
-        #statusTerminal {
-            width: 100%;
-            background: #101820;
-            color: #00E676;
-            font-family: 'Share Tech Mono', monospace;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #00E676;
-            margin-top: 20px;
-            text-align: left;
-            font-size: 0.85rem;
-        }
-        
+        #statusTerminal { width: 100%; background: #101820; color: #00E676; font-family: 'Share Tech Mono', monospace; padding: 10px; border-radius: 6px; border: 1px solid #00E676; margin-top: 20px; text-align: left; font-size: 0.85rem; }
         .btn-danger { border-color: #ff3366 !important; color: #ff3366 !important; }
         .btn-warning { border-color: #FF9800 !important; color: #FF9800 !important; }
+        
+        /* Contact Form Styles */
+        .contact-form { display: flex; gap: 10px; margin-bottom: 15px; }
+        .contact-form input { flex: 1; padding: 8px; background: rgba(0,0,0,0.5); color: #00E5FF; border: 1px solid #8892b0; border-radius: 4px; }
+        .contact-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,229,255,0.1); padding: 10px; border-radius: 4px; margin-bottom: 5px; border-left: 3px solid #00E676; }
+        .contact-info { color: #FFF; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
-    <div class="rolling-header">
-        <marquee behavior="scroll" direction="left" scrollamount="6">
-            🔴 RAKSHA-SURAKSHA : REMOTE HARDWARE MODIFICATION MODULE ACTIVE 🔴
-        </marquee>
-    </div>
-
     <header class="topbar">
         <a href="master-control.html" class="btn-tactical" style="width: auto; padding: 5px 10px; margin: 0; max-width: none;">⬅️ BACK</a>
         <div class="topbar-logo"><h2>APP CONTROLS</h2></div>
-        
         <div class="topbar-account" style="display: flex; gap: 15px; align-items: center;">
             <span id="userEmail" style="color: #00E5FF;">VERIFYING...</span>
             <button onclick="terminateSession()" style="background: transparent; border: 1px solid #ff3366; color: #ff3366; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">LOGOUT</button>
@@ -60,13 +39,25 @@
         
         <section class="glass-panel">
             <h3>🎛️ HARDWARE OVERRIDE</h3>
-            <p class="subtitle">Push execution payloads directly to the target device.</p>
-            
-            <button onclick="sendCommand('LOCK_ACCESSIBILITY')" class="btn-tactical btn-danger" style="width: 100%; max-width: 100%;">
-                🔒 INSTANT LOCK (Accessibility Override)
-            </button>
+            <button onclick="sendCommand('LOCK_ACCESSIBILITY')" class="btn-tactical btn-danger" style="width: 100%; max-width: 100%;">🔒 INSTANT LOCK (Accessibility Override)</button>
 
-            <!-- TACTICAL ACOUSTICS & ALARM -->
+            <h4 style="color: #66FCF1; margin-top: 20px; width: 100%; text-align: left;">Screen Timeout</h4>
+            <div class="control-grid">
+                <button onclick="sendCommand('TIMEOUT_1S')" class="btn-tactical">1 SEC</button>
+                <button onclick="sendCommand('TIMEOUT_10S')" class="btn-tactical">10 SEC</button>
+                <button onclick="sendCommand('TIMEOUT_1M')" class="btn-tactical">1 MIN</button>
+                <button onclick="sendCommand('TIMEOUT_5M')" class="btn-tactical">5 MIN</button>
+            </div>
+
+            <h4 style="color: #66FCF1; margin-top: 10px; width: 100%; text-align: left;">Display Brightness</h4>
+            <div class="control-grid">
+                <button onclick="sendCommand('BRIGHTNESS_0')" class="btn-tactical">0%</button>
+                <button onclick="sendCommand('BRIGHTNESS_30')" class="btn-tactical">30%</button>
+                <button onclick="sendCommand('BRIGHTNESS_50')" class="btn-tactical">50%</button>
+                <button onclick="sendCommand('BRIGHTNESS_80')" class="btn-tactical">80%</button>
+                <button onclick="sendCommand('BRIGHTNESS_100')" class="btn-tactical">100%</button>
+            </div>
+
             <h4 style="color: #66FCF1; margin-top: 20px; width: 100%; text-align: left;">Media Volume Override</h4>
             <div class="control-grid">
                 <button onclick="sendCommand('VOL_0')" class="btn-tactical">0%</button>
@@ -84,27 +75,34 @@
                 <button onclick="sendCommand('FLASH_OFF')" class="btn-tactical">🔦 FLASH OFF</button>
             </div>
 
-            <!-- EMERGENCY COMMS -->
-            <h4 style="color: #00E676; margin-top: 10px; width: 100%; text-align: left;">Emergency SOS Auto-Dial</h4>
+            <div id="statusTerminal">> WAITING FOR USER CACHE...</div>
+        </section>
+
+        <section class="glass-panel" style="margin-top: 20px;">
+            <h3>🚨 EMERGENCY COMMUNICATIONS</h3>
+            <p class="subtitle">Force target device to auto-dial critical numbers.</p>
+
+            <h4 style="color: #ff3366; width: 100%; text-align: left;">Locked Global Services (India)</h4>
             <div class="control-grid">
-                <button onclick="sendCommand('CALL_C1')" class="btn-tactical">CALL MOM</button>
-                <button onclick="sendCommand('CALL_C2')" class="btn-tactical">CALL DAD</button>
-                <button onclick="sendCommand('CALL_C3')" class="btn-tactical">CALL BROTHER</button>
-                <button onclick="sendCommand('CALL_C4')" class="btn-tactical">CALL POLICE (112)</button>
-                <button onclick="sendCommand('CALL_C5')" class="btn-tactical">CALL FRIEND</button>
+                <button onclick="sendDialCommand('112')" class="btn-tactical btn-danger">POLICE (112)</button>
+                <button onclick="sendDialCommand('108')" class="btn-tactical btn-danger">AMBULANCE (108)</button>
+                <button onclick="sendDialCommand('101')" class="btn-tactical btn-danger">FIRE (101)</button>
+                <button onclick="sendDialCommand('1091')" class="btn-tactical btn-danger">WOMEN HELP (1091)</button>
+                <button onclick="sendDialCommand('1930')" class="btn-tactical btn-danger">CYBER CRIME (1930)</button>
             </div>
 
-            <!-- SCREEN CONTROLS -->
-            <h4 style="color: #66FCF1; margin-top: 10px; width: 100%; text-align: left;">Display Brightness</h4>
-            <div class="control-grid">
-                <button onclick="sendCommand('BRIGHTNESS_0')" class="btn-tactical">0%</button>
-                <button onclick="sendCommand('BRIGHTNESS_50')" class="btn-tactical">50%</button>
-                <button onclick="sendCommand('BRIGHTNESS_100')" class="btn-tactical">100%</button>
+            <h4 style="color: #00E676; margin-top: 20px; width: 100%; text-align: left;">Custom SOS Vault (Max 10)</h4>
+            
+            <div class="contact-form">
+                <input type="text" id="contactName" placeholder="Name (e.g. Dad)">
+                <input type="number" id="contactPhone" placeholder="Phone Number">
+                <button onclick="addContact()" class="btn-tactical" style="width: auto;">+ ADD</button>
             </div>
 
-            <div id="statusTerminal">
-                > WAITING FOR USER CACHE...
+            <div id="customContactsList">
+                <p style="color:#8892b0; font-size: 0.8rem;">Loading secured contacts from Firebase...</p>
             </div>
+
         </section>
 
     </main>
@@ -128,29 +126,86 @@
             if (user) {
                 currentUserUid = user.uid; 
                 document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
-                document.getElementById('statusTerminal').innerHTML = `> UPLINK ESTABLISHED WITH UID: ${currentUserUid}<br>> SYSTEM SECURE AND READY.`;
+                document.getElementById('statusTerminal').innerHTML = `> UPLINK ESTABLISHED.<br>> SYSTEM SECURE AND READY.`;
+                loadContacts(); // Load user's saved contacts
             } else {
                 window.location.href = 'index.html'; 
             }
         });
 
+        // STANDARD COMMAND SENDER
         function sendCommand(cmdString) {
-            if (!currentUserUid) return alert("Error: No authenticated node session established.");
-
-            const terminal = document.getElementById('statusTerminal');
-            terminal.innerHTML = `> UPLOADING PAYLOAD: ${cmdString}...`;
-            terminal.style.color = "#FF9800"; 
-
+            if (!currentUserUid) return;
+            document.getElementById('statusTerminal').innerHTML = `> UPLOADING: ${cmdString}...`;
             database.ref(`users/${currentUserUid}/CurrentCommand`).set({
-                command: cmdString,
-                timestamp: Date.now()
+                command: cmdString, timestamp: Date.now()
             }).then(() => {
-                terminal.innerHTML = `> PAYLOAD SECURED AT target node.<br>> EXECUTED: ${cmdString}`;
-                terminal.style.color = "#00E676"; 
-            }).catch((error) => {
-                terminal.innerHTML = `> UPLOAD FAILED.<br>> ERR: ${error.message}`;
-                terminal.style.color = "#ff3366"; 
+                document.getElementById('statusTerminal').innerHTML = `> EXECUTED: ${cmdString}`;
             });
+        }
+
+        // DYNAMIC DIAL COMMAND SENDER
+        function sendDialCommand(phoneNumber) {
+            if (!currentUserUid) return;
+            const payload = "CALL_NUM:" + phoneNumber;
+            document.getElementById('statusTerminal').innerHTML = `> OVERRIDING COMMS... DIALING ${phoneNumber}`;
+            database.ref(`users/${currentUserUid}/CurrentCommand`).set({
+                command: payload, timestamp: Date.now()
+            });
+        }
+
+        // --- CONTACT MANAGEMENT SYSTEM ---
+        function addContact() {
+            const name = document.getElementById('contactName').value.trim();
+            const phone = document.getElementById('contactPhone').value.trim();
+            
+            if (!name || !phone) return alert("Please enter both Name and Phone Number.");
+            
+            // Check limits (Max 10)
+            database.ref(`users/${currentUserUid}/contacts`).once('value', snapshot => {
+                if (snapshot.numChildren() >= 10) {
+                    alert("SOS Vault is full! Maximum 10 custom contacts allowed.");
+                    return;
+                }
+                // Save to Firebase
+                const newContactRef = database.ref(`users/${currentUserUid}/contacts`).push();
+                newContactRef.set({ name: name, phone: phone }).then(() => {
+                    document.getElementById('contactName').value = "";
+                    document.getElementById('contactPhone').value = "";
+                });
+            });
+        }
+
+        function loadContacts() {
+            database.ref(`users/${currentUserUid}/contacts`).on('value', (snapshot) => {
+                const listDiv = document.getElementById('customContactsList');
+                listDiv.innerHTML = ""; // Clear current list
+                
+                if (!snapshot.exists()) {
+                    listDiv.innerHTML = '<p style="color:#8892b0; font-size: 0.8rem;">No custom contacts saved yet.</p>';
+                    return;
+                }
+
+                snapshot.forEach((childSnapshot) => {
+                    const data = childSnapshot.val();
+                    const key = childSnapshot.key;
+                    
+                    const div = document.createElement('div');
+                    div.className = 'contact-item';
+                    div.innerHTML = `
+                        <div class="contact-info"><strong>${data.name}</strong> (${data.phone})</div>
+                        <div style="display: flex; gap: 5px;">
+                            <button onclick="sendDialCommand('${data.phone}')" class="btn-tactical" style="padding: 5px 10px; margin:0;">DIAL</button>
+                            <button onclick="deleteContact('${key}')" class="btn-tactical btn-danger" style="padding: 5px 10px; margin:0;">X</button>
+                        </div>
+                    `;
+                    listDiv.appendChild(div);
+                });
+            });
+        }
+
+        function deleteContact(key) {
+            database.ref(`users/${currentUserUid}/contacts/${key}`).remove();
         }
 
         function terminateSession() {
