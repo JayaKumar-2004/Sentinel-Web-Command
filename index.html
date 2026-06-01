@@ -3,33 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha-Suraksha | Secure Login</title>
+    <title>Raksha-Suraksha | Agent Gateway</title>
     <link rel="stylesheet" href="style.css">
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-</head>
-<body style="justify-content: center; align-items: center;">
 
-    <!-- SPLASH SCREEN -->
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #020c1b; margin: 0; flex-direction: column; }
+        
+        /* Splash Screen specific */
+        #splash-screen { text-align: center; }
+        .splash-title { font-size: 3rem; color: #00E676; margin-bottom: 10px; font-weight: bold; }
+        .splash-subtitle { font-family: 'Share Tech Mono', monospace; color: #8892b0; letter-spacing: 4px; }
+
+        /* Login Box specific */
+        .login-box { background: rgba(16, 24, 32, 0.9); padding: 40px; border: 1px solid #00E5FF; border-radius: 8px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 0 20px rgba(0, 229, 255, 0.2); }
+        .login-box h2 { color: #00E676; margin-bottom: 5px; font-size: 1.5rem; letter-spacing: 2px; }
+        .login-box p { color: #8892b0; font-size: 0.85rem; margin-bottom: 30px; font-family: monospace; }
+        .tactical-input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.5); color: #FFF; border: 1px solid #00E5FF; border-radius: 4px; box-sizing: border-box; text-align: center; }
+        .tactical-input:focus { outline: none; border-color: #00E676; }
+        .action-text { color: #FF9800; font-size: 0.85rem; cursor: pointer; display: block; margin-bottom: 20px; text-align: right; text-decoration: underline; }
+        #sysMessage { font-size: 0.85rem; margin-top: 15px; display: none; }
+    </style>
+</head>
+<body>
+
     <div id="splash-screen">
-        <h1 class="splash-title" style="font-size: 3rem;">RAKSHA-SURAKSHA</h1>
-        <p class="splash-subtitle" style="font-family: 'Share Tech Mono'; color: #8892b0; letter-spacing: 4px;">INITIALIZING PROTOCOLS...</p>
+        <h1 class="splash-title">RAKSHA-SURAKSHA</h1>
+        <p class="splash-subtitle">INITIALIZING PROTOCOLS...</p>
     </div>
 
-    <!-- AUTH GATEWAY -->
-    <div id="authGate" class="auth-box glass-panel" style="max-width: 400px; display: none;">
-        <h3>IDENTITY REQUIRED</h3>
-        <p class="subtitle">Authentication required for System Access.</p>
-        <button id="btnGoogle">SIGN IN WITH GMAIL</button>
-        <p id="authError" class="warning-text"></p>
+    <div id="authGate" class="login-box" style="display: none;">
+        <h2>RAKSHA-SURAKSHA</h2>
+        <p>WEB TERMINAL AUTHENTICATION</p>
+
+        <input type="email" id="email" class="tactical-input" placeholder="AGENT EMAIL">
+        <input type="password" id="password" class="tactical-input" placeholder="PASSCODE (MIN 6 CHARS)">
+
+        <span class="action-text" onclick="resetPassword()">FORGOT PASSCODE?</span>
+
+        <button onclick="loginAgent()" class="btn-tactical" id="loginBtn" style="width: 100%; margin-bottom: 15px;">INITIATE UPLINK (LOGIN)</button>
+        <button onclick="registerAgent()" class="btn-tactical" id="regBtn" style="width: 100%; background: transparent; border-color: #8892b0; color: #8892b0;">REGISTER NEW AGENT</button>
+
+        <div id="sysMessage"></div>
     </div>
 
     <script>
+        // Splash Screen Timer
         setTimeout(() => {
             document.getElementById('splash-screen').style.display = 'none';
-            document.getElementById('authGate').style.display = 'flex';
+            document.getElementById('authGate').style.display = 'block';
         }, 2500);
 
+        // --- FIREBASE INIT ---
         const firebaseConfig = {
             apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI",
             authDomain: "sentinel-vault-fb4b7.firebaseapp.com",
@@ -39,24 +66,56 @@
             appId: "1:192301825793:web:734530705f4084608fe500"
         };
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
 
-        const authError = document.getElementById('authError');
-
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                window.location.href = 'dashboard.html'; // Route to Page 2
-            }
+        // Redirect if already logged in
+        auth.onAuthStateChanged(user => {
+            if (user) window.location.href = 'dashboard.html';
         });
 
-        document.getElementById('btnGoogle').addEventListener('click', () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            authError.style.color = "#00E5FF";
-            authError.innerText = "Opening Secure Gate...";
-            firebase.auth().signInWithPopup(provider).catch((error) => {
-                authError.style.color = "#D32F2F";
-                authError.innerText = error.code === 'auth/popup-blocked' ? "⚠️ Popup blocked! Allow it at the bottom of your screen." : "Access Error: " + error.message;
-            });
-        });
+        const msgBox = document.getElementById('sysMessage');
+
+        function showMessage(msg, color) {
+            msgBox.style.display = 'block';
+            msgBox.style.color = color;
+            msgBox.innerHTML = `> ${msg}`;
+        }
+
+        function loginAgent() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            if(!email || !pass) return showMessage("CREDENTIALS REQUIRED.", "#ff3366");
+
+            document.getElementById('loginBtn').innerText = "VERIFYING...";
+            auth.signInWithEmailAndPassword(email, pass)
+                .catch(err => {
+                    showMessage(err.message, "#ff3366");
+                    document.getElementById('loginBtn').innerText = "INITIATE UPLINK (LOGIN)";
+                });
+        }
+
+        function registerAgent() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            if(!email || pass.length < 6) return showMessage("VALID EMAIL & 6+ CHAR PASSCODE REQUIRED.", "#ff3366");
+
+            document.getElementById('regBtn').innerText = "REGISTERING...";
+            auth.createUserWithEmailAndPassword(email, pass)
+                .then(() => showMessage("AGENT REGISTERED. UPLINK ACTIVE.", "#00E676"))
+                .catch(err => {
+                    showMessage(err.message, "#ff3366");
+                    document.getElementById('regBtn').innerText = "REGISTER NEW AGENT";
+                });
+        }
+
+        function resetPassword() {
+            const email = document.getElementById('email').value;
+            if(!email) return showMessage("ENTER EMAIL ABOVE TO RESET PASSCODE.", "#FF9800");
+
+            auth.sendPasswordResetEmail(email)
+                .then(() => showMessage("RESET PROTOCOL INITIATED. CHECK INBOX.", "#00E676"))
+                .catch(err => showMessage(err.message, "#ff3366"));
+        }
     </script>
 </body>
 </html>
