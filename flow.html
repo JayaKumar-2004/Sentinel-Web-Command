@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raksha-Suraksha | System Architecture</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: #020c1b;
+            color: #8892b0;
+            font-family: 'Share Tech Mono', monospace;
+            padding-bottom: 40px;
+        }
+
+        /* --- TOP BAR (Matches your dashboard) --- */
+        .rolling-header { background: #ff3366; color: #020c1b; padding: 5px; font-size: 0.8rem; font-weight: bold; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(2, 12, 27, 0.9); border-bottom: 1px solid #00E5FF; position: sticky; top: 0; z-index: 100; }
+        .topbar h2 { color: #00E5FF; font-size: 1.2rem; letter-spacing: 2px; }
+        .btn-back { background: transparent; border: 1px solid #00E5FF; color: #00E5FF; padding: 5px 15px; text-decoration: none; border-radius: 4px; transition: 0.3s; }
+        .btn-back:hover { background: rgba(0, 229, 255, 0.1); }
+
+        /* --- FLOWCHART CONTAINER --- */
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
+            margin: 40px auto 0;
+            padding: 0 20px;
+        }
+
+        /* --- NODES (The Boxes) --- */
+        .node {
+            background: #101820;
+            border: 2px solid #303C55;
+            border-radius: 8px;
+            padding: 20px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        
+        .node:hover { transform: translateY(-5px); }
+        .node h3 { color: #FFF; font-size: 1.3rem; margin-bottom: 10px; letter-spacing: 1px; }
+        .node p { font-size: 0.9rem; line-height: 1.4; color: #A8B2D1; }
+
+        /* Node Color Themes */
+        .node-user { border-color: #00E676; box-shadow: 0 0 15px rgba(0, 230, 118, 0.2); }
+        .node-user h3 { color: #00E676; }
+        
+        .node-interface { border-color: #00E5FF; box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); }
+        .node-interface h3 { color: #00E5FF; }
+
+        .node-target { border-color: #ff3366; box-shadow: 0 0 15px rgba(255, 51, 102, 0.2); }
+        .node-target h3 { color: #ff3366; }
+
+        /* --- SPLIT PATHS (Online vs Offline) --- */
+        .split-path {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            gap: 20px;
+        }
+
+        .split-node { flex: 1; border-style: dashed; }
+        .split-node.online { border-color: #FF9800; }
+        .split-node.online h3 { color: #FF9800; }
+        .split-node.offline { border-color: #B388FF; }
+        .split-node.offline h3 { color: #B388FF; }
+
+        /* --- DATA STREAM ARROWS --- */
+        .arrow-down {
+            color: #64ffda;
+            font-size: 2rem;
+            margin: 15px 0;
+            animation: pulseStream 1.5s infinite;
+            text-shadow: 0 0 10px #64ffda;
+        }
+
+        .split-arrows {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes pulseStream {
+            0% { opacity: 0.4; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(5px); }
+            100% { opacity: 0.4; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .split-path { flex-direction: column; }
+            .split-arrows { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="rolling-header">
+        <marquee behavior="scroll" direction="left" scrollamount="6">
+            🛡️ RAKSHA-SURAKSHA : LIVE SYSTEM ARCHITECTURE MAP 🛡️
+        </marquee>
+    </div>
+
+    <header class="topbar">
+        <a href="dashboard.html" class="btn-back">⟸ BACK</a>
+        <div class="topbar-logo">
+            <h2>ARCHITECTURE FLOW</h2>
+        </div>
+        <div style="width: 70px;"></div> </header>
+
+    <div class="flow-container">
+        
+        <div class="node node-user">
+            <h3>1. AUTHORIZED AGENT</h3>
+            <p>The device owner initiates a defense protocol or tracking request.</p>
+        </div>
+
+        <div class="arrow-down">&#8595;</div>
+
+        <div class="node node-interface">
+            <h3>2. COMMAND INTERFACES</h3>
+            <p>Agent accesses the Web Dashboard (GitHub Pages) OR the Heavy Master Android App (Commander Node).</p>
+        </div>
+
+        <div class="split-arrows">
+            <div class="arrow-down" style="color: #FF9800; text-shadow: 0 0 10px #FF9800;">&#8601;</div>
+            <div class="arrow-down" style="color: #B388FF; text-shadow: 0 0 10px #B388FF;">&#8600;</div>
+        </div>
+
+        <div class="split-path">
+            <div class="node split-node online">
+                <h3>3A. PRIMARY UPLINK (ONLINE)</h3>
+                <p>Command pushed to Firebase Realtime Database. Secure Auth checks Agent UID. Live socket transmission.</p>
+            </div>
+            
+            <div class="node split-node offline">
+                <h3>3B. TACTICAL FALLBACK (OFFLINE)</h3>
+                <p>Web Dashboard generates encrypted SMS payload (RAKSHA:1234:CMD). Transmitted via cellular network towers.</p>
+            </div>
+        </div>
+
+        <div class="split-arrows">
+            <div class="arrow-down" style="color: #FF9800; text-shadow: 0 0 10px #FF9800;">&#8600;</div>
+            <div class="arrow-down" style="color: #B388FF; text-shadow: 0 0 10px #B388FF;">&#8601;</div>
+        </div>
+
+        <div class="node node-target">
+            <h3>4. TARGET DEVICE (LITE AGENT)</h3>
+            <p>Raksha-Link-Lite background service intercepts Firebase socket OR Android SMS Broadcast Receiver. Verifies security pin.</p>
+        </div>
+
+        <div class="arrow-down" style="color: #ff3366; text-shadow: 0 0 10px #ff3366;">&#8595;</div>
+
+        <div class="node" style="border-color: #FFF;">
+            <h3 style="color: #FFF;">5. HARDWARE EXECUTION</h3>
+            <p>Android OS executes payload: Wakes GPS Chip (Foreground Service), Triggers Siren (AudioManager), or Locks Screen (Accessibility Service).</p>
+        </div>
+
+    </div>
+
+</body>
+</html>
+
