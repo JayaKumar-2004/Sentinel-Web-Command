@@ -10,12 +10,24 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
     <style>
+        /* CSS Reset for structural integrity */
+        * { box-sizing: border-box; }
+
+        .dashboard-content-wrapper {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+
         .module-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
             padding: 20px;
-            max-width: 1000px;
+            width: 100%;
+            max-width: 1200px;
             margin: 0 auto;
         }
         
@@ -24,27 +36,33 @@
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
+            width: 100%;
         }
         
         .btn-danger { border-color: #ff3366 !important; color: #ff3366 !important; }
 
-        .footer {
-            text-align: center; /* Centered for better UI */
-            padding: 20px;
+        /* --- FOOTER FIX --- */
+        .footer-wrapper {
+            display: block;
+            width: 100%;
+            clear: both;
+            text-align: center;
+            padding: 30px 20px;
             font-family: 'Share Tech Mono', monospace;
             color: #8892b0;
-            font-size: 0.8rem;
-            margin-top: 20px;
+            font-size: 0.85rem;
             border-top: 1px solid rgba(0, 229, 255, 0.2);
+            margin-top: 20px;
         }
 
-        /* --- EPIC ROTATING NEON DASHED BUTTON --- */
+        /* --- EPIC ROTATING NEON DASHED BUTTON FIX --- */
         .neon-center-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 40px 0 20px 0;
             width: 100%;
+            padding: 30px 20px;
+            clear: both;
         }
 
         .rotating-neon-btn {
@@ -52,7 +70,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 320px;
+            width: 100%;
+            max-width: 320px; /* Responsive: Shrinks on small screens, maxes at 320px */
             height: 65px;
             background: #020c1b;
             text-decoration: none;
@@ -66,7 +85,6 @@
             transform: scale(0.95);
         }
         
-        /* The Rotating Multi-Color Gradient */
         .rotating-neon-btn::before {
             content: '';
             position: absolute;
@@ -79,7 +97,6 @@
             animation: spin 3s linear infinite;
         }
         
-        /* The Dashed Border Mask */
         .rotating-neon-btn::after {
             content: '';
             position: absolute;
@@ -89,7 +106,6 @@
             border: 2px dashed rgba(0, 229, 255, 0.8);
         }
 
-        /* The Button Text */
         .rotating-neon-btn .btn-text {
             position: relative;
             z-index: 10;
@@ -143,7 +159,7 @@
             <a href="trai.html">📜 TRAI Rules</a>
         </nav>
 
-        <main class="dashboard-content" style="padding-top: 20px; width: 100%;">
+        <main class="dashboard-content dashboard-content-wrapper">
             
             <div class="module-grid">
                 
@@ -172,14 +188,13 @@
                 </section>
                 
             </div>
-
             <div class="neon-center-wrapper">
                 <a href="dashboard.html" class="rotating-neon-btn">
                     <span class="btn-text">⟸ MAIN DASHBOARD</span>
                 </a>
             </div>
 
-            <div class="footer">
+            <div class="footer-wrapper">
                 © 2026 Suryakant Chaudhary & S Jaya Kumar.<br>Raksha-Suraksha Tactical Project.
             </div>
             
