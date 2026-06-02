@@ -87,6 +87,9 @@
             <button onclick="togglePanel()" class="close-btn">&times;</button>
         </div>
 
+        <!-- NEW INFO BANNER FOR presenters -->
+        <p style="color: #00E676; font-size: 0.8rem; margin-bottom: 10px; text-align: center;">💡 Tip: Tap anywhere directly on map to drop Origin & Dest pins manually!</p>
+
         <div class="section-title">🔍 Location Search</div>
         <input type="text" id="searchInput" placeholder="Search City, Area, or Landmark..." class="tactical-input">
         <button onclick="searchOnly()" class="btn-tactical" style="width: 100%; margin-bottom: 15px; border-color: #00E5FF; color: #00E5FF;">DROP PIN</button>
@@ -121,6 +124,7 @@
 
         var geocoder = L.Control.Geocoder.nominatim();
         var searchLayer = L.layerGroup().addTo(map); 
+        var manualPinLayer = L.layerGroup().addTo(map); // Holds tap-to-route pins
 
         var routingControl = L.Routing.control({
             waypoints: [], routeWhileDragging: false, show: false, 
@@ -132,12 +136,47 @@
             document.getElementById('routingPanel').classList.toggle('panel-closed');
         }
 
+        // --- DYNAMIC TAP TO ROUTE PROTOCOL ---
+        var manualOriginLatLng = null;
+        var manualDestLatLng = null;
+
+        map.on('click', function(e) {
+            if (manualOriginLatLng == null) {
+                // First Tap: Drop Green Origin Pin
+                manualOriginLatLng = e.latlng;
+                L.circleMarker(manualOriginLatLng, {radius: 10, color: '#00E676', fillColor: '#00E676', fillOpacity: 0.8})
+                    .addTo(manualPinLayer).bindPopup("<b style='color:black;'>📌 MANUAL ORIGIN START</b>").openPopup();
+                
+                document.getElementById('originInput').value = manualOriginLatLng.lat.toFixed(4) + ", " + manualOriginLatLng.lng.toFixed(4);
+                tvGpsStatus.setText("MANUAL ORIGIN LOCKED");
+                tvGpsStatus.setTextColor(android.graphics.Color.YELLOW);
+            } else if (manualDestLatLng == null) {
+                // Second Tap: Drop Red Destination Pin & Route
+                manualDestLatLng = e.latlng;
+                L.circleMarker(manualDestLatLng, {radius: 10, color: '#ff3366', fillColor: '#ff3366', fillOpacity: 0.8})
+                    .addTo(manualPinLayer).bindPopup("<b style='color:black;'>🎯 MANUAL DEST TARGET</b>").openPopup();
+                
+                document.getElementById('destInput').value = manualDestLatLng.lat.toFixed(4) + ", " + manualDestLatLng.lng.toFixed(4);
+                
+                // Draw the line immediately between pins
+                routingControl.setWaypoints([manualOriginLatLng, manualDestLatLng]);
+                tvGpsStatus.setText("MANUAL ROUTE LOCKED");
+                tvGpsStatus.setTextColor(android.graphics.Color.GREEN);
+                togglePanel(); // Close terminal to display line nicely
+            }
+        });
+
         function clearMap() {
             searchLayer.clearLayers(); 
+            manualPinLayer.clearLayers();
             routingControl.setWaypoints([]); 
+            manualOriginLatLng = null;
+            manualDestLatLng = null;
             document.getElementById('searchInput').value = "";
             document.getElementById('originInput').value = "";
             document.getElementById('destInput').value = "";
+            tvGpsStatus.setText("MAP RE-ARMED & CLEARED");
+            tvGpsStatus.setTextColor(android.graphics.Color.GREEN);
         }
 
         // GPS TRACKING
@@ -185,22 +224,20 @@
             }
         }
 
-        // --- THE ANTI-HANG PROTOCOLS (TIMEOUT FIXES) ---
-
+        // TIMEOUT SEARCH LOGIC
         function searchOnly() {
             var query = document.getElementById('searchInput').value;
             if(!query) return alert("Enter a location to search.");
             
             document.getElementById('searchInput').value = "Scanning...";
             
-            // Failsafe timer: 6 seconds
             var timeout = setTimeout(function() {
                 document.getElementById('searchInput').value = query;
                 alert("Server busy. Please try again.");
             }, 6000);
 
             geocoder.geocode(query, function(results) {
-                clearTimeout(timeout); // Success! Kill the timer.
+                clearTimeout(timeout); 
                 if(results && results.length > 0) {
                     searchLayer.clearLayers(); 
                     var latlng = results[0].center;
@@ -223,7 +260,6 @@
             document.getElementById('originInput').value = "Calculating...";
             document.getElementById('destInput').value = "Calculating...";
 
-            // Failsafe timer: 8 seconds for dual-routing
             var timeout = setTimeout(function() {
                 document.getElementById('originInput').value = origin;
                 document.getElementById('destInput').value = dest;
@@ -234,7 +270,7 @@
                 if(resultsOrigin && resultsOrigin.length > 0) {
                     setTimeout(function() {
                         geocoder.geocode(dest, function(resultsDest) {
-                            clearTimeout(timeout); // Success! Kill the timer.
+                            clearTimeout(timeout); 
                             if(resultsDest && resultsDest.length > 0) {
                                 document.getElementById('originInput').value = origin;
                                 document.getElementById('destInput').value = dest;
@@ -261,14 +297,13 @@
 
             document.getElementById('destInput').value = "Calculating...";
 
-            // Failsafe timer: 6 seconds
             var timeout = setTimeout(function() {
                 document.getElementById('destInput').value = dest;
                 alert("Routing server busy. Try again.");
             }, 6000);
 
             geocoder.geocode(dest, function(resultsDest) {
-                clearTimeout(timeout); // Success! Kill the timer.
+                clearTimeout(timeout); 
                 if(resultsDest && resultsDest.length > 0) {
                     document.getElementById('destInput').value = dest;
                     routingControl.setWaypoints([currentGpsLocation, resultsDest[0].center]);
