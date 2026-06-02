@@ -19,7 +19,7 @@
         /* TACTICAL MAP FIXES */
         body, html { margin: 0; padding: 0; overflow: hidden; }
         #google-map { background-color: #020c1b; height: calc(100vh - 90px); width: 100vw; z-index: 1; }
-        .leaflet-routing-container { display: none !important; } /* Hides the ugly default routing box */
+        .leaflet-routing-container { display: none !important; }
 
         /* FLOATING TOGGLE BUTTON */
         #panelToggleBtn {
@@ -40,12 +40,15 @@
 
         .panel-closed { opacity: 0; visibility: hidden; transform: translate(-50%, -20px); }
 
-        /* Panel Header & Close Button */
+        /* Panel Header & Close Button FIX */
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(0, 229, 255, 0.3); padding-bottom: 10px; }
         .panel-header h3 { color: #00E5FF; font-size: 1.1rem; margin: 0; letter-spacing: 1px; }
-        .close-btn { background: transparent; border: 1px solid #ff3366; color: #ff3366; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-weight: bold; }
+        .close-btn { 
+            background: rgba(255, 51, 102, 0.1); border: 2px solid #ff3366; color: #ff3366; 
+            border-radius: 50%; width: 35px; height: 35px; cursor: pointer; 
+            font-weight: bold; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; 
+        }
         
-        /* Section Dividers */
         .section-title { color: #8892b0; font-size: 0.8rem; margin: 10px 0 5px 0; text-transform: uppercase; letter-spacing: 1px; }
 
         .tactical-input {
@@ -81,7 +84,7 @@
         
         <div class="panel-header">
             <h3>COMMAND TERMINAL</h3>
-            <button onclick="togglePanel()" class="close-btn">X</button>
+            <button onclick="togglePanel()" class="close-btn">&times;</button>
         </div>
 
         <div class="section-title">🔍 Location Search</div>
@@ -109,8 +112,7 @@
     <div id="google-map"></div>
 
     <script>
-        // --- 1. CORE MAP SETUP ---
-        var map = L.map('google-map', { zoomControl: false }).setView([12.9716, 77.5946], 12); // Default Bangalore
+        var map = L.map('google-map', { zoomControl: false }).setView([12.9716, 77.5946], 12); 
         L.control.zoom({ position: 'bottomleft' }).addTo(map); 
 
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -118,7 +120,7 @@
         }).addTo(map);
 
         var geocoder = L.Control.Geocoder.nominatim();
-        var searchLayer = L.layerGroup().addTo(map); // Holds search pins
+        var searchLayer = L.layerGroup().addTo(map); 
 
         var routingControl = L.Routing.control({
             waypoints: [], routeWhileDragging: false, show: false, 
@@ -126,20 +128,19 @@
             createMarker: function() { return null; } 
         }).addTo(map);
 
-        // --- 2. UI CONTROLS ---
         function togglePanel() {
             document.getElementById('routingPanel').classList.toggle('panel-closed');
         }
 
         function clearMap() {
-            searchLayer.clearLayers(); // Removes search pins
-            routingControl.setWaypoints([]); // Removes routing lines
+            searchLayer.clearLayers(); 
+            routingControl.setWaypoints([]); 
             document.getElementById('searchInput').value = "";
             document.getElementById('originInput').value = "";
             document.getElementById('destInput').value = "";
         }
 
-        // --- 3. LIVE GPS TRACKING ---
+        // GPS TRACKING
         var isTracking = true;
         var currentGpsLocation = null;
         var liveMarker = null, liveCircle = null;
@@ -184,16 +185,24 @@
             }
         }
 
-        // --- 4. FEATURE: PURE SEARCH ---
+        // --- THE ANTI-HANG PROTOCOLS (TIMEOUT FIXES) ---
+
         function searchOnly() {
             var query = document.getElementById('searchInput').value;
             if(!query) return alert("Enter a location to search.");
             
             document.getElementById('searchInput').value = "Scanning...";
             
+            // Failsafe timer: 6 seconds
+            var timeout = setTimeout(function() {
+                document.getElementById('searchInput').value = query;
+                alert("Server busy. Please try again.");
+            }, 6000);
+
             geocoder.geocode(query, function(results) {
+                clearTimeout(timeout); // Success! Kill the timer.
                 if(results && results.length > 0) {
-                    searchLayer.clearLayers(); // clear old search
+                    searchLayer.clearLayers(); 
                     var latlng = results[0].center;
                     L.marker(latlng).addTo(searchLayer).bindPopup("<b style='color:black;'>" + results[0].name + "</b>").openPopup();
                     map.setView(latlng, 15);
@@ -206,19 +215,26 @@
             });
         }
 
-        // --- 5. FEATURE: ROUTING (A to B) ---
         function routeAtoB() {
             var origin = document.getElementById('originInput').value;
             var dest = document.getElementById('destInput').value;
             if(!origin || !dest) return alert("Please enter both Start and End points.");
 
             document.getElementById('originInput').value = "Calculating...";
+            document.getElementById('destInput').value = "Calculating...";
+
+            // Failsafe timer: 8 seconds for dual-routing
+            var timeout = setTimeout(function() {
+                document.getElementById('originInput').value = origin;
+                document.getElementById('destInput').value = dest;
+                alert("Routing server busy. Try again.");
+            }, 8000);
             
             geocoder.geocode(origin, function(resultsOrigin) {
                 if(resultsOrigin && resultsOrigin.length > 0) {
-                    // Delay to prevent server block
                     setTimeout(function() {
                         geocoder.geocode(dest, function(resultsDest) {
+                            clearTimeout(timeout); // Success! Kill the timer.
                             if(resultsDest && resultsDest.length > 0) {
                                 document.getElementById('originInput').value = origin;
                                 document.getElementById('destInput').value = dest;
@@ -228,15 +244,16 @@
                                 alert("Destination not found.");
                             }
                         });
-                    }, 1500); 
+                    }, 1000); 
                 } else {
+                    clearTimeout(timeout);
                     alert("Origin not found.");
                     document.getElementById('originInput').value = origin;
+                    document.getElementById('destInput').value = dest;
                 }
             });
         }
 
-        // --- 6. FEATURE: ROUTING (GPS to B) ---
         function routeGpsToDest() {
             var dest = document.getElementById('destInput').value;
             if(!dest) return alert("Please enter an End Point.");
@@ -244,7 +261,14 @@
 
             document.getElementById('destInput').value = "Calculating...";
 
+            // Failsafe timer: 6 seconds
+            var timeout = setTimeout(function() {
+                document.getElementById('destInput').value = dest;
+                alert("Routing server busy. Try again.");
+            }, 6000);
+
             geocoder.geocode(dest, function(resultsDest) {
+                clearTimeout(timeout); // Success! Kill the timer.
                 if(resultsDest && resultsDest.length > 0) {
                     document.getElementById('destInput').value = dest;
                     routingControl.setWaypoints([currentGpsLocation, resultsDest[0].center]);
