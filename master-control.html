@@ -10,147 +10,119 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
     <style>
-        /* CSS Reset for structural integrity */
-        * { box-sizing: border-box; }
-
-        .dashboard-content-wrapper {
-            display: block;
-            width: 100%;
-            max-width: 100%;
-            overflow-x: hidden;
-            padding-top: 20px;
+        /* 🚀 ULTIMATE CYBER-GRID BACKGROUND */
+        body, html {
+            height: 100%; margin: 0; background-color: #020617;
+            background-image: 
+                radial-gradient(circle at 50% 0%, #1e293b 0%, transparent 60%),
+                linear-gradient(rgba(0, 229, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.04) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px; background-attachment: fixed;
+            color: #8892b0; font-family: 'Share Tech Mono', monospace;
         }
+
+        .app-layout { display: flex; min-height: calc(100vh - 85px); width: 100%; }
+        .dashboard-content-wrapper { display: flex; flex-direction: column; width: 100%; padding: 20px; box-sizing: border-box; }
 
         .module-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px; width: 100%; max-width: 1100px; margin: 0 auto; flex-grow: 1;
         }
         
+        /* 🚀 ANIMATED GLASS CARDS */
         .glass-panel {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-            width: 100%;
+            background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); backdrop-filter: blur(16px);
+            padding: 30px 25px; display: flex; flex-direction: column; justify-content: space-between;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; 
+            animation: fadeInUp 0.6s ease forwards;
         }
-        
+
+        .glass-panel:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 229, 255, 0.15), inset 0 0 20px rgba(0, 229, 255, 0.05);
+            border-color: rgba(0, 229, 255, 0.6);
+        }
+
+        .glass-panel.danger-panel:hover {
+            box-shadow: 0 15px 35px rgba(255, 51, 102, 0.2), inset 0 0 20px rgba(255, 51, 102, 0.05);
+            border-color: rgba(255, 51, 102, 0.6);
+        }
+
+        .glass-panel h3 { color: #FFF; font-size: 1.3rem; margin-bottom: 12px; letter-spacing: 1px;}
+        .glass-panel .subtitle { color: #94a3b8; font-size: 0.95rem; line-height: 1.5; margin-bottom: 25px; flex-grow: 1;}
+
         .btn-danger { border-color: #ff3366 !important; color: #ff3366 !important; }
+        .btn-danger:hover { background: rgba(255, 51, 102, 0.1) !important; box-shadow: 0 0 15px rgba(255, 51, 102, 0.4) !important;}
 
-        /* --- FOOTER FIX --- */
-        .footer-wrapper {
-            display: block;
-            width: 100%;
-            clear: both;
-            text-align: center;
-            padding: 30px 20px;
-            font-family: 'Share Tech Mono', monospace;
-            color: #8892b0;
-            font-size: 0.85rem;
-            border-top: 1px solid rgba(0, 229, 255, 0.2);
-            margin-top: 20px;
-        }
-
-        /* --- EPIC ROTATING NEON DASHED BUTTON FIX --- */
-        .neon-center-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            padding: 30px 20px;
-            clear: both;
-        }
-
+        /* NEON BUTTON HOVER FIXES */
+        .neon-center-wrapper { display: flex; justify-content: center; align-items: center; width: 100%; padding: 30px 0; margin-top: 20px; }
         .rotating-neon-btn {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            max-width: 320px; /* Responsive: Shrinks on small screens, maxes at 320px */
-            height: 65px;
-            background: #020c1b;
-            text-decoration: none;
-            overflow: hidden;
-            border-radius: 35px;
-            box-shadow: 0 0 15px rgba(0, 229, 255, 0.3), 0 0 30px rgba(255, 51, 102, 0.2);
-            transition: transform 0.2s;
+            position: relative; display: flex; justify-content: center; align-items: center;
+            width: 100%; max-width: 320px; height: 60px; background: #0f172a; text-decoration: none; overflow: hidden;
+            border-radius: 35px; box-shadow: 0 0 20px rgba(0, 229, 255, 0.2); transition: all 0.3s ease;
+            opacity: 0; animation: fadeInUp 0.6s ease forwards; animation-delay: 0.5s;
         }
 
-        .rotating-neon-btn:active {
-            transform: scale(0.95);
-        }
+        .rotating-neon-btn:hover { transform: scale(1.05); box-shadow: 0 0 35px rgba(0, 229, 255, 0.5); }
+        .rotating-neon-btn:active { transform: scale(0.95); }
         
         .rotating-neon-btn::before {
-            content: '';
-            position: absolute;
-            width: 150%;
-            height: 500%;
-            background: conic-gradient(
-                #020c1b, #020c1b, 
-                #ff3366, #00E5FF, #00E676, #FF9800, #ff3366
-            );
+            content: ''; position: absolute; width: 150%; height: 500%;
+            background: conic-gradient(#0f172a, #0f172a, #ff3366, #00E5FF, #00E676, #FF9800, #ff3366);
             animation: spin 3s linear infinite;
         }
         
         .rotating-neon-btn::after {
-            content: '';
-            position: absolute;
-            inset: 3px;
-            background: #020c1b;
-            border-radius: 32px;
-            border: 2px dashed rgba(0, 229, 255, 0.8);
+            content: ''; position: absolute; inset: 3px; background: #0f172a;
+            border-radius: 32px; border: 2px dashed rgba(0, 229, 255, 0.8);
         }
 
         .rotating-neon-btn .btn-text {
-            position: relative;
-            z-index: 10;
-            color: #FFF;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 1.1rem;
-            font-weight: bold;
-            letter-spacing: 2px;
-            text-shadow: 0 0 5px #00E5FF;
+            position: relative; z-index: 10; color: #FFF; font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem; font-weight: bold; letter-spacing: 2px; text-shadow: 0 0 8px #00E5FF;
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .footer-wrapper {
+            width: 100%; text-align: center; padding: 20px; font-size: 0.85rem; color: #64ffda; border-top: 1px solid rgba(100, 255, 218, 0.1);
         }
+
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .delay-1 { animation-delay: 0.1s; } .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; } .delay-4 { animation-delay: 0.4s; }
     </style>
 </head>
 <body>
 
-    <div class="rolling-header" style="background: #ff3366; color: #020c1b; padding: 5px; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;">
+    <div class="rolling-header" style="background: #ff3366; color: #020c1b; padding: 6px; font-weight: bold; letter-spacing: 1px;">
         <marquee behavior="scroll" direction="left" scrollamount="6">
             🛡️ RAKSHA-SURAKSHA : MASTER CONTROL HUB ACTIVE 🛡️
         </marquee>
     </div>
 
-    <header class="topbar">
+    <header class="topbar" style="background: rgba(2, 6, 23, 0.85); border-bottom: 1px solid rgba(255, 51, 102, 0.3); backdrop-filter: blur(12px);">
         <div class="menu-toggle" onclick="toggleSidebar()" style="cursor: pointer;">
-            ☰ <span style="font-size: 0.8rem; letter-spacing: 1px;">MENU</span>
+            ☰ <span>MENU</span>
         </div>
         <div class="topbar-logo">
-            <h2>MASTER CONTROL</h2>
+            <h2 style="color: #ff3366; text-shadow: 0 0 8px rgba(255,51,102,0.4);">MASTER CONTROL</h2>
         </div>
-        
         <div class="topbar-account" style="display: flex; gap: 15px; align-items: center;">
-            <span id="userEmail" style="color: #00E5FF; font-size: 0.75rem;">AGENT: VERIFYING...</span>
-            <button onclick="terminateSession()" style="background: transparent; border: 1px solid #ff3366; color: #ff3366; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">LOGOUT</button>
+            <span id="userEmail" style="color: #00E5FF; text-shadow: 0 0 5px rgba(0,229,255,0.4);">VERIFYING...</span>
+            <button onclick="terminateSession()" style="background: transparent; border: 1px solid #ff3366; color: #ff3366; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; transition: 0.3s;">LOGOUT</button>
         </div>
     </header>
 
     <div class="app-layout">
-        
         <nav class="sidebar" id="sidebar">
             <div class="close-menu" onclick="toggleSidebar()">✖</div>
             <a href="dashboard.html" style="color: #00E5FF;">🏠 Main Dashboard</a>
-            <hr style="border-color: #1a2a42; margin: 10px 0;">
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 10px 0;">
             <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk">📲 App Download</a>
             <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/South_India_Pack.zip">🗺️ Map Download</a>
             <a href="FINALpptPro5.pdf" target="_blank">❓ Full Guide</a>
@@ -159,35 +131,35 @@
             <a href="trai.html">📜 TRAI Rules</a>
         </nav>
 
-        <main class="dashboard-content dashboard-content-wrapper">
-            
+        <main class="dashboard-content-wrapper">
             <div class="module-grid">
                 
-                <section class="glass-panel">
+                <section class="glass-panel delay-1">
                     <h3>🎛️ APP CONTROLS</h3>
-                    <p class="subtitle" style="flex-grow: 1;">Remote device locking and system parameter modification.</p>
-                    <a href="app-controls.html" class="btn-tactical" style="margin-top: 15px;">OPEN MODULE</a>
+                    <p class="subtitle">Remote device locking, hardware overrides, and system parameter modification.</p>
+                    <a href="app-controls.html" class="btn-tactical">OPEN MODULE</a>
                 </section>
 
-                <section class="glass-panel">
+                <section class="glass-panel delay-2">
                     <h3>📍 APP LOCATION</h3>
-                    <p class="subtitle" style="flex-grow: 1;">Access precision GPS coordinates and device tracking.</p>
-                    <a href="map.html" class="btn-tactical" style="margin-top: 15px;">OPEN MODULE</a>
+                    <p class="subtitle">Access precision GPS coordinates and real-time ghost device tracking.</p>
+                    <a href="map.html" class="btn-tactical">OPEN MODULE</a>
                 </section>
 
-                <section class="glass-panel">
+                <section class="glass-panel delay-3">
                     <h3>💬 MESSAGE CONTROL</h3>
-                    <p class="subtitle" style="flex-grow: 1;">Manage SMS routing, Auto-Responder settings, and trusted contacts.</p>
-                    <a href="message-control.html" class="btn-tactical" style="margin-top: 15px;">OPEN MODULE</a>
+                    <p class="subtitle">Manage SMS routing, Auto-Responder settings, and offline trusted contacts.</p>
+                    <a href="message-control.html" class="btn-tactical">OPEN MODULE</a>
                 </section>
 
-                <section class="glass-panel">
-                    <h3>🛡️ TIER-3 EVIDENCE VAULT</h3>
-                    <p class="subtitle" style="flex-grow: 1;">Authorized agents only. Access the secure cloud video portal.</p>
-                    <a href="upload.html" class="btn-tactical btn-danger" style="margin-top: 15px;">ENTER VAULT</a>
-                 </section>
+                <section class="glass-panel danger-panel delay-4" style="border-color: rgba(255, 51, 102, 0.4);">
+                    <h3 style="color: #ff3366;">🛡️ TIER-3 EVIDENCE VAULT</h3>
+                    <p class="subtitle">Authorized agents only. Access the secure cloud video and audio portal.</p>
+                    <a href="vault.html" class="btn-tactical btn-danger">ENTER VAULT</a>
+                </section>
                 
             </div>
+
             <div class="neon-center-wrapper">
                 <a href="dashboard.html" class="rotating-neon-btn">
                     <span class="btn-text">⟸ MAIN DASHBOARD</span>
@@ -197,40 +169,20 @@
             <div class="footer-wrapper">
                 © 2026 Suryakant Chaudhary & S Jaya Kumar.<br>Raksha-Suraksha Tactical Project.
             </div>
-            
         </main>
     </div>
 
     <script>
-        function toggleSidebar() { 
-            document.getElementById('sidebar').classList.toggle('active'); 
-        }
-
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
         const firebaseConfig = { 
-            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", 
-            authDomain: "sentinel-vault-fb4b7.firebaseapp.com", 
-            projectId: "sentinel-vault-fb4b7", 
-            storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", 
-            messagingSenderId: "192301825793", 
-            appId: "1:192301825793:web:734530705f4084608fe500" 
+            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" 
         };
         firebase.initializeApp(firebaseConfig);
-        
         firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
-            } else {
-                window.location.href = 'index.html';
-            }
+            if (user) document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
+            else window.location.href = 'index.html';
         });
-
-        function terminateSession() {
-            firebase.auth().signOut().then(() => {
-                window.location.href = 'index.html';
-            }).catch((error) => {
-                console.error("Logout Error:", error);
-            });
-        }
+        function terminateSession() { firebase.auth().signOut().then(() => { window.location.href = 'index.html'; }); }
     </script>
 </body>
 </html>
