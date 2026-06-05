@@ -8,32 +8,103 @@
     
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+    <style>
+        /* 🚀 ULTIMATE CYBER-GRID BACKGROUND */
+        body, html {
+            height: 100%; margin: 0;
+            background-color: #020617;
+            background-image: 
+                radial-gradient(circle at 50% 0%, #1e293b 0%, transparent 60%),
+                linear-gradient(rgba(0, 229, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.04) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            background-attachment: fixed;
+            color: #8892b0;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .app-layout { display: flex; min-height: calc(100vh - 85px); width: 100%; }
+        .dashboard-content-wrapper { display: flex; flex-direction: column; width: 100%; padding: 20px; box-sizing: border-box; }
+
+        .module-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px; width: 100%; max-width: 1100px; margin: 0 auto; flex-grow: 1;
+        }
+        
+        /* 🚀 ANIMATED GLASS CARDS */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7); 
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(16px);
+            padding: 30px 25px; display: flex; flex-direction: column; justify-content: space-between;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0; /* For animation */
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        /* Hover Physics */
+        .glass-panel:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 229, 255, 0.15), inset 0 0 20px rgba(0, 229, 255, 0.05);
+            border-color: rgba(0, 229, 255, 0.6);
+        }
+
+        /* Danger Card specific hover */
+        .glass-panel.danger-panel:hover {
+            box-shadow: 0 15px 35px rgba(255, 51, 102, 0.2), inset 0 0 20px rgba(255, 51, 102, 0.05);
+            border-color: rgba(255, 51, 102, 0.6);
+        }
+
+        .glass-panel h3 { color: #FFF; font-size: 1.3rem; margin-bottom: 12px; letter-spacing: 1px; text-shadow: 0 0 10px rgba(255,255,255,0.2);}
+        .glass-panel .subtitle { color: #94a3b8; font-size: 0.95rem; line-height: 1.5; margin-bottom: 25px; flex-grow: 1;}
+
+        .btn-danger { border-color: #ff3366 !important; color: #ff3366 !important; }
+        .btn-danger:hover { background: rgba(255, 51, 102, 0.1) !important; box-shadow: 0 0 15px rgba(255, 51, 102, 0.4) !important;}
+
+        .footer-wrapper {
+            width: 100%; text-align: center; padding: 25px 20px 10px 20px; margin-top: 40px;
+            font-size: 0.85rem; color: #64ffda; border-top: 1px solid rgba(100, 255, 218, 0.1);
+        }
+
+        /* 🚀 LOAD ANIMATION KEYFRAMES */
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Stagger the animation so cards load one by one */
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+    </style>
 </head>
 <body>
 
-    <div class="rolling-header">
+    <div class="rolling-header" style="background: #00E5FF; color: #020c1b; padding: 6px; font-weight: bold; letter-spacing: 1px;">
         <marquee behavior="scroll" direction="left" scrollamount="6">
             <img src="temp_logo.png" alt="Logo" style="height: 14px; vertical-align: middle; margin-right: 10px;">
             🛡️ RAKSHA-SURAKSHA : TACTICAL GUARDIAN & TRACKING SYSTEM ACTIVE 🛡️
         </marquee>
     </div>
 
-    <header class="topbar">
-        <div class="menu-toggle" onclick="toggleSidebar()">
+    <header class="topbar" style="background: rgba(2, 6, 23, 0.85); border-bottom: 1px solid rgba(0, 229, 255, 0.3); backdrop-filter: blur(12px);">
+        <div class="menu-toggle" onclick="toggleSidebar()" style="cursor: pointer;">
             ☰ <span>MENU</span>
         </div>
         <div class="topbar-logo">
-            <h2>GUARDIAN & TRACKING SYSTEM</h2>
+            <h2 style="color: #00E5FF; text-shadow: 0 0 8px rgba(0,229,255,0.4);">GUARDIAN & TRACKING SYSTEM</h2>
         </div>
-        
         <div class="topbar-account" style="display: flex; gap: 15px; align-items: center;">
-            <span id="userEmail" style="color: #00E5FF;">VERIFYING...</span>
-            <button onclick="terminateSession()" style="background: transparent; border: 1px solid #ff3366; color: #ff3366; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">LOGOUT</button>
+            <span id="userEmail" style="color: #00E676; text-shadow: 0 0 5px rgba(0,230,118,0.4);">VERIFYING...</span>
+            <button onclick="terminateSession()" style="background: transparent; border: 1px solid #ff3366; color: #ff3366; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; transition: 0.3s;">LOGOUT</button>
         </div>
     </header>
 
     <div class="app-layout">
-        
         <nav class="sidebar" id="sidebar">
             <div class="close-menu" onclick="toggleSidebar()">✖</div>
             <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk">📲 App Download</a>
@@ -44,66 +115,52 @@
             <a href="trai.html">📜 TRAI Rules</a>
         </nav>
 
-        <main class="dashboard-content">
-            
-            <section class="glass-panel" style="grid-column: 1 / -1;">
-                <h3>COMMAND CENTER GATEWAY</h3>
-                <p class="subtitle">Access deep system architecture and evidence vaults.</p>
-                <a href="master-control.html" class="btn-tactical">🎛️ ENTER MASTER / USER CONTROL</a>
-            </section>
+        <main class="dashboard-content-wrapper">
+            <div class="module-grid">
+                
+                <section class="glass-panel delay-1" style="grid-column: 1 / -1;">
+                    <h3 style="color: #00E5FF;">🎛️ COMMAND CENTER GATEWAY</h3>
+                    <p class="subtitle">Access deep system architecture and advanced control vaults.</p>
+                    <a href="master-control.html" class="btn-tactical">ENTER MASTER / USER CONTROL</a>
+                </section>
 
-            <section class="glass-panel">
-                <h3>🌤️ Tactical Weather</h3>
-                <p class="subtitle">Local atmospheric conditions for safe routing.</p>
-                <a href="weather.html" class="btn-tactical">ACCESS MODULE</a>
-            </section>
+                <section class="glass-panel delay-2">
+                    <h3>🌤️ Tactical Weather</h3>
+                    <p class="subtitle">Local atmospheric conditions for safe and secure routing.</p>
+                    <a href="weather.html" class="btn-tactical">ACCESS MODULE</a>
+                </section>
 
-            <section class="glass-panel">
-                <h3>🔗 App Linking</h3>
-                <p class="subtitle">Manage synchronized devices and guardian nodes.</p>
-                <a href="app-linking.html" class="btn-tactical">ACCESS MODULE</a>
-            </section>
+                <section class="glass-panel delay-3">
+                    <h3>🔗 App Linking</h3>
+                    <p class="subtitle">Manage synchronized devices and external guardian nodes.</p>
+                    <a href="app-linking.html" class="btn-tactical">ACCESS MODULE</a>
+                </section>
 
-            <section class="glass-panel" style="grid-column: 1 / -1; border-color: #ff3366;">
-                <h3 style="color: #ff3366;">🔴 LIVE RADAR MAP</h3>
-                <p class="subtitle">Launch the dedicated satellite GPS tracking interface.</p>
-                <a href="map.html" class="btn-tactical" style="border-color: #ff3366; color: #ff3366;">OPEN FULLSCREEN MAP</a>
-            </section>
-            
+                <section class="glass-panel danger-panel delay-4" style="grid-column: 1 / -1; border-color: rgba(255, 51, 102, 0.4);">
+                    <h3 style="color: #ff3366;">🔴 LIVE RADAR MAP</h3>
+                    <p class="subtitle">Launch the dedicated satellite GPS tracking interface and execute tactical routing.</p>
+                    <a href="map.html" class="btn-tactical btn-danger">OPEN FULLSCREEN MAP</a>
+                </section>
+                
+            </div>
+
+            <div class="footer-wrapper">
+                © 2026 Suryakant Chaudhary & S Jaya Kumar.<br>Raksha-Suraksha Project.
+            </div>
         </main>
     </div>
 
     <script>
-        // Sidebar Toggle
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
-        
-        // Auth Check ONLY
         const firebaseConfig = { 
-            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", 
-            authDomain: "sentinel-vault-fb4b7.firebaseapp.com", 
-            projectId: "sentinel-vault-fb4b7", 
-            storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", 
-            messagingSenderId: "192301825793", 
-            appId: "1:192301825793:web:734530705f4084608fe500" 
+            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" 
         };
         firebase.initializeApp(firebaseConfig);
-        
         firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
-            } else {
-                window.location.href = 'index.html';
-            }
+            if (user) document.getElementById('userEmail').innerText = "AGENT: " + user.email.split('@')[0].toUpperCase();
+            else window.location.href = 'index.html';
         });
-
-        // SECURE LOGOUT PROTOCOL
-        function terminateSession() {
-            firebase.auth().signOut().then(() => {
-                window.location.href = 'index.html';
-            }).catch((error) => {
-                console.error("Logout Error:", error);
-            });
-        }
+        function terminateSession() { firebase.auth().signOut().then(() => { window.location.href = 'index.html'; }); }
     </script>
 </body>
 </html>
