@@ -13,186 +13,195 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
     <style>
-        /* 🚀 ABSTRACT FLUID GRADIENT BACKGROUND */
+        /* 🚀 GLOBAL RESET */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body, html { height: 100%; width: 100%; overflow: hidden; background-color: #020617; color: #F8FAFC; }
+
+        /* =========================================
+           🚀 1. THE SPLASH SCREEN (INTRO POPUP)
+           ========================================= */
+        #splashScreen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #020617; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s ease;
+        }
+
+        /* Custom SVG Logo Animation */
+        .splash-logo {
+            width: 90px; height: 90px; margin-bottom: 20px;
+            filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.6));
+            animation: pulseLogo 1.5s infinite alternate;
+        }
+
+        .splash-title { font-size: 2.5rem; font-weight: 800; letter-spacing: 3px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        .splash-subtitle { color: #38BDF8; font-family: 'Share Tech Mono', monospace; font-size: 1.1rem; letter-spacing: 2px; }
         
-        body, html {
-            height: 100%; width: 100%; overflow: hidden;
+        .loading-bar-container { width: 250px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 30px; overflow: hidden; }
+        .loading-bar { height: 100%; width: 0%; background: #38BDF8; box-shadow: 0 0 10px #38BDF8; animation: fillBar 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        
+        .splash-credits { position: absolute; bottom: 30px; color: #475569; font-size: 0.85rem; font-weight: 500; letter-spacing: 1px; }
+
+        @keyframes pulseLogo { 0% { transform: scale(0.95); opacity: 0.8; } 100% { transform: scale(1.05); opacity: 1; } }
+        @keyframes fillBar { 0% { width: 0%; } 50% { width: 60%; } 100% { width: 100%; } }
+
+        /* =========================================
+           🚀 2. LANDING PAGE & GRADIENT BACKGROUND
+           ========================================= */
+        #mainLanding {
+            height: 100%; width: 100%;
             background: linear-gradient(-45deg, #0f172a, #312e81, #1e3a8a, #020617);
-            background-size: 400% 400%;
-            animation: fluidGradient 15s ease infinite;
-            color: #F8FAFC;
+            background-size: 400% 400%; animation: fluidGradient 15s ease infinite;
+            position: relative;
         }
 
-        @keyframes fluidGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        @keyframes fluidGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        /* 🚀 TOP NAVIGATION BAR */
-        .navbar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 24px 5%; width: 100%; position: absolute; top: 0; z-index: 100;
-        }
-
+        /* Navigation */
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 24px 5%; width: 100%; position: absolute; top: 0; z-index: 100; }
         .brand { display: flex; align-items: center; gap: 12px; }
-        .brand-icon { 
-            width: 36px; height: 36px; background: rgba(255,255,255,0.1); 
-            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
-            border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(5px);
-        }
+        .brand-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(5px); }
         .brand-name { font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
 
         .nav-links { display: flex; gap: 30px; }
         .nav-links a { color: #CBD5E1; text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: 0.3s; }
         .nav-links a:hover { color: #FFF; }
 
-        .nav-actions button {
-            background: transparent; border: 1px solid #F8FAFC; color: #F8FAFC;
-            padding: 8px 24px; border-radius: 30px; font-weight: 600; cursor: pointer;
-            transition: all 0.3s ease;
-        }
+        .nav-actions button { background: transparent; border: 1px solid #F8FAFC; color: #F8FAFC; padding: 8px 24px; border-radius: 30px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
         .nav-actions button:hover { background: #F8FAFC; color: #0f172a; }
 
-        /* 🚀 HERO SECTION (The Pitch) */
-        .hero-container {
-            display: flex; align-items: center; height: 100%; padding: 0 10%;
-            position: relative; z-index: 10;
-        }
-
+        /* Hero Pitch */
+        .hero-container { display: flex; align-items: center; height: 100%; padding: 0 10%; position: relative; z-index: 10; }
         .hero-content { max-width: 650px; transition: opacity 0.5s ease, transform 0.5s ease; }
-        
-        .hero-badge {
-            display: inline-block; background: rgba(56, 189, 248, 0.15); color: #38BDF8;
-            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
-            margin-bottom: 24px; border: 1px solid rgba(56, 189, 248, 0.3);
-            font-family: 'Share Tech Mono', monospace; letter-spacing: 1px;
-        }
-
+        .hero-badge { display: inline-block; background: rgba(56, 189, 248, 0.15); color: #38BDF8; padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 24px; border: 1px solid rgba(56, 189, 248, 0.3); font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
         .hero-content h1 { font-size: 4rem; font-weight: 800; line-height: 1.1; margin-bottom: 24px; letter-spacing: -1px; }
         .hero-content p { font-size: 1.1rem; color: #94A3B8; line-height: 1.6; margin-bottom: 40px; }
 
         .hero-buttons { display: flex; gap: 16px; }
-        .btn-primary {
-            background: #3B82F6; color: #FFF; border: none; padding: 16px 36px;
-            border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer;
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); transition: 0.3s;
-        }
+        .btn-primary { background: #3B82F6; color: #FFF; border: none; padding: 16px 36px; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); transition: 0.3s; }
         .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(59, 130, 246, 0.6); }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05); color: #FFF; border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 16px 36px; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer;
-            backdrop-filter: blur(10px); transition: 0.3s;
-        }
+        .btn-secondary { background: rgba(255, 255, 255, 0.05); color: #FFF; border: 1px solid rgba(255, 255, 255, 0.2); padding: 16px 36px; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer; backdrop-filter: blur(10px); transition: 0.3s; }
         .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
 
-        /* 🚀 AUTHENTICATION GATE (Glassmorphism Login Box) */
-        .login-wrapper {
-            position: absolute; right: 10%; top: 50%; transform: translateY(-50%);
-            width: 100%; max-width: 420px; display: none; opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        .login-box {
-            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px;
-            padding: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center;
-        }
-
+        /* Authentication Glass Box */
+        .login-wrapper { position: absolute; right: 10%; top: 50%; transform: translateY(-50%); width: 100%; max-width: 420px; display: none; opacity: 0; transition: opacity 0.5s ease; }
+        .login-box { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center; }
         .login-box h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
         .login-box p { color: #94A3B8; font-size: 0.9rem; margin-bottom: 30px; }
-
-        .tactical-input {
-            width: 100%; padding: 14px 20px; margin-bottom: 16px;
-            background: rgba(0,0,0,0.3); color: #FFF; border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; font-size: 0.95rem; outline: none; transition: 0.3s;
-        }
+        .tactical-input { width: 100%; padding: 14px 20px; margin-bottom: 16px; background: rgba(0,0,0,0.3); color: #FFF; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; font-size: 0.95rem; outline: none; transition: 0.3s; }
         .tactical-input:focus { border-color: #3B82F6; background: rgba(0,0,0,0.5); }
-
         .action-text { color: #38BDF8; font-size: 0.85rem; cursor: pointer; display: block; margin-bottom: 24px; text-align: right; text-decoration: none; }
         .action-text:hover { text-decoration: underline; }
-
-        .btn-login {
-            background: #3B82F6; color: white; border: none; width: 100%; padding: 14px;
-            border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; margin-bottom: 12px;
-        }
+        .btn-login { background: #3B82F6; color: white; border: none; width: 100%; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; margin-bottom: 12px; }
         .btn-login:hover { background: #2563EB; }
-
-        .btn-register {
-            background: transparent; color: #CBD5E1; border: 1px solid rgba(255,255,255,0.2);
-            width: 100%; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s;
-        }
+        .btn-register { background: transparent; color: #CBD5E1; border: 1px solid rgba(255,255,255,0.2); width: 100%; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; }
         .btn-register:hover { background: rgba(255,255,255,0.05); }
-
         #sysMessage { font-size: 0.85rem; margin-top: 16px; display: none; font-family: 'Share Tech Mono', monospace; }
 
-        /* Mobile Adjustments */
         @media (max-width: 900px) {
             .nav-links { display: none; }
             .hero-content h1 { font-size: 2.8rem; }
             .hero-container { padding: 0 5%; justify-content: center; text-align: center; }
             .hero-buttons { justify-content: center; flex-direction: column; }
             .login-wrapper { right: 5%; left: 5%; transform: translateY(-40%); }
+            .splash-title { font-size: 1.8rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
-        <div class="brand">
-            <div class="brand-icon">🛡️</div>
-            <div class="brand-name">RAKSHA-SURAKSHA</div>
+    <!-- =========================================
+         🚀 1. THE SPLASH SCREEN
+         ========================================= -->
+    <div id="splashScreen">
+        <!-- High-Tech Shield SVG Logo -->
+        <svg class="splash-logo" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            <circle cx="12" cy="11" r="3"></circle>
+            <path d="M12 8v3"></path>
+        </svg>
+        
+        <h1 class="splash-title">RAKSHA-SURAKSHA</h1>
+        <p class="splash-subtitle">INITIALIZING PROTOCOLS...</p>
+        
+        <div class="loading-bar-container">
+            <div class="loading-bar"></div>
         </div>
-        <div class="nav-links">
-            <a href="#">Overview</a>
-            <a href="#">Architecture</a>
-            <a href="#">Features</a>
-            <a href="#">Documentation</a>
-        </div>
-        <div class="nav-actions">
-            <button onclick="showLoginGate()">Agent Login</button>
-        </div>
-    </nav>
 
-    <!-- HERO SECTION (Landing Pitch) -->
-    <div class="hero-container">
-        <div class="hero-content" id="heroContent">
-            <div class="hero-badge">SYSTEM V2.0 READY</div>
-            <h1>Advanced Tactical Tracking & Security.</h1>
-            <p>Welcome to the Raksha-Suraksha Command Hub. A unified platform engineered to bridge remote physical devices with secure, real-time cloud and offline SMS monitoring protocols.</p>
-            
-            <div class="hero-buttons">
-                <button class="btn-primary" onclick="showLoginGate()">Initialize Web Terminal</button>
-                <button class="btn-secondary" onclick="window.location.href='FINALpptPro5.pdf'">View Documentation</button>
+        <div class="splash-credits">
+            DEVELOPED BY SURYAKANT CHAUDHARY & S JAYA KUMAR
+        </div>
+    </div>
+
+    <!-- =========================================
+         🚀 2. THE MAIN LANDING PAGE
+         ========================================= -->
+    <div id="mainLanding">
+        <!-- NAVBAR -->
+        <nav class="navbar">
+            <div class="brand">
+                <div class="brand-icon">🛡️</div>
+                <div class="brand-name">RAKSHA-SURAKSHA</div>
             </div>
-        </div>
+            <div class="nav-links">
+                <a href="#">Overview</a>
+                <a href="#">Architecture</a>
+                <a href="#">Features</a>
+                <a href="FINALpptPro5.pdf" target="_blank">Documentation</a>
+            </div>
+            <div class="nav-actions">
+                <button onclick="showLoginGate()">Agent Login</button>
+            </div>
+        </nav>
 
-        <!-- AUTHENTICATION GATE (Hidden by default) -->
-        <div class="login-wrapper" id="loginWrapper">
-            <div class="login-box">
-                <h2>Terminal Access</h2>
-                <p>Authenticate agent credentials to proceed.</p>
+        <!-- HERO PITCH -->
+        <div class="hero-container">
+            <div class="hero-content" id="heroContent">
+                <div class="hero-badge">SYSTEM V2.0 READY</div>
+                <h1>Advanced Tactical Tracking & Security.</h1>
+                <p>Welcome to the Raksha-Suraksha Command Hub. A unified platform engineered to bridge remote physical devices with secure, real-time cloud and offline SMS monitoring protocols.</p>
+                
+                <div class="hero-buttons">
+                    <button class="btn-primary" onclick="showLoginGate()">Initialize Web Terminal</button>
+                    <button class="btn-secondary" onclick="window.location.href='FINALpptPro5.pdf'">View Documentation</button>
+                </div>
+            </div>
 
-                <input type="email" id="email" class="tactical-input" placeholder="Agent Email ID">
-                <input type="password" id="password" class="tactical-input" placeholder="Secure Passcode">
+            <!-- AUTHENTICATION GATE -->
+            <div class="login-wrapper" id="loginWrapper">
+                <div class="login-box">
+                    <h2>Terminal Access</h2>
+                    <p>Authenticate agent credentials to proceed.</p>
 
-                <span class="action-text" onclick="resetPassword()">Forgot Passcode?</span>
+                    <input type="email" id="email" class="tactical-input" placeholder="Agent Email ID">
+                    <input type="password" id="password" class="tactical-input" placeholder="Secure Passcode">
 
-                <button onclick="loginAgent()" class="btn-login" id="loginBtn">Initiate Uplink (Login)</button>
-                <button onclick="registerAgent()" class="btn-register" id="regBtn">Register New Agent</button>
+                    <span class="action-text" onclick="resetPassword()">Forgot Passcode?</span>
 
-                <div id="sysMessage"></div>
+                    <button onclick="loginAgent()" class="btn-login" id="loginBtn">Initiate Uplink (Login)</button>
+                    <button onclick="registerAgent()" class="btn-register" id="regBtn">Register New Agent</button>
+
+                    <div id="sysMessage"></div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // --- SPLASH SCREEN LOGIC ---
+        // Waits exactly 2.5 seconds, then gracefully fades out the black intro screen
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.visibility = 'hidden';
+                }, 800); // Wait for the CSS fade transition to finish
+            }, 2500);
+        });
+
         // --- UI TRANSITION LOGIC ---
         function showLoginGate() {
-            // Fades out the hero text and fades in the login box
             const hero = document.getElementById('heroContent');
             const login = document.getElementById('loginWrapper');
             
@@ -222,7 +231,7 @@
 
         // Reroute to Dashboard if already logged in
         auth.onAuthStateChanged(user => {
-            if (user) window.location.href = 'flow.html'; // Points to your architecture flow lock!
+            if (user) window.location.href = 'flow.html';
         });
 
         const msgBox = document.getElementById('sysMessage');
