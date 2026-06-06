@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha-Suraksha | Advanced Mobile Security</title>
+    <title>Raksha-Suraksha | Tactical Command System</title>
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -13,90 +13,178 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
     <style>
-        /* 🚀 GLOBAL RESET */
+        /* 🚀 GLOBAL RESET & LIVING BACKGROUND */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body, html { height: 100%; width: 100%; overflow: hidden; background-color: #020617; color: #F8FAFC; }
+        
+        body, html { 
+            height: 100%; width: 100%; overflow: hidden; 
+            background-color: #030712; /* Deep space black */
+            color: #F8FAFC;
+        }
+
+        /* 🚀 MAGIC CURSOR GLOW (Tracks Mouse) */
+        .magic-glow {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            background: radial-gradient(
+                800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                rgba(0, 229, 255, 0.08), 
+                rgba(234, 88, 12, 0.03) 40%,
+                transparent 80%
+            );
+            transition: background 0.1s ease;
+        }
+
+        /* Drifting Neon Orbs for "Living" feel */
+        .orb {
+            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; z-index: 0;
+            animation: drift 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .orb-1 { width: 400px; height: 400px; background: #1D4ED8; top: -10%; left: -10%; }
+        .orb-2 { width: 300px; height: 300px; background: #EA580C; bottom: 10%; right: -5%; animation-delay: -5s; }
+        .orb-3 { width: 250px; height: 250px; background: #00E5FF; top: 40%; left: 40%; animation-delay: -10s; opacity: 0.2;}
+
+        @keyframes drift {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(100px, 50px) scale(1.2); }
+        }
 
         /* =========================================
-           🚀 1. THE SPLASH SCREEN (INTRO POPUP)
+           🚀 1. THE SPLASH SCREEN (MATCHING YOUR APP)
            ========================================= */
         #splashScreen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #020617; z-index: 9999;
+            background: #050B14; z-index: 9999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s ease;
         }
 
-        /* Custom SVG Logo Animation */
+        /* 🛡️ Custom SVG Logo Matching Your App Screenshot */
         .splash-logo {
-            width: 90px; height: 90px; margin-bottom: 20px;
-            filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.6));
-            animation: pulseLogo 1.5s infinite alternate;
+            width: 120px; height: 120px; margin-bottom: 30px;
+            filter: drop-shadow(0 0 20px rgba(29, 78, 216, 0.8));
+            animation: pulseLogo 2s infinite alternate;
         }
 
-        .splash-title { font-size: 2.5rem; font-weight: 800; letter-spacing: 3px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
-        .splash-subtitle { color: #38BDF8; font-family: 'Share Tech Mono', monospace; font-size: 1.1rem; letter-spacing: 2px; }
+        .splash-title { 
+            font-size: 2.8rem; font-weight: 800; letter-spacing: 4px; margin-bottom: 15px; 
+            color: #00E5FF; /* Cyan text like your app */
+            text-shadow: 0 0 15px rgba(0, 229, 255, 0.4); 
+        }
+        .splash-subtitle { color: #64748B; font-family: 'Share Tech Mono', monospace; font-size: 1.1rem; letter-spacing: 3px; text-transform: uppercase; }
         
-        .loading-bar-container { width: 250px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 30px; overflow: hidden; }
-        .loading-bar { height: 100%; width: 0%; background: #38BDF8; box-shadow: 0 0 10px #38BDF8; animation: fillBar 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        
-        .splash-credits { position: absolute; bottom: 30px; color: #475569; font-size: 0.85rem; font-weight: 500; letter-spacing: 1px; }
+        .loading-text { margin-top: 40px; color: #1D4ED8; font-family: 'Share Tech Mono', monospace; font-size: 0.9rem; letter-spacing: 2px; }
 
-        @keyframes pulseLogo { 0% { transform: scale(0.95); opacity: 0.8; } 100% { transform: scale(1.05); opacity: 1; } }
-        @keyframes fillBar { 0% { width: 0%; } 50% { width: 60%; } 100% { width: 100%; } }
+        @keyframes pulseLogo { 
+            0% { transform: scale(0.95); filter: drop-shadow(0 0 15px rgba(29, 78, 216, 0.6)); } 
+            100% { transform: scale(1.05); filter: drop-shadow(0 0 30px rgba(0, 229, 255, 0.8)); } 
+        }
 
         /* =========================================
-           🚀 2. LANDING PAGE & GRADIENT BACKGROUND
+           🚀 2. LANDING PAGE & NEON UI
            ========================================= */
-        #mainLanding {
-            height: 100%; width: 100%;
-            background: linear-gradient(-45deg, #0f172a, #312e81, #1e3a8a, #020617);
-            background-size: 400% 400%; animation: fluidGradient 15s ease infinite;
-            position: relative;
-        }
-
-        @keyframes fluidGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        #mainLanding { height: 100%; width: 100%; position: relative; z-index: 10; }
 
         /* Navigation */
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 24px 5%; width: 100%; position: absolute; top: 0; z-index: 100; }
         .brand { display: flex; align-items: center; gap: 12px; }
-        .brand-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(5px); }
-        .brand-name { font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
+        
+        /* Mini Logo for Nav */
+        .nav-logo { width: 32px; height: 32px; filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.5)); }
+        
+        .brand-name { font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; color: #F8FAFC; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
 
         .nav-links { display: flex; gap: 30px; }
-        .nav-links a { color: #CBD5E1; text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: 0.3s; }
-        .nav-links a:hover { color: #FFF; }
+        .nav-links a { color: #94A3B8; text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: 0.3s; }
+        .nav-links a:hover { color: #00E5FF; text-shadow: 0 0 8px rgba(0,229,255,0.5); }
 
-        .nav-actions button { background: transparent; border: 1px solid #F8FAFC; color: #F8FAFC; padding: 8px 24px; border-radius: 30px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        .nav-actions button:hover { background: #F8FAFC; color: #0f172a; }
+        .nav-actions button { 
+            background: transparent; border: 1px solid #00E5FF; color: #00E5FF; 
+            padding: 8px 24px; border-radius: 30px; font-weight: 600; cursor: pointer; 
+            transition: all 0.3s ease; box-shadow: 0 0 10px rgba(0,229,255,0.1);
+        }
+        .nav-actions button:hover { background: #00E5FF; color: #030712; box-shadow: 0 0 20px rgba(0,229,255,0.4); }
 
         /* Hero Pitch */
         .hero-container { display: flex; align-items: center; height: 100%; padding: 0 10%; position: relative; z-index: 10; }
         .hero-content { max-width: 650px; transition: opacity 0.5s ease, transform 0.5s ease; }
-        .hero-badge { display: inline-block; background: rgba(56, 189, 248, 0.15); color: #38BDF8; padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 24px; border: 1px solid rgba(56, 189, 248, 0.3); font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
+        
+        .hero-badge { 
+            display: inline-block; background: rgba(0, 229, 255, 0.1); color: #00E5FF; 
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 24px; 
+            border: 1px solid rgba(0, 229, 255, 0.3); font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; 
+            box-shadow: 0 0 15px rgba(0,229,255,0.2);
+        }
+        
         .hero-content h1 { font-size: 4rem; font-weight: 800; line-height: 1.1; margin-bottom: 24px; letter-spacing: -1px; }
         .hero-content p { font-size: 1.1rem; color: #94A3B8; line-height: 1.6; margin-bottom: 40px; }
 
         .hero-buttons { display: flex; gap: 16px; }
-        .btn-primary { background: #3B82F6; color: #FFF; border: none; padding: 16px 36px; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); transition: 0.3s; }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(59, 130, 246, 0.6); }
-        .btn-secondary { background: rgba(255, 255, 255, 0.05); color: #FFF; border: 1px solid rgba(255, 255, 255, 0.2); padding: 16px 36px; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer; backdrop-filter: blur(10px); transition: 0.3s; }
-        .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
+        
+        .btn-primary { 
+            background: linear-gradient(135deg, #1D4ED8, #00E5FF); color: #FFF; border: none; 
+            padding: 16px 36px; border-radius: 30px; font-size: 1rem; font-weight: 700; cursor: pointer; 
+            box-shadow: 0 8px 25px rgba(0, 229, 255, 0.4); transition: 0.3s; 
+        }
+        .btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 35px rgba(0, 229, 255, 0.6); }
+        
+        .btn-secondary { 
+            background: rgba(255, 255, 255, 0.03); color: #FFF; border: 1px solid rgba(255, 255, 255, 0.1); 
+            padding: 16px 36px; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer; 
+            backdrop-filter: blur(10px); transition: 0.3s; 
+        }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255,255,255,0.3); }
 
-        /* Authentication Glass Box */
+        /* 🚀 AUTHENTICATION NEON GLASS BOX */
         .login-wrapper { position: absolute; right: 10%; top: 50%; transform: translateY(-50%); width: 100%; max-width: 420px; display: none; opacity: 0; transition: opacity 0.5s ease; }
-        .login-box { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center; }
-        .login-box h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
+        
+        .login-box { 
+            background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(25px); 
+            border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 24px; padding: 40px; 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,229,255,0.05); 
+            text-align: center; position: relative; overflow: hidden;
+        }
+
+        /* Glowing Border Animation */
+        .login-box::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(transparent, transparent, transparent, #00E5FF);
+            animation: borderGlow 4s linear infinite; z-index: -1; opacity: 0.5;
+        }
+        .login-box::after {
+            content: ''; position: absolute; inset: 2px; background: rgba(15, 23, 42, 0.85);
+            border-radius: 22px; z-index: -1;
+        }
+
+        @keyframes borderGlow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .login-box h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; color: #F8FAFC; }
         .login-box p { color: #94A3B8; font-size: 0.9rem; margin-bottom: 30px; }
-        .tactical-input { width: 100%; padding: 14px 20px; margin-bottom: 16px; background: rgba(0,0,0,0.3); color: #FFF; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; font-size: 0.95rem; outline: none; transition: 0.3s; }
-        .tactical-input:focus { border-color: #3B82F6; background: rgba(0,0,0,0.5); }
-        .action-text { color: #38BDF8; font-size: 0.85rem; cursor: pointer; display: block; margin-bottom: 24px; text-align: right; text-decoration: none; }
-        .action-text:hover { text-decoration: underline; }
-        .btn-login { background: #3B82F6; color: white; border: none; width: 100%; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; margin-bottom: 12px; }
-        .btn-login:hover { background: #2563EB; }
-        .btn-register { background: transparent; color: #CBD5E1; border: 1px solid rgba(255,255,255,0.2); width: 100%; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .btn-register:hover { background: rgba(255,255,255,0.05); }
-        #sysMessage { font-size: 0.85rem; margin-top: 16px; display: none; font-family: 'Share Tech Mono', monospace; }
+        
+        .tactical-input { 
+            width: 100%; padding: 14px 20px; margin-bottom: 16px; 
+            background: rgba(0,0,0,0.5); color: #FFF; border: 1px solid rgba(0,229,255,0.1); 
+            border-radius: 12px; font-size: 0.95rem; outline: none; transition: 0.3s; 
+        }
+        .tactical-input:focus { border-color: #00E5FF; box-shadow: 0 0 15px rgba(0,229,255,0.2); background: rgba(0,0,0,0.7); }
+        
+        .action-text { color: #00E5FF; font-size: 0.85rem; cursor: pointer; display: block; margin-bottom: 24px; text-align: right; text-decoration: none; transition: 0.3s;}
+        .action-text:hover { text-shadow: 0 0 8px rgba(0,229,255,0.6); }
+        
+        .btn-login { 
+            background: #1D4ED8; color: white; border: none; width: 100%; padding: 14px; 
+            border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-bottom: 12px; 
+            box-shadow: 0 4px 15px rgba(29,78,216,0.4);
+        }
+        .btn-login:hover { background: #00E5FF; color: #030712; box-shadow: 0 0 20px rgba(0,229,255,0.6); }
+        
+        .btn-register { background: transparent; color: #94A3B8; border: 1px solid rgba(255,255,255,0.1); width: 100%; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .btn-register:hover { background: rgba(255,255,255,0.05); color: #FFF; border-color: rgba(255,255,255,0.3); }
+        
+        #sysMessage { font-size: 0.85rem; margin-top: 16px; display: none; font-family: 'Share Tech Mono', monospace; text-shadow: 0 0 5px currentColor;}
 
         @media (max-width: 900px) {
             .nav-links { display: none; }
@@ -111,36 +199,42 @@
 <body>
 
     <!-- =========================================
-         🚀 1. THE SPLASH SCREEN
+         🚀 1. THE SPLASH SCREEN (WITH CUSTOM APP LOGO)
          ========================================= -->
     <div id="splashScreen">
-        <!-- High-Tech Shield SVG Logo -->
-        <svg class="splash-logo" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            <circle cx="12" cy="11" r="3"></circle>
-            <path d="M12 8v3"></path>
+        <!-- SVG EXACTLY MATCHING YOUR ANDROID APP ICON -->
+        <svg class="splash-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Deep Blue Outer Shield -->
+            <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/>
+            <!-- Vibrant Orange Inner Core -->
+            <path d="M12 5.5L6 7.5V11.5C6 15.2 8.5 18.6 12 19.5C15.5 18.6 18 15.2 18 11.5V7.5L12 5.5Z" fill="#EA580C"/>
+            <!-- White Center Hex/Shield -->
+            <path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="#FFFFFF"/>
         </svg>
         
         <h1 class="splash-title">RAKSHA-SURAKSHA</h1>
-        <p class="splash-subtitle">INITIALIZING PROTOCOLS...</p>
+        <p class="splash-subtitle">TACTICAL COMMAND SYSTEM</p>
         
-        <div class="loading-bar-container">
-            <div class="loading-bar"></div>
-        </div>
-
-        <div class="splash-credits">
-            DEVELOPED BY SURYAKANT CHAUDHARY & S JAYA KUMAR
-        </div>
+        <div class="loading-text">INITIALIZING PROTOCOLS...</div>
     </div>
 
     <!-- =========================================
-         🚀 2. THE MAIN LANDING PAGE
+         🚀 2. THE LIVING LANDING PAGE
          ========================================= -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="magic-glow"></div> <!-- The Magic Cursor Tracker -->
+
     <div id="mainLanding">
         <!-- NAVBAR -->
         <nav class="navbar">
             <div class="brand">
-                <div class="brand-icon">🛡️</div>
+                <svg class="nav-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/>
+                    <path d="M12 5.5L6 7.5V11.5C6 15.2 8.5 18.6 12 19.5C15.5 18.6 18 15.2 18 11.5V7.5L12 5.5Z" fill="#EA580C"/>
+                    <path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="#FFFFFF"/>
+                </svg>
                 <div class="brand-name">RAKSHA-SURAKSHA</div>
             </div>
             <div class="nav-links">
@@ -167,7 +261,7 @@
                 </div>
             </div>
 
-            <!-- AUTHENTICATION GATE -->
+            <!-- AUTHENTICATION NEON GATE -->
             <div class="login-wrapper" id="loginWrapper">
                 <div class="login-box">
                     <h2>Terminal Access</h2>
@@ -188,15 +282,20 @@
     </div>
 
     <script>
+        // --- 🚀 MAGIC CURSOR TRACKING LOGIC ---
+        document.addEventListener('mousemove', (e) => {
+            document.documentElement.style.setProperty('--mouse-x', e.clientX + 'px');
+            document.documentElement.style.setProperty('--mouse-y', e.clientY + 'px');
+        });
+
         // --- SPLASH SCREEN LOGIC ---
-        // Waits exactly 2.5 seconds, then gracefully fades out the black intro screen
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
                 splash.style.opacity = '0';
                 setTimeout(() => {
                     splash.style.visibility = 'hidden';
-                }, 800); // Wait for the CSS fade transition to finish
+                }, 800); 
             }, 2500);
         });
 
@@ -229,7 +328,6 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // Reroute to Dashboard if already logged in
         auth.onAuthStateChanged(user => {
             if (user) window.location.href = 'flow.html';
         });
@@ -245,12 +343,12 @@
         function loginAgent() {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
-            if(!email || !pass) return showMessage("CREDENTIALS REQUIRED.", "#F87171");
+            if(!email || !pass) return showMessage("CREDENTIALS REQUIRED.", "#FB7185");
 
             document.getElementById('loginBtn').innerText = "Verifying...";
             auth.signInWithEmailAndPassword(email, pass)
                 .catch(err => {
-                    showMessage(err.message, "#F87171");
+                    showMessage(err.message, "#FB7185");
                     document.getElementById('loginBtn').innerText = "Initiate Uplink (Login)";
                 });
         }
@@ -258,13 +356,13 @@
         function registerAgent() {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
-            if(!email || pass.length < 6) return showMessage("VALID EMAIL & 6+ CHAR PASSCODE REQUIRED.", "#F87171");
+            if(!email || pass.length < 6) return showMessage("VALID EMAIL & 6+ CHAR PASSCODE REQUIRED.", "#FB7185");
 
             document.getElementById('regBtn').innerText = "Registering...";
             auth.createUserWithEmailAndPassword(email, pass)
-                .then(() => showMessage("AGENT REGISTERED. UPLINK ACTIVE.", "#34D399"))
+                .then(() => showMessage("AGENT REGISTERED. UPLINK ACTIVE.", "#00E5FF"))
                 .catch(err => {
-                    showMessage(err.message, "#F87171");
+                    showMessage(err.message, "#FB7185");
                     document.getElementById('regBtn').innerText = "Register New Agent";
                 });
         }
@@ -274,8 +372,8 @@
             if(!email) return showMessage("ENTER EMAIL ABOVE TO RESET PASSCODE.", "#FBBF24");
 
             auth.sendPasswordResetEmail(email)
-                .then(() => showMessage("RESET PROTOCOL INITIATED. CHECK INBOX.", "#34D399"))
-                .catch(err => showMessage(err.message, "#F87171"));
+                .then(() => showMessage("RESET PROTOCOL INITIATED. CHECK INBOX.", "#00E5FF"))
+                .catch(err => showMessage(err.message, "#FB7185"));
         }
     </script>
 </body>
