@@ -3,106 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha-Suraksha | Modern Dashboard</title>
+    <title>Raksha-Suraksha | User Dashboard</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* 🚀 MODERN ENTERPRISE UI/UX RESET */
+        /* 🚀 CLEAN ENTERPRISE UI/UX RESET */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
         
-        body { background-color: #0B0F19; color: #94A3B8; display: flex; height: 100vh; overflow: hidden; }
+        /* Trustable, calm light-gray background */
+        body { background-color: #F3F4F6; color: #374151; display: flex; height: 100vh; overflow: hidden; }
 
-        /* 🚀 SLEEK FIXED SIDEBAR */
+        /* 🚀 SLEEK LIGHT SIDEBAR */
         .sidebar {
-            width: 280px; background-color: #111827; border-right: 1px solid #1E293B;
+            width: 280px; background-color: #FFFFFF; border-right: 1px solid #E5E7EB;
             display: flex; flex-direction: column; padding: 24px; transition: transform 0.3s ease;
+            z-index: 1000;
         }
 
         .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; }
-        .brand-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #3B82F6, #8B5CF6); border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
-        .brand-text { color: #F8FAFC; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px; }
-
-        .nav-links { display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
-        .nav-links a {
-            text-decoration: none; color: #94A3B8; padding: 12px 16px; border-radius: 12px;
-            display: flex; align-items: center; gap: 12px; font-weight: 600; transition: all 0.2s ease;
+        .brand-icon { 
+            width: 40px; height: 40px; background: #2563EB; border-radius: 10px; 
+            display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: white;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
         }
-        .nav-links a:hover, .nav-links a.active { background-color: #1E293B; color: #F8FAFC; }
+        .brand-text { color: #111827; font-weight: 700; font-size: 1.2rem; }
+
+        .nav-links { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
+        .nav-links a {
+            text-decoration: none; color: #4B5563; padding: 12px 16px; border-radius: 10px;
+            display: flex; align-items: center; gap: 12px; font-weight: 500; transition: all 0.2s ease;
+        }
+        .nav-links a:hover { background-color: #F3F4F6; color: #111827; }
+        .nav-links a.active { background-color: #EFF6FF; color: #2563EB; font-weight: 600; }
         
         /* 🚀 MAIN CONTENT AREA */
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; background-color: #0B0F19; }
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; background-color: #F9FAFB; position: relative; }
 
-        /* Header */
+        /* Crisp Header */
         .header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 24px 40px; background: rgba(11, 15, 25, 0.8); backdrop-filter: blur(10px);
-            position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #1E293B;
+            padding: 20px 40px; background: #FFFFFF; border-bottom: 1px solid #E5E7EB;
+            position: sticky; top: 0; z-index: 10;
         }
         
-        .header-title h1 { color: #F8FAFC; font-size: 1.5rem; margin-bottom: 4px; }
-        .header-title p { color: #10B981; font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; letter-spacing: 1px; }
+        .header-title h1 { color: #111827; font-size: 1.5rem; margin-bottom: 4px; font-weight: 700; }
+        .header-title p { color: #059669; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .status-dot { width: 8px; height: 8px; background-color: #10B981; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
 
-        .user-profile { display: flex; align-items: center; gap: 16px; background: #111827; padding: 8px 16px; border-radius: 30px; border: 1px solid #1E293B; }
-        .user-profile span { font-family: 'Share Tech Mono', monospace; color: #38BDF8; font-size: 0.9rem; }
-        .logout-btn { background: #EF4444; color: white; border: none; padding: 6px 16px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .logout-btn:hover { background: #DC2626; transform: scale(1.05); }
+        .user-profile { display: flex; align-items: center; gap: 16px; background: #F3F4F6; padding: 6px 16px; border-radius: 30px; border: 1px solid #E5E7EB; }
+        .user-profile span { color: #374151; font-size: 0.9rem; font-weight: 600; }
+        .logout-btn { background: #FFFFFF; color: #EF4444; border: 1px solid #FECACA; padding: 6px 16px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .logout-btn:hover { background: #FEF2F2; border-color: #F87171; }
 
-        /* 🚀 WIDGET GRID (Like the Reference Image) */
+        /* 🚀 CLEAN WIDGET GRID */
         .dashboard-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px; padding: 40px; align-items: start;
+            gap: 24px; padding: 40px; align-items: start; max-width: 1400px; margin: 0 auto; width: 100%;
         }
 
         .widget-card {
-            background-color: #111827; border: 1px solid #1E293B; border-radius: 24px;
-            padding: 24px; transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative; overflow: hidden;
+            background-color: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 16px;
+            padding: 24px; transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            display: flex; flex-direction: column; height: 100%;
         }
-        .widget-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
+        .widget-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
 
         /* Widget Badges & Headers */
         .widget-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
         .icon-badge {
-            width: 48px; height: 48px; border-radius: 16px;
+            width: 48px; height: 48px; border-radius: 12px;
             display: flex; justify-content: center; align-items: center; font-size: 1.4rem;
         }
-        .badge-blue { background: rgba(56, 189, 248, 0.1); color: #38BDF8; }
-        .badge-purple { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
-        .badge-red { background: rgba(244, 63, 94, 0.1); color: #F43F5E; }
-        .badge-green { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+        
+        /* Trustworthy Badge Colors */
+        .badge-blue { background: #EFF6FF; color: #2563EB; }
+        .badge-purple { background: #F3E8FF; color: #9333EA; }
+        .badge-green { background: #ECFDF5; color: #059669; }
+        .badge-red { background: #FEF2F2; color: #DC2626; }
 
-        .widget-card h3 { color: #F8FAFC; font-size: 1.2rem; }
-        .widget-card p { color: #64748B; font-size: 0.9rem; line-height: 1.5; margin-bottom: 24px; }
+        .widget-card h3 { color: #111827; font-size: 1.15rem; font-weight: 600; }
+        .widget-card p { color: #6B7280; font-size: 0.95rem; line-height: 1.5; margin-bottom: 24px; flex-grow: 1; }
 
         /* Modern Action Buttons */
         .action-btn {
             display: inline-flex; justify-content: center; align-items: center; width: 100%;
-            padding: 14px; border-radius: 14px; font-weight: 600; text-decoration: none;
+            padding: 12px; border-radius: 10px; font-weight: 600; text-decoration: none;
             transition: all 0.2s; font-size: 0.95rem; border: none; cursor: pointer;
         }
-        .btn-primary { background: #1E293B; color: #F8FAFC; border: 1px solid #334155; }
-        .btn-primary:hover { background: #2DD4BF; color: #0B0F19; border-color: #2DD4BF; }
+        .btn-primary { background: #2563EB; color: #FFFFFF; }
+        .btn-primary:hover { background: #1D4ED8; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
         
-        .btn-danger { background: rgba(244, 63, 94, 0.1); color: #F43F5E; border: 1px solid rgba(244, 63, 94, 0.3); }
-        .btn-danger:hover { background: #F43F5E; color: #FFF; box-shadow: 0 0 20px rgba(244, 63, 94, 0.4); }
+        .btn-danger { background: #FFFFFF; color: #DC2626; border: 1px solid #FECACA; }
+        .btn-danger:hover { background: #FEF2F2; border-color: #F87171; }
 
-        /* Mobile Hamburger */
-        .mobile-menu-btn { display: none; background: none; border: none; color: #F8FAFC; font-size: 1.5rem; cursor: pointer; }
+        /* 🚀 MOBILE FIXES (Solves the squished screen issue) */
+        .mobile-menu-btn { display: none; background: none; border: none; color: #111827; font-size: 1.5rem; cursor: pointer; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
 
         @media (max-width: 900px) {
-            .sidebar { position: fixed; z-index: 100; height: 100%; transform: translateX(-100%); }
-            .sidebar.active { transform: translateX(0); box-shadow: 20px 0 50px rgba(0,0,0,0.5); }
+            /* Hide sidebar entirely off-screen on mobile */
+            .sidebar { position: fixed; left: -280px; height: 100%; box-shadow: none; }
+            .sidebar.active { left: 0; box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
+            
+            .overlay.active { display: block; }
             .mobile-menu-btn { display: block; margin-right: 16px; }
+            
             .header { padding: 16px 20px; }
-            .dashboard-grid { padding: 20px; }
+            .dashboard-grid { padding: 20px; grid-template-columns: 1fr; } /* Stack cards on mobile */
+            .user-profile span { display: none; } /* Hide email text on tiny screens to save space */
         }
     </style>
 </head>
 <body>
 
+    <!-- Mobile Overlay -->
+    <div class="overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="brand">
             <div class="brand-icon">🛡️</div>
@@ -110,15 +131,16 @@
         </div>
         
         <nav class="nav-links">
-            <a href="#" class="active">📊 Dashboard Hub</a>
-            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk">📲 Client App APK</a>
-            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/South_India_Pack.zip">🗺️ Offline Maps</a>
-            <a href="FINALpptPro5.pdf" target="_blank">📄 Documentation</a>
-            <a href="settings.html">⚙️ Settings</a>
+            <a href="#" class="active">📊 Overview Dashboard</a>
+            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk">📲 Client Application</a>
+            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/South_India_Pack.zip">🗺️ Offline Maps Pack</a>
+            <a href="FINALpptPro5.pdf" target="_blank">📄 User Documentation</a>
+            <a href="settings.html">⚙️ Account Settings</a>
             <a href="privacy.html">🔒 Privacy Policy</a>
         </nav>
     </aside>
 
+    <!-- MAIN CONTENT -->
     <main class="main-content">
         
         <header class="header">
@@ -126,60 +148,67 @@
                 <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
                 <div class="header-title">
                     <h1>System Overview</h1>
-                    <p>● SECURE UPLINK ESTABLISHED</p>
+                    <p><span class="status-dot"></span> Connection Secured</p>
                 </div>
             </div>
             
             <div class="user-profile">
-                <span id="userEmail">VERIFYING...</span>
+                <span id="userEmail">Loading...</span>
                 <button class="logout-btn" onclick="terminateSession()">Logout</button>
             </div>
         </header>
 
         <div class="dashboard-grid">
             
+            <!-- Widget 1 -->
             <div class="widget-card">
                 <div class="widget-header">
                     <div class="icon-badge badge-blue">🎛️</div>
                     <h3>Command Gateway</h3>
                 </div>
-                <p>Access deep system architecture, manage devices, and view evidence vaults.</p>
-                <a href="master-control.html" class="action-btn btn-primary">Enter Master Control</a>
+                <p>Access core system architecture, manage linked devices, and view secure evidence records.</p>
+                <a href="master-control.html" class="action-btn btn-primary">Open Master Control</a>
             </div>
 
+            <!-- Widget 2 -->
             <div class="widget-card">
                 <div class="widget-header">
                     <div class="icon-badge badge-purple">🔗</div>
                     <h3>Device Synchronization</h3>
                 </div>
-                <p>Manage synchronized devices, active sessions, and secondary guardian nodes.</p>
-                <a href="app-linking.html" class="action-btn btn-primary">Manage Links</a>
+                <p>Manage synchronized physical devices, active sessions, and secondary guardian nodes.</p>
+                <a href="app-linking.html" class="action-btn btn-primary">Manage Devices</a>
             </div>
 
+            <!-- Widget 3 -->
             <div class="widget-card">
                 <div class="widget-header">
                     <div class="icon-badge badge-green">🌤️</div>
                     <h3>Atmospheric Data</h3>
                 </div>
-                <p>Monitor local weather and atmospheric conditions for safe routing protocols.</p>
+                <p>Monitor local weather conditions and environmental metrics for safe routing.</p>
                 <a href="weather.html" class="action-btn btn-primary">View Weather</a>
             </div>
 
-            <div class="widget-card" style="border-color: rgba(244, 63, 94, 0.3);">
+            <!-- Widget 4: Radar -->
+            <div class="widget-card" style="border: 1px solid #FECACA;">
                 <div class="widget-header">
-                    <div class="icon-badge badge-red">🛰️</div>
-                    <h3 style="color: #F43F5E;">Live Radar Array</h3>
+                    <div class="icon-badge badge-red">📍</div>
+                    <h3 style="color: #DC2626;">Live Location Radar</h3>
                 </div>
-                <p>Launch the dedicated satellite interface to track target devices in real-time.</p>
-                <a href="map.html" class="action-btn btn-danger">Initialize Satellite Map</a>
+                <p>Launch the dedicated map interface to pinpoint target devices and establish routing.</p>
+                <a href="map.html" class="action-btn btn-danger">Initialize Map</a>
             </div>
 
         </div>
     </main>
 
     <script>
-        // Sidebar Toggle for Mobile
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+        // Smooth Sidebar Toggle for Mobile UX
+        function toggleSidebar() { 
+            document.getElementById('sidebar').classList.toggle('active'); 
+            document.getElementById('mobileOverlay').classList.toggle('active');
+        }
         
         // Firebase Auth
         const firebaseConfig = { 
@@ -189,8 +218,7 @@
         
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                // Extracts name beautifully from email
-                document.getElementById('userEmail').innerText = "Agent " + user.email.split('@')[0].toUpperCase();
+                document.getElementById('userEmail').innerText = user.email;
             } else {
                 window.location.href = 'index.html';
             }
@@ -202,4 +230,3 @@
     </script>
 </body>
 </html>
-
