@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account | Raksha-Suraksha</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050a14;
+  --bg2: #0a1224;
+  --cyan: #00E5FF;
+  --blue: #3B82F6;
+  --orange: #FF6B35;
+  --green: #00FF88;
+  --text: #F5F7FA;
+  --muted: #A0AEC0;
+  --error: #EF4444;
+  --success: #10B981;
+  --glow-c: 0 0 20px rgba(0,229,255,0.6), 0 0 40px rgba(0,229,255,0.3);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  width: 100%; min-height: 100vh; overflow-x: hidden;
+  background: var(--bg); color: var(--text);
+  font-family: 'Rajdhani', sans-serif; line-height: 1.6;
+  display: flex; align-items: center; justify-content: center;
+}
+
+#bgCanvas { position: fixed; inset: 0; z-index: -3; pointer-events: none; }
+.grid-bg {
+  position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background-image: linear-gradient(rgba(0,229,255,0.04) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.auth-container {
+  width: 100%; max-width: 500px; padding: 40px 30px;
+  position: relative; z-index: 1;
+}
+
+.auth-card {
+  background: linear-gradient(145deg, rgba(10,20,40,0.95), rgba(5,12,28,0.99));
+  border: 1.5px solid var(--cyan);
+  border-radius: 16px; padding: 50px 40px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.auth-card::before {
+  content: ''; position: absolute;
+  top: -50%; left: -50%; width: 200%; height: 200%;
+  background: conic-gradient(from 0deg, transparent, rgba(0,229,255,0.08), transparent);
+  animation: rotateBg 15s linear infinite;
+}
+@keyframes rotateBg {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.auth-content { position: relative; z-index: 1; }
+
+.auth-header {
+  text-align: center; margin-bottom: 40px;
+}
+
+.auth-logo {
+  width: 60px; height: 60px; margin: 0 auto 20px;
+}
+
+.auth-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.8rem; font-weight: 900;
+  letter-spacing: 2px; color: var(--cyan);
+  text-shadow: 0 0 15px rgba(0,229,255,0.6);
+  margin-bottom: 8px;
+}
+
+.auth-subtitle {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem; letter-spacing: 3px;
+  color: var(--muted); text-transform: uppercase;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem; letter-spacing: 2px;
+  color: var(--cyan); display: block;
+  margin-bottom: 8px; text-transform: uppercase;
+  font-weight: 600;
+}
+
+.form-input {
+  width: 100%; padding: 13px 16px;
+  background: rgba(0,0,0,0.5);
+  color: var(--text);
+  border: 1px solid rgba(0,229,255,0.25);
+  border-radius: 8px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95rem; outline: none;
+  transition: all 0.3s;
+}
+
+.form-input::placeholder {
+  color: rgba(160,174,192,0.4);
+}
+
+.form-input:focus {
+  border-color: var(--cyan);
+  background: rgba(0,229,255,0.08);
+  box-shadow: 0 0 15px rgba(0,229,255,0.2);
+}
+
+.form-input.error {
+  border-color: var(--error);
+  background: rgba(239,68,68,0.05);
+}
+
+.error-message {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem; color: var(--error);
+  margin-top: 6px; display: none;
+  animation: slideDown 0.3s ease;
+}
+
+.error-message.show { display: block; }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.success-message {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.8rem; color: var(--success);
+  background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3);
+  padding: 12px; border-radius: 8px; margin-bottom: 20px;
+  display: none;
+}
+
+.success-message.show { display: block; }
+
+.password-requirements {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem; color: var(--muted);
+  background: rgba(10,25,50,0.6); border: 1px solid rgba(0,229,255,0.15);
+  padding: 12px; border-radius: 8px; margin-top: 12px;
+  line-height: 1.6;
+}
+
+.requirement {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 6px;
+}
+
+.requirement.met { color: var(--success); }
+.requirement.unmet { color: var(--muted); }
+
+.req-indicator {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor;
+}
+
+.form-button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  color: #050a14; border: none;
+  border-radius: 8px; cursor: pointer;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.9rem; letter-spacing: 2px;
+  font-weight: 700; text-transform: uppercase;
+  margin-top: 10px; transition: all 0.3s;
+  position: relative; overflow: hidden;
+}
+
+.form-button::before {
+  content: ''; position: absolute;
+  top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+.form-button:hover::before { left: 100%; }
+
+.form-button:hover {
+  box-shadow: var(--glow-c);
+  transform: translateY(-2px);
+}
+
+.form-button:disabled {
+  opacity: 0.6; cursor: not-allowed;
+  box-shadow: none; transform: none;
+}
+
+.form-button.loading::after {
+  content: ''; position: absolute;
+  width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white; border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  right: 16px; top: 50%; transform: translateY(-50%);
+}
+
+@keyframes spin {
+  to { transform: translateY(-50%) rotate(360deg); }
+}
+
+.auth-footer {
+  text-align: center; margin-top: 24px;
+}
+
+.auth-footer p {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.8rem; color: var(--muted);
+}
+
+.auth-footer a {
+  color: var(--cyan); text-decoration: none;
+  font-weight: 600; transition: color 0.3s;
+}
+
+.auth-footer a:hover { color: var(--blue); }
+
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 30px 0; color: var(--muted);
+}
+
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,229,255,0.2), transparent);
+}
+
+@media(max-width: 600px) {
+  .auth-container { padding: 20px; }
+  .auth-card { padding: 40px 20px; }
+  .auth-title { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="grid-bg"></div>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-content">
+      
+      <div class="auth-header">
+        <svg class="auth-logo" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#3B82F6"/>
+          <path d="M12 5.5L6 7.5V11.5C6 15.2 8.5 18.6 12 19.5C15.5 18.6 18 15.2 18 11.5V7.5L12 5.5Z" fill="#FF6B35"/>
+          <path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="white"/>
+        </svg>
+        <div class="auth-title">CREATE ACCOUNT</div>
+        <div class="auth-subtitle">SECURE AGENT REGISTRATION</div>
+      </div>
+
+      <div class="success-message" id="successMsg">✓ Registration successful! Redirecting to login...</div>
+
+      <form id="signupForm">
+        
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="fullName" class="form-input" placeholder="Your Name"
+                 required minlength="3">
+          <div class="error-message" id="nameError"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="signupEmail" class="form-input" placeholder="agent@tactical.ops"
+                 required>
+          <div class="error-message" id="emailError"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="signupPass" class="form-input" placeholder="••••••••••••"
+                 required minlength="8">
+          <div class="error-message" id="passError"></div>
+          
+          <div class="password-requirements">
+            <div class="requirement unmet" id="req-length">
+              <span class="req-indicator"></span> At least 8 characters
+            </div>
+            <div class="requirement unmet" id="req-upper">
+              <span class="req-indicator"></span> One uppercase letter
+            </div>
+            <div class="requirement unmet" id="req-lower">
+              <span class="req-indicator"></span> One lowercase letter
+            </div>
+            <div class="requirement unmet" id="req-number">
+              <span class="req-indicator"></span> One number
+            </div>
+            <div class="requirement unmet" id="req-special">
+              <span class="req-indicator"></span> One special character (!@#$%^&*)
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" id="confirmPass" class="form-input" placeholder="••••••••••••"
+                 required>
+          <div class="error-message" id="confirmError"></div>
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--muted); font-weight: 400; cursor: pointer;">
+            <input type="checkbox" id="agreeTerms" required style="width: 18px; height: 18px; cursor: pointer;">
+            I agree to the Terms of Service and Privacy Policy
+          </label>
+          <div class="error-message" id="termsError"></div>
+        </div>
+
+        <button type="submit" class="form-button" id="signupBtn">⚡ Create Account</button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Already have an account? <a href="index.html">Login here</a></p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// Firebase
+const fbCfg = {
+  apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI",
+  authDomain: "sentinel-vault-fb4b7.firebaseapp.com",
+  projectId: "sentinel-vault-fb4b7",
+  storageBucket: "sentinel-vault-fb4b7.firebasestorage.app",
+  messagingSenderId: "192301825793",
+  appId: "1:192301825793:web:734530705f4084608fe500"
+};
+firebase.initializeApp(fbCfg);
+
+// Check if already logged in
+firebase.auth().onAuthStateChanged(user => {
+  if (user) window.location.href = 'flow.html';
+});
+
+// Password validation
+const passInput = document.getElementById('signupPass');
+passInput.addEventListener('input', function() {
+  const pass = this.value;
+  
+  document.getElementById('req-length').classList.toggle('met', pass.length >= 8);
+  document.getElementById('req-upper').classList.toggle('met', /[A-Z]/.test(pass));
+  document.getElementById('req-lower').classList.toggle('met', /[a-z]/.test(pass));
+  document.getElementById('req-number').classList.toggle('met', /\d/.test(pass));
+  document.getElementById('req-special').classList.toggle('met', /[!@#$%^&*]/.test(pass));
+});
+
+// Form submission
+document.getElementById('signupForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const fullName = document.getElementById('fullName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const pass = document.getElementById('signupPass').value;
+  const confirmPass = document.getElementById('confirmPass').value;
+  const agreeTerms = document.getElementById('agreeTerms').checked;
+  
+  let hasError = false;
+  
+  // Clear previous errors
+  document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+  document.querySelectorAll('.form-input').forEach(el => el.classList.remove('error'));
+  
+  // Validation
+  if (fullName.length < 3) {
+    showError('nameError', 'Name must be at least 3 characters');
+    hasError = true;
+  }
+  
+  if (!email.includes('@')) {
+    showError('emailError', 'Invalid email address');
+    hasError = true;
+  }
+  
+  if (pass.length < 8) {
+    showError('passError', 'Password must be at least 8 characters');
+    hasError = true;
+  }
+  
+  if (!/[A-Z]/.test(pass) || !/[a-z]/.test(pass) || !/\d/.test(pass) || !/[!@#$%^&*]/.test(pass)) {
+    showError('passError', 'Password does not meet all requirements');
+    hasError = true;
+  }
+  
+  if (pass !== confirmPass) {
+    showError('confirmError', 'Passwords do not match');
+    hasError = true;
+  }
+  
+  if (!agreeTerms) {
+    showError('termsError', 'You must agree to the terms');
+    hasError = true;
+  }
+  
+  if (hasError) return;
+  
+  // Firebase signup
+  const btn = document.getElementById('signupBtn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  
+  try {
+    const userCred = await firebase.auth().createUserWithEmailAndPassword(email, pass);
+    
+    // Update profile with name
+    await userCred.user.updateProfile({ displayName: fullName });
+    
+    // Show success
+    document.getElementById('successMsg').classList.add('show');
+    
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 2000);
+    
+  } catch (error) {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    
+    if (error.code === 'auth/email-already-in-use') {
+      showError('emailError', 'Email already in use');
+    } else if (error.code === 'auth/weak-password') {
+      showError('passError', 'Password is too weak');
+    } else {
+      showError('passError', error.message);
+    }
+  }
+});
+
+function showError(elementId, message) {
+  const el = document.getElementById(elementId);
+  el.textContent = message;
+  el.classList.add('show');
+  
+  const inputId = elementId.replace('Error', '');
+  const input = document.getElementById(inputId) || 
+                document.getElementById('signup' + inputId.charAt(0).toUpperCase() + inputId.slice(1)) ||
+                document.getElementById('confirmPass');
+  if (input) input.classList.add('error');
+}
+
+// Background particles
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+bgCanvas.width = window.innerWidth;
+bgCanvas.height = window.innerHeight;
+
+const particles = Array.from({length: 50}, () => ({
+  x: Math.random() * bgCanvas.width,
+  y: Math.random() * bgCanvas.height,
+  vx: (Math.random() - 0.5) * 0.3,
+  vy: (Math.random() - 0.5) * 0.3,
+  r: Math.random() * 1 + 0.3,
+  a: Math.random() * 0.3 + 0.08
+}));
+
+function animate() {
+  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0 || p.x > bgCanvas.width) p.vx *= -1;
+    if (p.y < 0 || p.y > bgCanvas.height) p.vy *= -1;
+    bgCtx.beginPath();
+    bgCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    bgCtx.fillStyle = `rgba(0,229,255,${p.a})`;
+    bgCtx.fill();
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+
+window.addEventListener('resize', () => {
+  bgCanvas.width = window.innerWidth;
+  bgCanvas.height = window.innerHeight;
+});
+</script>
+</body>
+</html>
