@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raksha-Suraksha | Enterprise Tactical Command</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* 🚀 1. ENTERPRISE CSS RESET & VARIABLES */
+        :root {
+            --primary-bg: #0A1128;      /* Deep Navy */
+            --secondary-bg: #1C2541;    /* Slate Navy */
+            --accent-blue: #3A506B;     /* Muted Blue */
+            --trust-teal: #47E5BC;      /* Secure Teal */
+            --text-light: #F8FAFC;      /* Crisp White */
+            --text-muted: #94A3B8;      /* Slate Gray */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        
+        /* 🚀 2. LOCKED FOOTER ARCHITECTURE */
+        body {
+            display: flex; flex-direction: column; min-height: 100vh;
+            background-color: var(--primary-bg); color: var(--text-light);
+            overflow-x: hidden;
+        }
+
+        main { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+
+        /* 🚀 3. VIDEO BACKGROUND WITH FROSTED GLASS */
+        #bgVideo {
+            position: fixed; right: 0; bottom: 0;
+            min-width: 100%; min-height: 100%;
+            z-index: -2; object-fit: cover;
+        }
+        .video-overlay {
+            position: fixed; inset: 0; z-index: -1;
+            background: rgba(10, 17, 40, 0.75); /* Darkens the video */
+            backdrop-filter: blur(8px); /* Creates the premium glass look */
+        }
+
+        /* 🚀 4. ENTERPRISE SPLASH SCREEN */
+        #splash {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--primary-bg); display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        .splash-logo {
+            font-size: 3rem; margin-bottom: 20px;
+            animation: pulseLogo 2s infinite ease-in-out;
+        }
+        .splash-text {
+            font-size: 1.5rem; font-weight: 700; letter-spacing: 2px;
+            color: var(--trust-teal);
+        }
+        @keyframes pulseLogo {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+        }
+
+        /* 🚀 5. RESPONSIVE NAVBAR (Based on your sketch) */
+        .nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 5%; background: rgba(28, 37, 65, 0.4);
+            backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky; top: 0; z-index: 500;
+        }
+        .n-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .n-brand-icon { font-size: 1.5rem; }
+        .n-brand-name { font-weight: 800; font-size: 1.2rem; color: var(--text-light); letter-spacing: 1px;}
+        
+        .n-links { display: flex; gap: 30px; list-style: none; }
+        .n-links a {
+            color: var(--text-muted); text-decoration: none; font-weight: 500;
+            font-size: 0.95rem; transition: color 0.3s;
+        }
+        .n-links a:hover, .n-links a.active { color: var(--trust-teal); }
+
+        .n-auth-btn {
+            background: var(--trust-teal); color: var(--primary-bg);
+            padding: 10px 24px; border-radius: 6px; font-weight: 700;
+            border: none; cursor: pointer; transition: all 0.3s;
+        }
+        .n-auth-btn:hover { background: #38bda0; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(71, 229, 188, 0.3); }
+
+        /* Mobile Hamburger */
+        .burger { display: none; background: none; border: none; color: #FFF; font-size: 1.8rem; cursor: pointer; }
+
+        /* 🚀 6. HERO SECTION (Fluid Typography) */
+        .hero {
+            text-align: center; padding: 100px 5%; max-width: 1000px; margin: 0 auto;
+        }
+        .hero-badge {
+            display: inline-block; padding: 6px 16px; border-radius: 20px;
+            background: rgba(71, 229, 188, 0.1); color: var(--trust-teal);
+            font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(71, 229, 188, 0.3);
+            margin-bottom: 30px;
+        }
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4.5rem); /* Scales perfectly on all devices */
+            font-weight: 800; line-height: 1.1; margin-bottom: 24px;
+            background: linear-gradient(to right, #FFF, #94A3B8);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-desc {
+            font-size: clamp(1rem, 2vw, 1.25rem); color: var(--text-muted);
+            line-height: 1.6; margin-bottom: 40px; font-weight: 400;
+        }
+
+        /* 🚀 7. THE LOCKED FOOTER */
+        footer {
+            margin-top: auto; /* Pushes to bottom */
+            background: rgba(10, 17, 40, 0.9); border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 24px 5%; display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 15px; font-size: 0.85rem; color: var(--text-muted);
+        }
+        .ft-links { display: flex; gap: 20px; }
+        .ft-links a { color: var(--text-muted); text-decoration: none; transition: color 0.3s; }
+        .ft-links a:hover { color: var(--trust-teal); }
+
+        /* 🚀 8. LOGIN MODAL (Enterprise Style) */
+        .modal-wrap {
+            position: fixed; inset: 0; background: rgba(10, 17, 40, 0.8);
+            backdrop-filter: blur(10px); z-index: 2000; display: none;
+            justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s;
+        }
+        .modal-wrap.active { opacity: 1; display: flex; }
+        
+        .login-box {
+            background: #1C2541; border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px; padding: 40px; width: 100%; max-width: 400px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); position: relative;
+        }
+        .m-close {
+            position: absolute; top: 15px; right: 15px; background: none; border: none;
+            color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: 0.3s;
+        }
+        .m-close:hover { color: #FFF; }
+        
+        .m-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 25px; text-align: center; }
+        
+        .inp-group { margin-bottom: 20px; }
+        .inp-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+        .tac-input {
+            width: 100%; padding: 12px; border-radius: 6px; background: #0A1128;
+            border: 1px solid rgba(255,255,255,0.1); color: #FFF; font-size: 0.95rem;
+            transition: 0.3s; outline: none;
+        }
+        .tac-input:focus { border-color: var(--trust-teal); box-shadow: 0 0 0 3px rgba(71, 229, 188, 0.1); }
+        
+        .btn-login {
+            width: 100%; padding: 14px; background: var(--trust-teal); color: var(--primary-bg);
+            border: none; border-radius: 6px; font-weight: 700; font-size: 1rem;
+            cursor: pointer; transition: 0.3s; margin-top: 10px;
+        }
+        .btn-login:hover { background: #38bda0; }
+        .m-err { color: #EF4444; font-size: 0.85rem; display: block; text-align: center; margin-top: 15px; }
+        .m-links { display: flex; justify-content: space-between; margin-top: 20px; font-size: 0.85rem; }
+        .m-links a { color: var(--trust-teal); text-decoration: none; }
+
+        /* 🚀 9. MOBILE RESPONSIVENESS */
+        @media (max-width: 768px) {
+            .n-links { display: none; } /* Hide links on mobile for now */
+            .burger { display: block; }
+            footer { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="splash">
+        <div class="splash-logo">🛡️</div>
+        <div class="splash-text">RAKSHA-SURAKSHA</div>
+    </div>
+
+    <video autoplay loop muted playsinline id="bgVideo">
+        <source src="background.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
+    <nav class="nav">
+        <a href="#" class="n-brand">
+            <span class="n-brand-icon">🛡️</span>
+            <span class="n-brand-name">Raksha-Suraksha</span>
+        </a>
+        <ul class="n-links">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="capabilities.html">Capabilities</a></li>
+            <li><a href="dashboard.html">Main Dashboard</a></li>
+            <li><a href="faq.html">FAQs</a></li>
+        </ul>
+        <button class="n-auth-btn" onclick="openModal()">Agent Login</button>
+        <button class="burger">☰</button>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="hero-badge">Military-Grade Mobile Security</div>
+            <h1 class="hero-title">Command. Control. Protect.</h1>
+            <p class="hero-desc">
+                The ultimate enterprise command hub engineered to bridge physical mobile hardware with secure, real-time cloud analytics. 
+                Monitor assets, trigger hardware defense protocols, and establish tactical offline telemetry.
+            </p>
+            <button class="n-auth-btn" style="padding: 16px 32px; font-size: 1.1rem;" onclick="openModal()">Initialize Secure Terminal</button>
+        </section>
+    </main>
+
+    <footer>
+        <div class="ft-brand">© 2026 R.K Sentinel 3-Tier Tactical Command System</div>
+        <div class="ft-links">
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="trai.html">TRAI Compliance</a>
+        </div>
+    </footer>
+
+    <div class="modal-wrap" id="modal">
+        <div class="login-box">
+            <button class="m-close" onclick="closeModal()">×</button>
+            <div class="m-title">Secure Portal Access</div>
+            
+            <div class="inp-group">
+                <label class="inp-label">Agent Email</label>
+                <input type="email" id="agentEmail" class="tac-input" placeholder="agent@tactical.ops">
+            </div>
+            
+            <div class="inp-group">
+                <label class="inp-label">Passcode</label>
+                <input type="password" id="agentPass" class="tac-input" placeholder="••••••••">
+            </div>
+            
+            <button class="btn-login" id="loginBtn" onclick="loginAgent()">Authenticate</button>
+            <span class="m-err" id="loginErr"></span>
+
+            <div class="m-links">
+                <a href="forgot-password.html">Forgot Password?</a>
+                <a href="signup.html">Create Account →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. "ONCE-ONLY" SPLASH LOGIC
+        window.addEventListener('DOMContentLoaded', () => {
+            const splash = document.getElementById('splash');
+            
+            // If introPlayed exists in sessionStorage, skip the animation
+            if (sessionStorage.getItem('introPlayed')) {
+                splash.style.display = 'none';
+            } else {
+                // Play animation, then hide and set the flag
+                setTimeout(() => {
+                    splash.style.opacity = '0';
+                    setTimeout(() => { splash.style.display = 'none'; }, 800);
+                    sessionStorage.setItem('introPlayed', 'true');
+                }, 2500); // 2.5 seconds is the sweet spot for an enterprise intro
+            }
+        });
+
+        // 2. FIREBASE AUTH CONFIG
+        const fbCfg = { 
+            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", 
+            authDomain: "sentinel-vault-fb4b7.firebaseapp.com", 
+            projectId: "sentinel-vault-fb4b7", 
+            storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", 
+            messagingSenderId: "192301825793", 
+            appId: "1:192301825793:web:734530705f4084608fe500" 
+        };
+        firebase.initializeApp(fbCfg);
+        
+        // Routing fix: Send logged-in users straight to dashboard
+        firebase.auth().onAuthStateChanged(user => { 
+            if (user) { window.location.href = 'dashboard.html'; } 
+        });
+
+        // 3. LOGIN EXECUTION
+        function loginAgent() {
+            const email = document.getElementById('agentEmail').value;
+            const pass = document.getElementById('agentPass').value;
+            const btn = document.getElementById('loginBtn');
+            const err = document.getElementById('loginErr');
+            
+            btn.textContent = 'Authenticating...';
+            err.textContent = '';
+            
+            firebase.auth().signInWithEmailAndPassword(email, pass).catch(e => {
+                err.textContent = '⚠ ' + e.message;
+                btn.textContent = 'Authenticate';
+            });
+        }
+
+        // 4. MODAL CONTROLS
+        function openModal() { document.getElementById('modal').classList.add('active'); }
+        function closeModal() { document.getElementById('modal').classList.remove('active'); }
+        
+        // Close modal if clicking outside the box
+        document.getElementById('modal').addEventListener('click', function(e) { 
+            if (e.target === this) closeModal(); 
+        });
+    </script>
+</body>
+</html>
