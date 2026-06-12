@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raksha-Suraksha | Tactical Command</title>
+    
+    <!-- Firebase Core SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 🚀 1. TACTICAL VARIABLES */
+        :root {
+            --bg-deep: #030712;
+            --bg-panel: rgba(15, 23, 42, 0.8);
+            --cyan-glow: #00E5FF;
+            --blue-shield: #1D4ED8;
+            --orange-core: #FF6B35;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-line: rgba(0, 229, 255, 0.2);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; }
+        main { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 10;}
+
+        /* 🚀 2. RESTORED ORIGINAL PARTICLE BACKGROUND */
+        #particleCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
+        .grid-overlay {
+            position: fixed; inset: 0; z-index: -2; pointer-events: none;
+            background-image: linear-gradient(rgba(0, 229, 255, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 229, 255, 0.04) 1px, transparent 1px);
+            background-size: 60px 60px; background-color: rgba(3, 7, 18, 0.6); backdrop-filter: blur(2px);
+        }
+
+        /* 🚀 3. THE EXACT VIDEO INTRO (RADAR + TYPEWRITER) */
+        #splash {
+            position: fixed; inset: 0; background: #030712; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.8s ease-out;
+        }
+        
+        .radar-container {
+            position: relative; width: 180px; height: 180px;
+            display: flex; justify-content: center; align-items: center;
+            margin-bottom: 40px;
+        }
+        .radar-ring {
+            position: absolute; border-radius: 50%;
+            border: 2px solid var(--cyan-glow); opacity: 0;
+            animation: radarPing 3s infinite ease-out;
+        }
+        .r1 { width: 100%; height: 100%; animation-delay: 0s; }
+        .r2 { width: 100%; height: 100%; animation-delay: 1s; }
+        .r3 { width: 100%; height: 100%; animation-delay: 2s; }
+        
+        @keyframes radarPing {
+            0% { transform: scale(0.2); opacity: 1; border-width: 3px; }
+            100% { transform: scale(2.5); opacity: 0; border-width: 1px; }
+        }
+
+        .splash-shield {
+            width: 80px; height: 80px; z-index: 10;
+            animation: shieldPop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            filter: drop-shadow(0 0 20px rgba(0,229,255,0.8));
+        }
+        @keyframes shieldPop {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .typewriter-text {
+            font-family: 'Orbitron', sans-serif; font-size: clamp(1.5rem, 5vw, 3rem); font-weight: 900;
+            color: var(--cyan-glow); letter-spacing: 6px; text-shadow: 0 0 20px rgba(0,229,255,0.6);
+            overflow: hidden; border-right: 3px solid var(--cyan-glow); white-space: nowrap; margin: 0 auto;
+            width: 0; animation: typing 2.5s steps(20, end) 1s forwards, blink 0.75s step-end infinite;
+        }
+        @keyframes typing { from { width: 0; } to { width: 100%; } }
+        @keyframes blink { from, to { border-color: transparent; } 50% { border-color: var(--cyan-glow); } }
+
+        /* 🚀 4. RESPONSIVE UNIVERSAL NAVBAR */
+        .nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); 
+            border-bottom: 1px solid var(--border-line); position: relative; z-index: 500;
+        }
+        .brand { display: flex; align-items: center; gap: 15px; text-decoration: none; }
+        .brand-svg { width: 45px; height: 45px; filter: drop-shadow(0 0 8px rgba(0,229,255,0.4));}
+        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--text-main); letter-spacing: 2px;}
+        .brand-name span { color: var(--cyan-glow); }
+        
+        .nav-links { display: flex; gap: 30px; list-style: none; align-items: center; }
+        .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--cyan-glow); text-shadow: 0 0 8px rgba(0,229,255,0.5); }
+        
+        /* Special style for the PDF download link in nav */
+        .nav-dl-link { color: #00FF88 !important; border-bottom: 1px dashed #00FF88; padding-bottom: 2px; }
+        .nav-dl-link:hover { text-shadow: 0 0 8px #00FF88 !important; }
+
+        #authStateContainer { display: flex; gap: 15px; align-items: center; }
+        .agent-badge { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: #10B981; border: 1px solid rgba(16, 185, 129, 0.4); padding: 6px 12px; border-radius: 4px; background: rgba(16, 185, 129, 0.1); }
+        .auth-btn { background: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); border: 1px solid var(--cyan-glow); padding: 10px 24px; border-radius: 4px; font-weight: 700; cursor: pointer; transition: all 0.3s; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; text-transform: uppercase;}
+        .auth-btn:hover { background: var(--cyan-glow); color: #000; box-shadow: 0 0 20px rgba(0,229,255,0.4); }
+        .logout-btn { background: transparent; color: #EF4444; border: 1px solid #EF4444; padding: 10px 16px; border-radius: 4px; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Orbitron', sans-serif; text-transform: uppercase; font-size: 0.8rem;}
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.15); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+
+        .burger { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2rem; cursor: pointer; }
+
+        /* 🚀 5. ROLLING BANNER */
+        .rolling-banner { width: 100%; background: #00E5FF; color: #000; padding: 6px 0; font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; display: flex; overflow: hidden; white-space: nowrap; box-shadow: 0 2px 10px rgba(0,229,255,0.2); position: relative; z-index: 499; }
+        .marquee-content { display: inline-block; animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
+
+        /* 🚀 6. HERO SECTION */
+        .hero { text-align: center; padding: 80px 5%; max-width: 1100px; margin: 0 auto; }
+        .sys-status { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 20px; background: rgba(0, 255, 136, 0.1); border: 1px solid #00FF88; color: #00FF88; font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 1px; margin-bottom: 30px; }
+        .pulse-dot { width: 8px; height: 8px; background: #00FF88; border-radius: 50%; box-shadow: 0 0 10px #00FF88; animation: pulseDot 1.5s infinite; }
+        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        
+        .hero-title { font-family: 'Orbitron', sans-serif; font-size: clamp(2.5rem, 6vw, 5.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 24px; color: #FFF; text-transform: uppercase; letter-spacing: -1px; text-shadow: 0 0 20px rgba(0, 229, 255, 0.2); }
+        .hero-desc { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--text-muted); line-height: 1.6; margin-bottom: 40px; max-width: 800px; margin-inline: auto; }
+
+        .hero-actions { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .btn-secondary { background: transparent; color: var(--text-main); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); color: #FFF; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+
+        .metric-grid { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 60px; }
+        .metric { font-family: 'Orbitron', sans-serif; text-align: center; }
+        .m-val { font-size: 2.5rem; font-weight: 900; color: var(--cyan-glow); text-shadow: 0 0 15px rgba(0,229,255,0.5); }
+        .m-lab { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; display: block; margin-top: 5px;}
+
+        /* 🚀 7. LOCKED FOOTER */
+        footer { margin-top: auto; background: rgba(3, 7, 18, 0.9); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; color: var(--text-muted); position: relative; z-index: 10; }
+        .ft-links { display: flex; gap: 20px; font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 1px;}
+        .ft-links a { color: var(--text-muted); text-decoration: none; transition: 0.3s; }
+        .ft-links a:hover { color: var(--cyan-glow); }
+
+        /* 🚀 8. MULTI-STATE AUTH MODAL */
+        .modal-wrap { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(10px); z-index: 2000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; }
+        .modal-wrap.active { opacity: 1; display: flex; }
+        .auth-box { background: rgba(15, 23, 42, 0.95); border: 1px solid var(--cyan-glow); border-radius: 12px; padding: 40px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,229,255,0.15); position: relative; }
+        .m-close { position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: 0.3s; }
+        .m-close:hover { color: #FFF; }
+        
+        .m-title { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--cyan-glow); margin-bottom: 25px; text-align: center; font-weight: 800;}
+        .inp-group { margin-bottom: 20px; }
+        .inp-label { display: block; font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
+        .tac-input { width: 100%; padding: 14px; border-radius: 6px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: #FFF; font-size: 1rem; outline: none; transition: 0.3s; }
+        .tac-input:focus { border-color: var(--cyan-glow); box-shadow: 0 0 10px rgba(0, 229, 255, 0.2); }
+        .btn-submit { width: 100%; padding: 15px; background: var(--cyan-glow); color: #000; border: none; border-radius: 6px; font-weight: 800; font-family: 'Orbitron', sans-serif; font-size: 1rem; cursor: pointer; transition: 0.3s; margin-top: 10px; letter-spacing: 1px; }
+        .btn-submit:hover { background: #fff; box-shadow: 0 0 20px rgba(0,229,255,0.6); transform: translateY(-2px);}
+        
+        .auth-view { display: none; }
+        .auth-view.active { display: block; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .m-links { display: flex; justify-content: space-between; margin-top: 25px; font-family: 'Space Mono', monospace; font-size: 0.75rem; }
+        .m-links a { color: var(--text-muted); text-decoration: none; transition: 0.3s; cursor: pointer;}
+        .m-links a:hover { color: var(--cyan-glow); }
+        .m-err, .m-succ { font-family: 'Space Mono', monospace; font-size: 0.8rem; display: block; text-align: center; margin-top: 15px; min-height: 20px; }
+        .m-err { color: #EF4444; } .m-succ { color: #10B981; }
+
+        @media (max-width: 850px) { .nav-links { display: none; } #authStateContainer { flex-direction: column; gap: 5px; } footer { flex-direction: column; text-align: center; } }
+    </style>
+</head>
+<body>
+
+    <!-- 🚀 1. SVG SHIELD LOGO -->
+    <svg style="display:none;">
+        <symbol id="shield-logo" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/>
+            <path d="M12 5.5L6 7.5V11.5C6 15.2 8.5 18.6 12 19.5C15.5 18.6 18 15.2 18 11.5V7.5L12 5.5Z" fill="#FF6B35"/>
+            <path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="#FFFFFF"/>
+        </symbol>
+    </svg>
+
+    <!-- 🚀 2. RESTORED 3D RADAR + TYPEWRITER SPLASH -->
+    <div id="splash">
+        <div class="radar-container">
+            <div class="radar-ring r1"></div>
+            <div class="radar-ring r2"></div>
+            <div class="radar-ring r3"></div>
+            <svg class="splash-shield"><use href="#shield-logo"></use></svg>
+        </div>
+        <div class="typewriter-text">RAKSHA-SURAKSHA</div>
+    </div>
+
+    <!-- 🚀 3. RESTORED ORIGINAL FLOATING PARTICLE CANVAS -->
+    <canvas id="particleCanvas"></canvas>
+    <div class="grid-overlay"></div>
+
+    <!-- 🚀 4. UNIVERSAL NAVIGATION -->
+    <nav class="nav">
+        <a href="index.html" class="brand">
+            <svg class="brand-svg"><use href="#shield-logo"></use></svg>
+            <div class="brand-name">RAKSHA<span>-</span>SURAKSHA</div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">HOME</a></li>
+            <li><a href="capabilities.html">CAPABILITIES</a></li>
+            <li><a href="modules.html">MODULES</a></li>
+            <li><a href="faq.html">FAQS</a></li>
+            <!-- 📄 DIRECT PDF DOWNLOAD LINK IN NAVBAR -->
+            <li><a href="mad gradle.pdf" download class="nav-dl-link">📄 DOCS (PDF)</a></li>
+        </ul>
+        
+        <!-- Dynamic Auth Container -->
+        <div id="authStateContainer">
+            <button class="auth-btn" id="mainActionBtn" onclick="openModal('login')">SECURE LOGIN</button>
+        </div>
+    </nav>
+
+    <!-- 🚀 5. ROLLING BANNER -->
+    <div class="rolling-banner">
+        <div class="marquee-content">
+            🛡️ RAKSHA-SURAKSHA TACTICAL COMMAND SYSTEM &nbsp;&nbsp;|&nbsp;&nbsp; 📍 CURRENT NODE: HOME &nbsp;&nbsp;|&nbsp;&nbsp; ⚠️ SYSTEM STATUS: ALL NODES OPERATIONAL &nbsp;&nbsp;|&nbsp;&nbsp; 🛡️ RAKSHA-SURAKSHA TACTICAL COMMAND SYSTEM &nbsp;&nbsp;|&nbsp;&nbsp; 📍 CURRENT NODE: HOME &nbsp;&nbsp;|&nbsp;&nbsp; ⚠️ SYSTEM STATUS: ALL NODES OPERATIONAL
+        </div>
+    </div>
+
+    <!-- 🚀 6. MAIN HERO -->
+    <main>
+        <section class="hero">
+            <div class="sys-status"><span class="pulse-dot"></span> CONNECTION SECURED</div>
+            <h1 class="hero-title">Advanced Tactical Tracking & Security</h1>
+            <p class="hero-desc">
+                The ultimate command hub engineered to bridge physical mobile hardware with secure, real-time cloud analytics. Monitor, control, and dominate your assets from anywhere on Earth.
+            </p>
+            
+            <div class="hero-actions">
+                <button class="auth-btn" style="padding: 18px 40px; font-size: 1.1rem; background: rgba(0, 229, 255, 0.1);" onclick="handleHeroCTA()">INITIALIZE WEB TERMINAL</button>
+                
+                <!-- 📄 DIRECT PDF DOWNLOAD BUTTON IN HERO -->
+                <a href="mad gradle.pdf" download class="auth-btn btn-secondary" style="padding: 18px 40px; font-size: 1.1rem; text-decoration: none; display: inline-flex; align-items: center; gap: 10px;">
+                    📄 DOWNLOAD DOCS (PDF)
+                </a>
+            </div>
+
+            <div class="metric-grid">
+                <div class="metric"><span class="m-val">256<span style="font-size:1rem;">bit</span></span><span class="m-lab">Encryption</span></div>
+                <div class="metric"><span class="m-val">99.9<span style="font-size:1rem;">%</span></span><span class="m-lab">Uptime SLA</span></div>
+                <div class="metric"><span class="m-val">&lt;50<span style="font-size:1rem;">ms</span></span><span class="m-lab">Cmd Latency</span></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 🚀 7. LOCKED FOOTER -->
+    <footer>
+        <div>© 2026 R.K Sentinel 3-Tier Tactical Command System</div>
+        <div class="ft-links">
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="trai.html">TRAI Compliance</a>
+            <a href="mad gradle.pdf" download>Project Docs</a>
+        </div>
+    </footer>
+
+    <!-- 🚀 8. ALL-IN-ONE AUTH MODAL -->
+    <div class="modal-wrap" id="modal">
+        <div class="auth-box">
+            <button class="m-close" onclick="closeModal()">×</button>
+            
+            <!-- LOGIN VIEW -->
+            <div id="view-login" class="auth-view active">
+                <div class="m-title">AGENT LOGIN</div>
+                <div class="inp-group">
+                    <label class="inp-label">Agent ID (Email)</label>
+                    <input type="email" id="logEmail" class="tac-input" placeholder="agent@tactical.ops">
+                </div>
+                <div class="inp-group">
+                    <label class="inp-label">Passcode</label>
+                    <input type="password" id="logPass" class="tac-input" placeholder="••••••••">
+                </div>
+                <button class="btn-submit" id="btn-login-exec" onclick="execLogin()">AUTHENTICATE</button>
+                <span class="m-err" id="logErr"></span>
+                <div class="m-links">
+                    <a onclick="switchAuthView('reset')">Forgot Password?</a>
+                    <a onclick="switchAuthView('signup')">Register Agent →</a>
+                </div>
+            </div>
+
+            <!-- SIGNUP VIEW -->
+            <div id="view-signup" class="auth-view">
+                <div class="m-title">REGISTER AGENT</div>
+                <div class="inp-group">
+                    <label class="inp-label">Secure Email</label>
+                    <input type="email" id="regEmail" class="tac-input" placeholder="new.agent@tactical.ops">
+                </div>
+                <div class="inp-group">
+                    <label class="inp-label">Master Passcode (Min 8 Chars)</label>
+                    <input type="password" id="regPass" class="tac-input" placeholder="••••••••">
+                </div>
+                <button class="btn-submit" id="btn-reg-exec" onclick="execSignup()">CREATE SECURE ACCOUNT</button>
+                <span class="m-err" id="regErr"></span>
+                <div class="m-links">
+                    <a onclick="switchAuthView('login')">← Back to Login</a>
+                </div>
+            </div>
+
+            <!-- RESET VIEW -->
+            <div id="view-reset" class="auth-view">
+                <div class="m-title">RESET PASSCODE</div>
+                <div class="inp-group">
+                    <label class="inp-label">Registered Email</label>
+                    <input type="email" id="resEmail" class="tac-input" placeholder="agent@tactical.ops">
+                </div>
+                <button class="btn-submit" id="btn-res-exec" onclick="execReset()">SEND OVERRIDE LINK</button>
+                <span class="m-err" id="resErr"></span>
+                <span class="m-succ" id="resSucc"></span>
+                <div class="m-links">
+                    <a onclick="switchAuthView('login')">← Back to Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🚀 CORE LOGIC SCRIPTS -->
+    <script>
+        // --- 1. 7-SECOND ONCE-ONLY INTRO LOGIC ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const splash = document.getElementById('splash');
+            if (sessionStorage.getItem('introPlayed')) {
+                splash.style.display = 'none'; 
+            } else {
+                setTimeout(() => {
+                    splash.style.opacity = '0';
+                    setTimeout(() => { splash.style.display = 'none'; }, 800);
+                    sessionStorage.setItem('introPlayed', 'true');
+                }, 7000); // Wait for the Radar & Typewriter animation
+            }
+        });
+
+        // --- 2. RESTORED ORIGINAL CLAUDE PARTICLE BACKGROUND (No Lines) ---
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        
+        const particles = Array.from({length: 50}, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.3,
+            r: Math.random() * 1.5 + 0.5,
+            a: Math.random() * 0.4 + 0.1
+        }));
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 229, 255, ${p.a})`;
+                ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+        // --- 3. FIREBASE CONFIG & AUTH STATE MANAGER ---
+        const fbCfg = { 
+            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" 
+        };
+        firebase.initializeApp(fbCfg);
+        
+        let currentUser = null;
+
+        firebase.auth().onAuthStateChanged(user => { 
+            currentUser = user;
+            const container = document.getElementById('authStateContainer');
+            if (user) { 
+                const agentName = user.email.split('@')[0].toUpperCase();
+                container.innerHTML = `
+                    <span class="agent-badge">AGENT: ${agentName}</span>
+                    <button class="auth-btn" onclick="window.location.href='dashboard.html'">ENTER DASHBOARD</button>
+                    <button class="logout-btn" onclick="firebase.auth().signOut()">SWITCH ACCOUNT</button>
+                `;
+            } else {
+                container.innerHTML = `<button class="auth-btn" onclick="openModal('login')">SECURE LOGIN</button>`;
+            }
+        });
+
+        function handleHeroCTA() {
+            if (currentUser) { window.location.href = 'dashboard.html'; } 
+            else { openModal('login'); }
+        }
+
+        // --- 4. AUTH MODAL LOGIC ---
+        function openModal(view) { switchAuthView(view); document.getElementById('modal').classList.add('active'); }
+        function closeModal() { document.getElementById('modal').classList.remove('active'); }
+        document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+
+        function switchAuthView(viewId) {
+            document.querySelectorAll('.auth-view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+            document.querySelectorAll('.m-err, .m-succ').forEach(e => e.textContent = '');
+        }
+
+        // --- 5. FIREBASE EXECUTIONS ---
+        function execLogin() {
+            const email = document.getElementById('logEmail').value;
+            const pass = document.getElementById('logPass').value;
+            const btn = document.getElementById('btn-login-exec');
+            const err = document.getElementById('logErr');
+            
+            btn.textContent = 'VERIFYING...'; err.textContent = '';
+            firebase.auth().signInWithEmailAndPassword(email, pass)
+                .then(() => { window.location.href = 'dashboard.html'; })
+                .catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'AUTHENTICATE'; });
+        }
+
+        function execSignup() {
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+            const btn = document.getElementById('btn-reg-exec');
+            const err = document.getElementById('regErr');
+            
+            if(pass.length < 8) { err.textContent = '⚠ Passcode must be at least 8 characters.'; return; }
+
+            btn.textContent = 'ENCRYPTING...'; err.textContent = '';
+            firebase.auth().createUserWithEmailAndPassword(email, pass)
+                .then(() => { window.location.href = 'dashboard.html'; })
+                .catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'CREATE SECURE ACCOUNT'; });
+        }
+
+        function execReset() {
+            const email = document.getElementById('resEmail').value;
+            const btn = document.getElementById('btn-res-exec');
+            const err = document.getElementById('resErr');
+            const succ = document.getElementById('resSucc');
+            
+            btn.textContent = 'TRANSMITTING...'; err.textContent = ''; succ.textContent = '';
+            firebase.auth().sendPasswordResetEmail(email)
+                .then(() => { succ.textContent = '✓ Override link transmitted to inbox.'; btn.textContent = 'SEND OVERRIDE LINK'; })
+                .catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'SEND OVERRIDE LINK'; });
+        }
+    </script>
+</body>
+</html>
+
