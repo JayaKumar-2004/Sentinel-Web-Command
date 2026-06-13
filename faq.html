@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raksha-Suraksha | FAQs</title>
+    
+    <!-- Firebase Core SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <!-- Premium Tech Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 🚀 1. CORE VARIABLES & RESET */
+        :root {
+            --bg-deep: #030712;
+            --bg-panel: rgba(15, 23, 42, 0.7);
+            --cyan-glow: #00E5FF;
+            --blue-shield: #1D4ED8;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-line: rgba(0, 229, 255, 0.2);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; }
+        main { flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; position: relative; z-index: 10; padding: 60px 5%; max-width: 1200px; margin: 0 auto; width: 100%;}
+
+        /* 🚀 2. INTERACTIVE CURSOR BACKGROUND */
+        #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
+        .grid-overlay {
+            position: fixed; inset: 0; z-index: -2; pointer-events: none;
+            background-image: linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px; background-color: rgba(3, 7, 18, 0.7); backdrop-filter: blur(3px);
+        }
+
+        /* 🚀 3. STRICT DESKTOP/MOBILE SEPARATION */
+        .desktop-nav { display: flex; align-items: center; }
+        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; }
+        @media (max-width: 800px) { .desktop-nav { display: none !important; } .mobile-nav-btn { display: block !important; } }
+
+        /* 🚀 4. RESPONSIVE NAVBAR */
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-line); position: relative; z-index: 500; }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand-svg { width: 40px; height: 40px; filter: drop-shadow(0 0 8px rgba(0,229,255,0.5));}
+        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--text-main); letter-spacing: 2px;}
+        .brand-name span { color: var(--cyan-glow); }
+        .nav-links { display: flex; gap: 25px; list-style: none; margin-right: 25px; }
+        .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--cyan-glow); text-shadow: 0 0 8px rgba(0,229,255,0.5); }
+
+        .agent-badge { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: #10B981; border: 1px solid rgba(16, 185, 129, 0.4); padding: 6px 12px; border-radius: 4px; background: rgba(16, 185, 129, 0.1); margin-right: 15px;}
+        .auth-btn { background: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); border: 1px solid var(--cyan-glow); padding: 10px 24px; border-radius: 4px; font-weight: 700; cursor: pointer; transition: all 0.3s; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; text-transform: uppercase;}
+        .auth-btn:hover { background: var(--cyan-glow); color: #000; box-shadow: 0 0 20px rgba(0,229,255,0.6); transform: scale(1.05); }
+        .logout-btn { background: transparent; color: #EF4444; border: 1px solid #EF4444; padding: 10px 16px; border-radius: 4px; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; margin-left: 10px;}
+
+        /* 🚀 5. MOBILE SLIDE-OUT MENU */
+        .mobile-overlay { position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: rgba(10, 15, 28, 0.98); backdrop-filter: blur(20px); z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-left: 1px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 30px; }
+        .mobile-overlay.active { right: 0; }
+        .m-nav-close { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 2.5rem; color: var(--text-muted); cursor: pointer; }
+        .m-nav-links { list-style: none; display: flex; flex-direction: column; gap: 25px; }
+        .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; transition: 0.3s; display: block; }
+        .m-nav-links a:hover, .m-nav-links a.active { color: var(--cyan-glow); }
+
+        /* 🚀 6. ROLLING BANNER */
+        .rolling-banner { width: 100%; background: #00E5FF; color: #000; padding: 6px 0; font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; display: flex; overflow: hidden; white-space: nowrap; box-shadow: 0 2px 10px rgba(0,229,255,0.2); position: relative; z-index: 499; }
+        .marquee-content { display: inline-block; animation: marquee 25s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
+
+        /* 🚀 7. PAGE HEADERS */
+        .s-label { font-family: 'Space Mono', monospace; font-size: 0.85rem; letter-spacing: 3px; color: var(--cyan-glow); text-transform: uppercase; margin-bottom: 12px; text-align: center;}
+        .s-title { font-family: 'Orbitron', sans-serif; font-size: clamp(2rem, 5vw, 4rem); font-weight: 900; line-height: 1.1; margin-bottom: 16px; color: #FFF; text-shadow: 0 0 20px rgba(0, 229, 255, 0.2); text-transform: uppercase; text-align: center;}
+        .s-desc { font-size: 1.1rem; color: var(--text-muted); max-width: 800px; line-height: 1.6; margin-bottom: 60px; text-align: center; margin-inline: auto;}
+
+        /* 🚀 8. TACTICAL FAQ ACCORDION */
+        .faq-container { display: flex; flex-direction: column; gap: 15px; margin-bottom: 80px; width: 100%; max-width: 900px; margin-inline: auto; }
+        .faq-item { background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-line); border-radius: 8px; backdrop-filter: blur(10px); overflow: hidden; transition: all 0.3s; }
+        .faq-item:hover { border-color: var(--cyan-glow); box-shadow: 0 5px 20px rgba(0,229,255,0.1); }
+        .faq-question { padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--text-main); letter-spacing: 1px; transition: 0.3s;}
+        .faq-question:hover { color: var(--cyan-glow); }
+        .faq-question::after { content: '+'; color: var(--cyan-glow); font-family: 'Space Mono', monospace; font-size: 1.8rem; transition: transform 0.3s; font-weight: 400;}
+        
+        .faq-item.active .faq-question::after { transform: rotate(45deg); color: #FFF; }
+        .faq-item.active { border-color: var(--cyan-glow); background: rgba(0, 229, 255, 0.05); }
+        
+        .faq-answer { max-height: 0; padding: 0 25px; opacity: 0; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; transition: all 0.4s ease; }
+        .faq-item.active .faq-answer { max-height: 500px; padding-bottom: 20px; opacity: 1; margin-top: 10px; }
+        .faq-answer strong { color: var(--cyan-glow); }
+
+        /* 🚀 9. LOCKED FOOTER */
+        footer { margin-top: auto; background: rgba(3, 7, 18, 0.95); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; color: var(--text-muted); position: relative; z-index: 10; }
+        .ft-links { display: flex; gap: 20px; font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 1px;}
+        .ft-links a { color: var(--text-muted); text-decoration: none; transition: 0.3s; }
+        .ft-links a:hover { color: var(--cyan-glow); }
+
+        /* 🚀 10. UNIFIED AUTH MODAL */
+        .modal-wrap { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.9); backdrop-filter: blur(10px); z-index: 4000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; padding: 20px; }
+        .modal-wrap.active { opacity: 1; display: flex; }
+        .auth-box { background: rgba(10, 15, 28, 0.95); border: 1px solid var(--cyan-glow); border-radius: 12px; padding: 40px; width: 100%; max-width: 420px; box-shadow: 0 0 50px rgba(0,229,255,0.2); position: relative; }
+        .m-close-modal { position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: 0.3s; }
+        .m-close-modal:hover { color: #FFF; }
+        .m-title { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--cyan-glow); margin-bottom: 25px; text-align: center; font-weight: 800; letter-spacing: 1px;}
+        .inp-group { margin-bottom: 20px; }
+        .inp-label { display: block; font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
+        .tac-input { width: 100%; padding: 14px; border-radius: 6px; background: rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); color: #FFF; font-size: 1rem; outline: none; transition: 0.3s; }
+        .tac-input:focus { border-color: var(--cyan-glow); box-shadow: 0 0 10px rgba(0, 229, 255, 0.3); }
+        .btn-submit { width: 100%; padding: 15px; background: var(--cyan-glow); color: #000; border: none; border-radius: 6px; font-weight: 800; font-family: 'Orbitron', sans-serif; font-size: 1rem; cursor: pointer; transition: 0.3s; margin-top: 10px; letter-spacing: 1px; }
+        .btn-submit:hover { background: #fff; box-shadow: 0 0 20px rgba(0,229,255,0.6); transform: translateY(-2px);}
+        
+        .auth-view { display: none; }
+        .auth-view.active { display: block; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .m-links { display: flex; justify-content: space-between; margin-top: 25px; font-family: 'Space Mono', monospace; font-size: 0.75rem; }
+        .m-links a { color: var(--text-muted); text-decoration: none; transition: 0.3s; cursor: pointer;}
+        .m-links a:hover { color: var(--cyan-glow); }
+        .m-err, .m-succ { font-family: 'Space Mono', monospace; font-size: 0.8rem; display: block; text-align: center; margin-top: 15px; min-height: 20px; }
+        .m-err { color: #EF4444; } .m-succ { color: #10B981; }
+
+        @media (max-width: 800px) { footer { flex-direction: column; text-align: center; } }
+    </style>
+</head>
+<body>
+
+    <!-- 🚀 SVG SHIELD TEMPLATE -->
+    <svg style="display:none;">
+        <symbol id="shield-logo" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/>
+            <path d="M12 5.5L6 7.5V11.5C6 15.2 8.5 18.6 12 19.5C15.5 18.6 18 15.2 18 11.5V7.5L12 5.5Z" fill="#FF6B35"/>
+            <path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="#FFFFFF"/>
+        </symbol>
+    </svg>
+
+    <!-- 🚀 INTERACTIVE MOUSE CANVAS -->
+    <canvas id="interactiveCanvas"></canvas>
+    <div class="grid-overlay"></div>
+
+    <!-- 🚀 UNIVERSAL NAVIGATION -->
+    <nav class="nav">
+        <a href="index.html" class="brand">
+            <svg class="brand-svg"><use href="#shield-logo"></use></svg>
+            <div class="brand-name">RAKSHA<span>-</span>SURAKSHA</div>
+        </a>
+
+        <!-- DESKTOP SPECIFIC NAV -->
+        <div class="desktop-nav" id="desktopNavContainer">
+            <ul class="nav-links">
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="capabilities.html">CAPABILITIES</a></li>
+                <li><a href="modules.html">MODULES</a></li>
+                <li><a href="faq.html" class="active">FAQS</a></li>
+            </ul>
+            <div id="desktopAuthState">
+                <button class="auth-btn" onclick="openModal('login')">SECURE LOGIN</button>
+            </div>
+        </div>
+
+        <!-- MOBILE SPECIFIC NAV BUTTON -->
+        <button class="mobile-nav-btn" onclick="toggleMobileNav()">☰</button>
+    </nav>
+
+    <!-- 🚀 MOBILE SLIDE-OUT MENU -->
+    <div class="mobile-overlay" id="mobileNav">
+        <button class="m-nav-close" onclick="toggleMobileNav()">×</button>
+        <ul class="m-nav-links">
+            <li><a href="index.html">HOME</a></li>
+            <li><a href="capabilities.html">CAPABILITIES</a></li>
+            <li><a href="modules.html">MODULES</a></li>
+            <li><a href="faq.html" class="active">FAQS</a></li>
+        </ul>
+        <div id="mobileAuthState" style="margin-top: 40px; border-top: 1px solid rgba(0,229,255,0.2); padding-top: 30px;">
+            <button class="auth-btn" style="width: 100%;" onclick="openModal('login'); toggleMobileNav();">SECURE LOGIN</button>
+        </div>
+    </div>
+
+    <!-- 🚀 ROLLING BANNER -->
+    <div class="rolling-banner">
+        <div class="marquee-content">
+            🛡️ RAKSHA-SURAKSHA TACTICAL COMMAND SYSTEM &nbsp;&nbsp;|&nbsp;&nbsp; 📍 CURRENT NODE: FAQS &nbsp;&nbsp;|&nbsp;&nbsp; ⚠️ SYSTEM STATUS: ALL NODES OPERATIONAL &nbsp;&nbsp;|&nbsp;&nbsp; 🛡️ RAKSHA-SURAKSHA TACTICAL COMMAND SYSTEM &nbsp;&nbsp;|&nbsp;&nbsp; 📍 CURRENT NODE: FAQS &nbsp;&nbsp;|&nbsp;&nbsp; ⚠️ SYSTEM STATUS: ALL NODES OPERATIONAL
+        </div>
+    </div>
+
+    <!-- 🚀 MAIN CONTENT -->
+    <main>
+        <div class="s-label">KNOWLEDGE BASE</div>
+        <h2 class="s-title">Frequently Asked Questions</h2>
+        <p class="s-desc">Access classified intelligence and operational directives regarding the Raksha-Suraksha Tactical Command System's architecture, fallbacks, and security protocols.</p>
+
+        <!-- 🚀 FAQ ACCORDION -->
+        <div class="faq-container">
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">1. What is the Raksha-Suraksha Command System?</div>
+                <div class="faq-answer">
+                    It is an elite bidirectional command-and-control (C2) platform. It allows authorized agents to remotely monitor, track, and secure physical mobile hardware using a secure web interface connected to cloud analytics.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">2. How does the Offline SMS Fallback work?</div>
+                <div class="faq-answer">
+                    If the target mobile device loses internet connectivity, the web terminal can dispatch <strong>encrypted SMS payloads</strong>. The companion Android app intercepts these hidden texts and triggers hardware actions (like locking the screen or sounding an alarm) entirely offline.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">3. Is my location data secure?</div>
+                <div class="faq-answer">
+                    Absolutely. All data transit uses <strong>256-bit TLS encryption</strong>. The Firebase Realtime Database is locked behind strict security rules, ensuring only authenticated agents can read or write coordinate streams.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">4. What permissions does the Android app require?</div>
+                <div class="faq-answer">
+                    To execute advanced tactical operations, the companion app requires <strong>Device Administrator</strong> rights, background location access, and SMS reception permissions to facilitate the offline bridge.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">5. Can a thief just uninstall the app?</div>
+                <div class="faq-answer">
+                    No. Because the app is granted Device Administrator privileges during initial setup, it is completely locked into the operating system. It cannot be forcefully uninstalled or force-stopped without entering the agent's <strong>Master Passcode</strong>.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">6. Does continuous GPS tracking drain the battery?</div>
+                <div class="faq-answer">
+                    The system utilizes dynamic WAKE_LOCK algorithms. By default, coordinates are fetched efficiently to balance accuracy with power consumption, preserving the hardware's operational lifespan in the field.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">7. Can I manage multiple devices from one account?</div>
+                <div class="faq-answer">
+                    Yes. The App Linking Bridge allows a single command node (your dashboard account) to authorize and manage telemetry streams from multiple physical devices simultaneously.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">8. What is the "Tier-3 Vault"?</div>
+                <div class="faq-answer">
+                    The Tier-3 Vault is a restricted-access cloud sector designed to store sensitive evidence records, intercepted audio logs, and high-risk operational data captured from the field hardware.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">9. What happens to tracking if the device is powered off?</div>
+                <div class="faq-answer">
+                    The web dashboard will immediately log a <strong>Connection Terminated</strong> status and freeze the map on the last known coordinates WSS ping. The WSS bridge will instantly re-establish the second the hardware boots up.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">10. How do I recover a forgotten Master Passcode?</div>
+                <div class="faq-answer">
+                    Navigate to the <strong>Secure Login</strong> portal and click "Forgot Password". Provide your registered Agent Email, and the Firebase WSS server will transmit a secure, time-sensitive override link to your inbox.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">11. Do I need to pay for a subscription?</div>
+                <div class="faq-answer">
+                    The core framework, including SMS fallback systems and standard WSS telemetry mapping, is accessible without subscription during the initial deployment phase.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">12. Which Android versions are supported?</div>
+                <div class="faq-answer">
+                    The Raksha-Suraksha tactical client (Sentinel-X) requires <strong>Android 8.0 (Oreo)</strong> or higher to ensure compatibility with our background service restrictions and WSS bridging protocols.
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 🚀 LOCKED FOOTER -->
+    <footer>
+        <div>© 2026 R.K Sentinel 3-Tier Tactical Command System</div>
+        <div class="ft-links">
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="trai.html">TRAI Compliance</a>
+        </div>
+    </footer>
+
+    <!-- 🚀 ALL-IN-ONE AUTH MODAL -->
+    <div class="modal-wrap" id="modal">
+        <div class="auth-box">
+            <button class="m-close-modal" onclick="closeModal()">×</button>
+            
+            <!-- LOGIN VIEW -->
+            <div id="view-login" class="auth-view active">
+                <div class="m-title">AGENT LOGIN</div>
+                <div class="inp-group">
+                    <label class="inp-label">Agent ID (Email)</label>
+                    <input type="email" id="logEmail" class="tac-input" placeholder="agent@tactical.ops">
+                </div>
+                <div class="inp-group">
+                    <label class="inp-label">Passcode</label>
+                    <input type="password" id="logPass" class="tac-input" placeholder="••••••••">
+                </div>
+                <button class="btn-submit" id="btn-login-exec" onclick="execLogin()">AUTHENTICATE</button>
+                <span class="m-err" id="logErr"></span>
+                <div class="m-links">
+                    <a onclick="switchAuthView('reset')">Forgot Password?</a>
+                    <a onclick="switchAuthView('signup')">Register Agent →</a>
+                </div>
+            </div>
+
+            <!-- SIGNUP VIEW -->
+            <div id="view-signup" class="auth-view">
+                <div class="m-title">REGISTER AGENT</div>
+                <div class="inp-group">
+                    <label class="inp-label">Secure Email</label>
+                    <input type="email" id="regEmail" class="tac-input" placeholder="new.agent@tactical.ops">
+                </div>
+                <div class="inp-group">
+                    <label class="inp-label">Master Passcode (Min 8 Chars)</label>
+                    <input type="password" id="regPass" class="tac-input" placeholder="••••••••">
+                </div>
+                <button class="btn-submit" id="btn-reg-exec" onclick="execSignup()">CREATE SECURE ACCOUNT</button>
+                <span class="m-err" id="regErr"></span>
+                <div class="m-links">
+                    <a onclick="switchAuthView('login')">← Back to Login</a>
+                </div>
+            </div>
+
+            <!-- RESET VIEW -->
+            <div id="view-reset" class="auth-view">
+                <div class="m-title">RESET PASSCODE</div>
+                <div class="inp-group">
+                    <label class="inp-label">Registered Email</label>
+                    <input type="email" id="resEmail" class="tac-input" placeholder="agent@tactical.ops">
+                </div>
+                <button class="btn-submit" id="btn-res-exec" onclick="execReset()">SEND OVERRIDE LINK</button>
+                <span class="m-err" id="resErr"></span>
+                <span class="m-succ" id="resSucc"></span>
+                <div class="m-links">
+                    <a onclick="switchAuthView('login')">← Back to Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🚀 JAVASCRIPT LOGIC -->
+    <script>
+        // 1. FAQ ACCORDION LOGIC
+        function toggleFAQ(element) {
+            const item = element.parentElement;
+            const isActive = item.classList.contains('active');
+            
+            // Close all other FAQs
+            document.querySelectorAll('.faq-item').forEach(faq => faq.classList.remove('active'));
+            
+            // Open the clicked one if it wasn't already open
+            if (!isActive) {
+                item.classList.add('active');
+            }
+        }
+
+        // 2. MOBILE MENU TOGGLE
+        function toggleMobileNav() {
+            document.getElementById('mobileNav').classList.toggle('active');
+        }
+
+        // 3. INTERACTIVE CURSOR PARTICLES
+        const canvas = document.getElementById('interactiveCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        
+        let particles = [];
+        let mouse = { x: null, y: null, radius: 150 };
+
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
+        window.addEventListener('touchmove', (e) => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; });
+        window.addEventListener('touchend', () => { mouse.x = undefined; mouse.y = undefined; });
+
+        for (let i = 0; i < 90; i++) {
+            particles.push({
+                x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.8, vy: (Math.random() - 0.5) * 0.8,
+                size: Math.random() * 2 + 0.5
+            });
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.x += p.vx; p.y += p.vy;
+                
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 229, 255, 0.6)'; ctx.fill();
+
+                if(mouse.x != null) {
+                    let dx = mouse.x - p.x; let dy = mouse.y - p.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < mouse.radius) {
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y);
+                        ctx.strokeStyle = `rgba(0, 229, 255, ${1 - distance/mouse.radius})`;
+                        ctx.lineWidth = 1; ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+        // 4. FIREBASE AUTHENTICATION
+        const fbCfg = { 
+            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" 
+        };
+        firebase.initializeApp(fbCfg);
+        
+        let currentUser = null;
+
+        firebase.auth().onAuthStateChanged(user => { 
+            currentUser = user;
+            const dContainer = document.getElementById('desktopAuthState');
+            const mContainer = document.getElementById('mobileAuthState');
+            
+            if (user) { 
+                const agentName = user.email.split('@')[0].toUpperCase();
+                
+                dContainer.innerHTML = `
+                    <span class="agent-badge">AGENT: ${agentName}</span>
+                    <button class="auth-btn" onclick="window.location.href='dashboard.html'">DASHBOARD</button>
+                    <button class="logout-btn" onclick="firebase.auth().signOut()">LOGOUT</button>
+                `;
+                
+                mContainer.innerHTML = `
+                    <span class="agent-badge" style="display:block; margin-bottom:15px; text-align:center;">AGENT: ${agentName}</span>
+                    <button class="auth-btn" style="width:100%; margin-bottom:15px;" onclick="window.location.href='dashboard.html'">ENTER DASHBOARD</button>
+                    <button class="logout-btn" style="width:100%;" onclick="firebase.auth().signOut()">LOGOUT</button>
+                `;
+            } else {
+                dContainer.innerHTML = `<button class="auth-btn" onclick="openModal('login')">SECURE LOGIN</button>`;
+                mContainer.innerHTML = `<button class="auth-btn" style="width: 100%;" onclick="openModal('login'); toggleMobileNav();">SECURE LOGIN</button>`;
+            }
+        });
+
+        // 5. MODAL UI CONTROLS
+        function openModal(view) { switchAuthView(view); document.getElementById('modal').classList.add('active'); }
+        function closeModal() { document.getElementById('modal').classList.remove('active'); }
+        document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+
+        function switchAuthView(viewId) {
+            document.querySelectorAll('.auth-view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+            document.querySelectorAll('.m-err, .m-succ').forEach(e => e.textContent = '');
+        }
+
+        // 6. FIREBASE EXECUTIONS
+        function execLogin() {
+            const email = document.getElementById('logEmail').value;
+            const pass = document.getElementById('logPass').value;
+            const btn = document.getElementById('btn-login-exec');
+            const err = document.getElementById('logErr');
+            
+            btn.textContent = 'VERIFYING...'; err.textContent = '';
+            firebase.auth().signInWithEmailAndPassword(email, pass)
+                .then(() => { window.location.href = 'dashboard.html'; })
+                .catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'AUTHENTICATE'; });
+        }
+
+        function execSignup() {
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+            const btn = document.getElementById('btn-reg-exec');
+            const err = document.getElementById('regErr');
+            
+            if(pass.length < 8) { err.textContent = '⚠ Passcode must be at least 8 characters.'; return; }
+
+            btn.textContent = 'ENCRYPTING...'; err.textContent = '';
+            firebase.auth().createUserWithEmailAndPassword(email, pass)
+                .then(() => { window.location.href = 'dashboard.html'; })
+                .catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'CREATE SECURE ACCOUNT'; });
+        }
+
+        function execReset() {
+            const email = document.getElementById('resEmail').value;
+            const btn = document.getElementById('btn-res-exec');
+            const err = document.getElementById('resErr');
+            const succ = document.getElementById('resSucc');
+            
+            btn.textContent = 'TRANSMITTING...'; err.textContent = ''; succ.textContent = '';
+            firebase.auth().sendPasswordResetEmail(email)
+                .then(() => { succ.textContent = '✓ Override link transmitted to inbox.'; btn.textContent = 'SEND OVERRIDE LINK'; })
+                .catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'SEND OVERRIDE LINK'; });
+        }
+    </script>
+</body>
+  </html>
