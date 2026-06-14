@@ -63,7 +63,7 @@
         .brand-name span { color: #FF6B35; }
         
         .desktop-nav { display: flex; align-items: center; gap: 20px; flex-wrap: nowrap;}
-        .nav-links { display: flex; gap: 20px; list-style: none; margin-right: 10px; }
+        .nav-links { display: flex; gap: 25px; list-style: none; margin-right: 15px; }
         .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700; white-space: nowrap;}
         .nav-links a:hover, .nav-links a.active { color: var(--cyan-glow); text-shadow: 0 0 8px var(--shadow-color); }
 
@@ -106,7 +106,7 @@
         .m-nav-close { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 2.5rem; color: var(--text-muted); cursor: pointer; }
         .m-nav-links { list-style: none; display: flex; flex-direction: column; gap: 25px; }
         .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; transition: 0.3s; display: block; font-weight: 700;}
-        .m-nav-links a:hover, .m-nav-links a.active { color: var(--cyan-glow); }
+        .m-nav-links a:hover { color: var(--cyan-glow); }
 
         /* 🚀 5. MAIN CONTENT & GRID */
         main { flex-grow: 1; padding: 120px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; }
@@ -151,7 +151,8 @@
 
         footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); position: relative; z-index: 10; margin-top: auto;}
 
-        @media (max-width: 1150px) {
+        /* 🔥 HOME PAGE IDENTICAL BREAKPOINT FIX */
+        @media (max-width: 850px) {
             .desktop-nav { display: none !important; }
             .mobile-nav-btn { display: block !important; }
             .brand-name { font-size: 1.2rem; }
@@ -176,7 +177,7 @@
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
-    <!-- 🚀 SMART TOP NAVBAR (Updated) -->
+    <!-- 🚀 SMART TOP NAVBAR -->
     <nav class="nav">
         <a href="index.html" class="brand">
             <svg class="brand-svg"><use href="#shield-logo"></use></svg>
@@ -199,7 +200,7 @@
         </div>
     </nav>
 
-    <!-- 🚀 MOBILE OVERLAY MENU (Updated) -->
+    <!-- 🚀 MOBILE OVERLAY MENU -->
     <div class="mobile-overlay" id="mobileNav">
         <button class="m-nav-close" onclick="toggleMobileNav()">×</button>
         <ul class="m-nav-links">
@@ -324,7 +325,7 @@
             localStorage.setItem('tactical_theme', newTheme);
         }
         function updateMobileThemeBtnVis() {
-            if(window.innerWidth <= 1150) { document.getElementById('themeBtnMob').style.display = 'flex'; } 
+            if(window.innerWidth <= 850) { document.getElementById('themeBtnMob').style.display = 'flex'; } 
             else { document.getElementById('themeBtnMob').style.display = 'none'; }
         }
         initTheme(); window.addEventListener('resize', updateMobileThemeBtnVis);
@@ -406,4 +407,4 @@
         });
     </script>
 </body>
-                        </html>
+</html>
