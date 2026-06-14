@@ -8,45 +8,29 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         /* 🚀 THEME VARIABLES */
-        :root[data-theme="dark"] { --bg-deep: #030712; --bg-panel: rgba(15, 23, 42, 0.85); --cyan-glow: #00E5FF; --text-main: #F8FAFC; --text-muted: #94A3B8; --border-line: rgba(0, 229, 255, 0.2); --shadow-color: rgba(0, 229, 255, 0.3); --danger: #EF4444; --danger-bg: rgba(239, 68, 68, 0.1); --warning: #F59E0B; --warning-bg: rgba(245, 158, 11, 0.1); --success: #10B981; --input-bg: rgba(0,0,0,0.8); --terminal-text: #10B981; }
-        :root[data-theme="light"] { --bg-deep: #F1F5F9; --bg-panel: rgba(255, 255, 255, 0.95); --cyan-glow: #1D4ED8; --text-main: #0F172A; --text-muted: #475569; --border-line: rgba(29, 78, 216, 0.2); --shadow-color: rgba(29, 78, 216, 0.2); --danger: #DC2626; --danger-bg: rgba(220, 38, 38, 0.1); --warning: #D97706; --warning-bg: rgba(217, 119, 6, 0.1); --success: #059669; --input-bg: #FFFFFF; --terminal-text: #059669; }
+        :root[data-theme="dark"] { --bg-deep: #030712; --bg-panel: rgba(15, 23, 42, 0.85); --cyan-glow: #00E5FF; --text-main: #F8FAFC; --text-muted: #94A3B8; --border-line: rgba(0, 229, 255, 0.2); --shadow-color: rgba(0, 229, 255, 0.3); --danger: #EF4444; --danger-bg: rgba(239, 68, 68, 0.1); --warning: #F59E0B; --success: #10B981; --input-bg: rgba(0,0,0,0.8); --terminal-text: #10B981; }
+        :root[data-theme="light"] { --bg-deep: #F1F5F9; --bg-panel: rgba(255, 255, 255, 0.95); --cyan-glow: #1D4ED8; --text-main: #0F172A; --text-muted: #475569; --border-line: rgba(29, 78, 216, 0.2); --shadow-color: rgba(29, 78, 216, 0.2); --danger: #DC2626; --danger-bg: rgba(220, 38, 38, 0.1); --warning: #D97706; --success: #059669; --input-bg: #FFFFFF; --terminal-text: #059669; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); }
         #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
         .grid-overlay { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.2; }
         
-        /* NAVBAR */
-        .nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500; }
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500; }
         .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--text-main); letter-spacing: 2px;}
-        .desktop-nav { display: flex; align-items: center; gap: 20px;}
-        .return-base-btn { font-family: 'Space Mono', monospace; color: var(--cyan-glow); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; font-weight: 700; border: 1px solid var(--border-line); padding: 8px 16px; border-radius: 6px; background: rgba(0, 229, 255, 0.05); }
-        .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; color: var(--text-main);}
+        .return-base-btn { font-family: 'Space Mono', monospace; color: var(--cyan-glow); text-decoration: none; font-size: 0.85rem; font-weight: 700; border: 1px solid var(--border-line); padding: 8px 16px; border-radius: 6px; background: rgba(0, 229, 255, 0.05); }
 
-        /* PROFILE */
-        .user-profile-container { position: relative; display: inline-block; z-index: 1000;}
-        .user-chip { display: flex; align-items: center; gap: 10px; background: var(--bg-panel); border: 1px solid var(--cyan-glow); padding: 6px 16px 6px 6px; border-radius: 30px; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 700; }
-        .user-avatar { width: 28px; height: 28px; background: var(--cyan-glow); color: var(--bg-deep); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-family: 'Orbitron'; font-size: 1rem; }
-        .agent-name-txt { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; font-size: 0.7rem; text-align: left; line-height: 1.2;}
-        .user-dropdown { position: absolute; top: 130%; right: 0; background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 8px; padding: 20px; width: 240px; display: none; flex-direction: column; gap: 10px; text-align: center; }
-        .user-profile-container:hover .user-dropdown { display: flex; }
-        .dropdown-email { font-family: 'Space Mono'; font-size: 0.75rem; color: var(--text-muted); word-break: break-all; border-bottom: 1px solid var(--border-line); padding-bottom: 15px;}
-        .btn-logout-drop { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 4px; font-family: 'Orbitron'; font-size: 0.8rem; font-weight: 700; cursor: pointer;}
-
-        /* MAIN UI */
         main { flex-grow: 1; padding: 100px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; }
         .content-wrapper { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 30px;}
         .module-panel { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; backdrop-filter: blur(10px); padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .panel-header { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: var(--text-main); font-weight: 800; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px;}
+        .panel-header { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: var(--text-main); font-weight: 800; letter-spacing: 1px; display: flex; justify-content: center; margin-bottom: 25px;}
 
-        /* Buttons */
         .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;}
-        .btn-ctrl { flex: 1; min-width: 80px; padding: 10px 5px; background: transparent; border: 1px solid var(--cyan-glow); color: var(--cyan-glow); font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700; border-radius: 4px; cursor: pointer; transition: 0.3s; text-align: center; text-transform: uppercase; }
+        .btn-ctrl { flex: 1; min-width: 80px; padding: 10px 5px; background: transparent; border: 1px solid var(--cyan-glow); color: var(--cyan-glow); font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700; border-radius: 4px; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
         .btn-ctrl:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 10px var(--shadow-color); }
         .btn-danger { border-color: var(--danger); color: var(--danger); }
         .btn-danger:hover { background: var(--danger); color: #FFF; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
@@ -55,20 +39,9 @@
         .btn-full { width: 100%; margin-bottom: 20px; }
         .sub-label { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); margin-bottom: 10px; font-weight: 700;}
 
-        /* Terminal */
         .terminal-box { background: var(--input-bg); border: 1px solid var(--border-line); border-radius: 6px; padding: 15px; font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--terminal-text); height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
 
-        /* Toggle & SOS */
-        .toggle-wrapper { display: flex; justify-content: center; align-items: center; gap: 15px; margin: 20px 0 30px 0;}
-        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--danger-bg); border: 1px solid var(--danger); transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 3px; background-color: var(--danger); transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: rgba(16, 185, 129, 0.2); border-color: var(--success); }
-        input:checked + .slider:before { transform: translateX(24px); background-color: var(--success); }
-        .toggle-label { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; color: var(--danger); font-weight: 800; transition: 0.3s;}
-        input:checked ~ .toggle-label { color: var(--success); }
-        .btn-disabled { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+        /* SOS Inputs */
         .sos-input-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;}
         .sos-input { flex: 1; min-width: 150px; background: transparent; border: 1px solid var(--border-line); padding: 10px; color: var(--text-main); font-family: 'Space Mono'; font-size: 0.85rem; border-radius: 4px; outline: none; }
         
@@ -83,12 +56,8 @@
 
     <nav class="nav">
         <a href="services.html" class="return-base-btn">⟵ BACK</a>
-        <div class="brand"><div class="brand-name">APP CONTROLS</div></div>
-        <div class="desktop-nav" id="desktopNavContainer">
-            <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
-            <div id="desktopAuthState"></div>
-        </div>
-    </nav>
+        <div class="brand-name">APP CONTROLS</div>
+        <div style="width: 80px;"></div> </nav>
 
     <main>
         <div class="content-wrapper">
@@ -96,37 +65,40 @@
             <div class="module-panel">
                 <div class="panel-header">🎛️ HARDWARE OVERRIDE</div>
                 
-                <button class="btn-ctrl btn-danger btn-full" onclick="issueFirebaseCommand('INSTANT_LOCK', '🔒 INSTANT LOCK COMMAND PUSHED TO DEVICE.')">🔒 INSTANT LOCK (Accessibility Override)</button>
+                <button class="btn-ctrl btn-danger btn-full" onclick="issueFirebaseCommand('LOCK_ACCESSIBILITY', '🔒 ACCESSIBILITY LOCK COMMAND PUSHED.')">🔒 INSTANT LOCK (Accessibility Override)</button>
 
                 <div class="sub-label">Screen Timeout</div>
                 <div class="btn-row">
-                    <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_1S', 'Screen timeout set to 1 SEC.')">1 SEC</button>
-                    <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_10S', 'Screen timeout set to 10 SEC.')">10 SEC</button>
-                    <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_1M', 'Screen timeout set to 1 MIN.')">1 MIN</button>
-                    <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_5M', 'Screen timeout set to 5 MIN.')">5 MIN</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_1S', 'Screen timeout 1s pushed.')">1 SEC</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_10S', 'Screen timeout 10s pushed.')">10 SEC</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_1M', 'Screen timeout 1m pushed.')">1 MIN</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_5M', 'Screen timeout 5m pushed.')">5 MIN</button>
                 </div>
 
                 <div class="sub-label">Display Brightness</div>
                 <div class="btn-row">
-                    <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHT_0', 'Brightness locked at 0%.')">0%</button>
-                    <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHT_30', 'Brightness locked at 30%.')">30%</button>
-                    <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHT_50', 'Brightness locked at 50%.')">50%</button>
-                    <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHT_100', 'Brightness locked at 100%.')">100%</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHTNESS_0', 'Brightness 0% pushed.')">0%</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHTNESS_30', 'Brightness 30% pushed.')">30%</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHTNESS_50', 'Brightness 50% pushed.')">50%</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHTNESS_80', 'Brightness 80% pushed.')">80%</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHTNESS_100', 'Brightness 100% pushed.')">100%</button>
                 </div>
 
                 <div class="sub-label">Media Volume Override</div>
                 <div class="btn-row">
-                    <button class="btn-ctrl" onclick="issueFirebaseCommand('VOL_0', 'Volume locked at 0%.')">0%</button>
-                    <button class="btn-ctrl" onclick="issueFirebaseCommand('VOL_50', 'Volume locked at 50%.')">50%</button>
-                    <button class="btn-ctrl" onclick="issueFirebaseCommand('VOL_100', 'Volume locked at 100%.')">100%</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('VOL_0', 'Volume 0% pushed.')">0%</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('VOL_30', 'Volume 30% pushed.')">30%</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('VOL_60', 'Volume 60% pushed.')">60%</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('VOL_80', 'Volume 80% pushed.')">80%</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('VOL_100', 'Volume 100% pushed.')">100%</button>
                 </div>
 
                 <div class="sub-label" style="color: var(--danger);">Anti-Theft Siren & Strobe</div>
                 <div class="btn-row">
-                    <button class="btn-ctrl btn-danger" onclick="issueFirebaseCommand('TRIGGER_SIREN', '🚨 ANTI-THEFT SIREN TRIGGERED.')">🚨 TRIGGER SIREN</button>
+                    <button class="btn-ctrl btn-danger" onclick="issueFirebaseCommand('ALARM_ON', '🚨 ANTI-THEFT SIREN TRIGGERED.')">🚨 TRIGGER SIREN</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('ALARM_OFF', '🔇 ANTI-THEFT SIREN DISARMED.')">🔇 DISARM SIREN</button>
-                    <button class="btn-ctrl btn-warning" onclick="issueFirebaseCommand('STROBE_ON', '⚡ STROBE FLASH ENGAGED.')">⚡ STROBE FLASH</button>
-                    <button class="btn-ctrl" onclick="issueFirebaseCommand('STROBE_OFF', '❌ STROBE FLASH DISABLED.')">❌ FLASH OFF</button>
+                    <button class="btn-ctrl btn-warning" onclick="issueFirebaseCommand('FLASH_BLINK', '⚡ STROBE FLASH ENGAGED.')">⚡ STROBE FLASH</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('FLASH_OFF', '❌ STROBE FLASH DISABLED.')">❌ FLASH OFF</button>
                 </div>
 
                 <div class="terminal-box" id="termLog">
@@ -138,39 +110,18 @@
             <div class="module-panel">
                 <div class="panel-header" style="color: var(--danger);">🚨 EMERGENCY COMMUNICATIONS</div>
 
-                <div class="toggle-wrapper">
-                    <label class="switch">
-                        <input type="checkbox" id="globalToggle" onchange="toggleEmergency()">
-                        <span class="slider"></span>
-                    </label>
-                    <span class="toggle-label" id="toggleText">UNLOCK GLOBAL SERVICES</span>
-                </div>
-
                 <div class="btn-row" id="emergencyGroup">
-                    <button class="btn-ctrl btn-danger btn-disabled" onclick="issueFirebaseCommand('DIAL_112', 'FORCE DIALING: POLICE (112)')">POLICE (112)</button>
-                    <button class="btn-ctrl btn-danger btn-disabled" onclick="issueFirebaseCommand('DIAL_108', 'FORCE DIALING: AMBULANCE (108)')">AMBULANCE (108)</button>
-                    <button class="btn-ctrl btn-danger btn-disabled" onclick="issueFirebaseCommand('DIAL_101', 'FORCE DIALING: FIRE (101)')">FIRE (101)</button>
+                    <button class="btn-ctrl btn-danger" onclick="issueFirebaseCommand('CALL_NUM:112', 'FORCE DIALING: POLICE (112)')">POLICE (112)</button>
+                    <button class="btn-ctrl btn-danger" onclick="issueFirebaseCommand('CALL_NUM:108', 'FORCE DIALING: AMBULANCE (108)')">AMBULANCE (108)</button>
+                    <button class="btn-ctrl btn-danger" onclick="issueFirebaseCommand('CALL_NUM:101', 'FORCE DIALING: FIRE (101)')">FIRE (101)</button>
                 </div>
 
-                <div class="sub-label" style="margin-top: 20px; color: var(--success);">Custom SOS Vault</div>
+                <div class="sub-label" style="margin-top: 20px; color: var(--success);">Custom SOS Auto-Dialer</div>
                 <div class="sos-input-row">
                     <input type="text" id="sosName" class="sos-input" placeholder="Name">
                     <input type="text" id="sosNum" class="sos-input" placeholder="Phone Number">
                 </div>
-                <button class="btn-ctrl btn-full" style="border-color: var(--success); color: var(--success);" onclick="addSOS()">+ ADD & STORE</button>
-                <div id="sosList" style="display:flex; flex-direction:column; gap:10px;"></div>
-            </div>
-
-            <div class="module-panel" style="border-color: var(--warning); background: rgba(245, 158, 11, 0.02);">
-                <div class="panel-header" style="color: var(--warning);">📡 OFFLINE SMS PAYLOAD</div>
-                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-                    <input type="text" id="targetNum" class="sos-input" style="max-width: 300px; text-align: center; color: var(--warning); border-color: var(--warning);" placeholder="Target Phone Number">
-                </div>
-                <div class="btn-row">
-                    <button class="btn-ctrl btn-warning" onclick="issueFirebaseCommand('SMS_PING', 'OFFLINE SMS PREPPED: PING RADAR')">📍 SMS: PING RADAR</button>
-                    <button class="btn-ctrl btn-warning" onclick="issueFirebaseCommand('SMS_SIREN', 'OFFLINE SMS PREPPED: TRIGGER SIREN')">🚨 SMS: TRIGGER SIREN</button>
-                    <button class="btn-ctrl btn-warning" onclick="issueFirebaseCommand('SMS_LOCK', 'OFFLINE SMS PREPPED: INSTANT LOCK')">🔒 SMS: INSTANT LOCK</button>
-                </div>
+                <button class="btn-ctrl btn-full" style="border-color: var(--success); color: var(--success);" onclick="addSOS()">+ STORE & DIAL</button>
             </div>
 
         </div>
@@ -182,14 +133,14 @@
         const database = firebase.database();
         let currentUserId = null;
 
-        // 🚀 FIREBASE COMMAND WRITER
         const terminal = document.getElementById('termLog');
         
+        // 🚀 FIREBASE WRITER: PATH MATCHES JAVA PERFECTLY
         function issueFirebaseCommand(cmdCode, logMessage) {
             if(!currentUserId) { alert("Agent connection lost."); return; }
 
-            // Write the exact command to the user's active_command node
-            database.ref('agents/' + currentUserId + '/active_command').set({
+            // JAVA APP LISTENS HERE: "users/" + userUid + "/CurrentCommand"
+            database.ref('users/' + currentUserId + '/CurrentCommand').set({
                 command: cmdCode,
                 timestamp: Date.now()
             }).then(() => {
@@ -205,59 +156,26 @@
             });
         }
 
-        // Emergency Toggle UI
-        function toggleEmergency() {
-            const isChecked = document.getElementById('globalToggle').checked;
-            const btns = document.querySelectorAll('#emergencyGroup .btn-ctrl');
-            if(isChecked) {
-                document.getElementById('toggleText').textContent = "GLOBAL SERVICES UNLOCKED";
-                btns.forEach(b => b.classList.remove('btn-disabled'));
-            } else {
-                document.getElementById('toggleText').textContent = "UNLOCK GLOBAL SERVICES";
-                btns.forEach(b => b.classList.add('btn-disabled'));
-            }
-        }
-
         // SOS UI Helper
         function addSOS() {
-            const name = document.getElementById('sosName').value;
             const num = document.getElementById('sosNum').value;
-            if(!name || !num) return;
-            const id = 'sos-' + Date.now();
-            document.getElementById('sosList').innerHTML += `
-                <div id="${id}" style="display:flex; justify-content:space-between; padding:10px; border:1px solid var(--success); border-radius:4px;">
-                    <span>${name} (${num})</span>
-                    <button style="background:var(--success); color:#fff; border:none; padding:5px 10px; cursor:pointer;" onclick="issueFirebaseCommand('DIAL_${num}', 'FORCE DIALING: ${name}')">DIAL</button>
-                </div>
-            `;
-            document.getElementById('sosName').value = ''; document.getElementById('sosNum').value = '';
+            const name = document.getElementById('sosName').value;
+            if(!num) return;
+            issueFirebaseCommand('CALL_NUM:' + num, 'FORCE DIALING: ' + name);
+            document.getElementById('sosNum').value = '';
+            document.getElementById('sosName').value = '';
         }
 
-        // Auth
         firebase.auth().onAuthStateChanged(user => { 
             if (!user) window.location.href = 'index.html'; 
             else {
                 currentUserId = user.uid;
                 document.getElementById('authLoader').style.display = 'none';
-                const agentName = user.email.split('@')[0].toUpperCase();
-                document.getElementById('desktopAuthState').innerHTML = `
-                    <div class="user-profile-container">
-                        <div class="user-chip">
-                            <div class="user-avatar">${agentName.charAt(0)}</div>
-                            <div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:0.5rem; color:var(--text-muted);">AGENT</span><span class="agent-name-txt">${agentName}</span></div>
-                        </div>
-                        <div class="user-dropdown">
-                            <div class="dropdown-email">${user.email}</div>
-                            <button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ LOGOUT</button>
-                        </div>
-                    </div>`;
             }
         });
 
-        // Background / Theme
-        function initTheme() { document.documentElement.setAttribute('data-theme', localStorage.getItem('tactical_theme') || 'dark'); }
-        function toggleTheme() { const r = document.documentElement; r.setAttribute('data-theme', r.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); localStorage.setItem('tactical_theme', r.getAttribute('data-theme')); }
-        initTheme();
+        // Theme Background Setup
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('tactical_theme') || 'dark');
         const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d'); canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         let particles = []; for (let i = 0; i < 65; i++) particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5 });
         function animateCanvas() {
