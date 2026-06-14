@@ -7,79 +7,34 @@
     
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* 🚀 1. DYNAMIC THEME VARIABLES */
-        :root[data-theme="dark"] {
-            --bg-deep: #030712;
-            --bg-panel: rgba(15, 23, 42, 0.85);
-            --cyan-glow: #00E5FF;
-            --text-main: #F8FAFC;
-            --text-muted: #94A3B8;
-            --border-line: rgba(0, 229, 255, 0.2);
-            --shadow-color: rgba(0, 229, 255, 0.3);
-            --danger: #EF4444;
-            --danger-bg: rgba(239, 68, 68, 0.1);
-            --success: #10B981;
-            --card-inner: rgba(30, 41, 59, 0.5);
-        }
-
-        :root[data-theme="light"] {
-            --bg-deep: #F1F5F9; 
-            --bg-panel: rgba(255, 255, 255, 0.95);
-            --cyan-glow: #1D4ED8; 
-            --text-main: #0F172A;
-            --text-muted: #475569;
-            --border-line: rgba(29, 78, 216, 0.2);
-            --shadow-color: rgba(29, 78, 216, 0.2);
-            --danger: #DC2626;
-            --danger-bg: rgba(220, 38, 38, 0.1);
-            --success: #059669;
-            --card-inner: rgba(226, 232, 240, 0.6);
-        }
+        /* [THEME VARIABLES & CORE STYLES REMAIN IDENTICAL] */
+        :root[data-theme="dark"] { --bg-deep: #030712; --bg-panel: rgba(15, 23, 42, 0.85); --cyan-glow: #00E5FF; --text-main: #F8FAFC; --text-muted: #94A3B8; --border-line: rgba(0, 229, 255, 0.2); --shadow-color: rgba(0, 229, 255, 0.3); --danger: #EF4444; --danger-bg: rgba(239, 68, 68, 0.1); --success: #10B981; --card-inner: rgba(30, 41, 59, 0.5); --input-bg: rgba(0,0,0,0.8); }
+        :root[data-theme="light"] { --bg-deep: #F1F5F9; --bg-panel: rgba(255, 255, 255, 0.95); --cyan-glow: #1D4ED8; --text-main: #0F172A; --text-muted: #475569; --border-line: rgba(29, 78, 216, 0.2); --shadow-color: rgba(29, 78, 216, 0.2); --danger: #DC2626; --danger-bg: rgba(220, 38, 38, 0.1); --success: #059669; --card-inner: rgba(226, 232, 240, 0.6); --input-bg: #FFFFFF; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; transition: background-color 0.4s ease; }
-
-        /* 🚀 2. DYNAMIC GEOMETRIC CANVAS BACKGROUND */
         #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
-        .grid-overlay {
-            position: fixed; inset: 0; z-index: -2; pointer-events: none;
-            background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
-            background-size: 60px 60px; opacity: 0.2;
-        }
-
-        /* 🚀 3. SMART TOP NAVBAR */
-        .nav {
-            display: flex; justify-content: space-between; align-items: center; gap: 20px;
-            padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); 
-            border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500;
-        }
+        .grid-overlay { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.2; }
+        .nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500; }
         .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0;}
         .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--text-main); letter-spacing: 2px; text-transform: uppercase;}
-        
         .desktop-nav { display: flex; align-items: center; gap: 20px; flex-wrap: nowrap;}
-        
-        .return-base-btn { 
-            font-family: 'Space Mono', monospace; color: var(--cyan-glow); text-decoration: none; 
-            font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; 
-            font-weight: 700; border: 1px solid var(--border-line); padding: 8px 16px; border-radius: 6px;
-            background: rgba(0, 229, 255, 0.05); display: flex; align-items: center; gap: 8px; white-space: nowrap;
-        }
+        .return-base-btn { font-family: 'Space Mono', monospace; color: var(--cyan-glow); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700; border: 1px solid var(--border-line); padding: 8px 16px; border-radius: 6px; background: rgba(0, 229, 255, 0.05); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
         .return-base-btn:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 15px var(--shadow-color); }
-
         .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); flex-shrink: 0;}
         .theme-toggle:hover { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
+        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; flex-shrink: 0;}
 
-        /* PROFILE DROPDOWN */
         .user-profile-container { position: relative; display: inline-block; z-index: 1000; flex-shrink: 0;}
         .user-chip { display: flex; align-items: center; gap: 10px; background: var(--bg-panel); border: 1px solid var(--cyan-glow); padding: 6px 16px 6px 6px; border-radius: 30px; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); transition: 0.3s; font-weight: 700; }
         .user-chip:hover { box-shadow: 0 0 15px var(--shadow-color); }
         .user-avatar { width: 28px; height: 28px; background: var(--cyan-glow); color: var(--bg-deep); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 1rem; flex-shrink: 0; }
         .agent-name-txt { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; font-size: 0.7rem; text-align: left; line-height: 1.2;}
-        
         .user-dropdown { position: absolute; top: 130%; right: 0; background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 8px; padding: 20px; width: 240px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px); display: none; flex-direction: column; gap: 10px; text-align: center; }
         .user-profile-container:hover .user-dropdown { display: flex; animation: slideDown 0.3s ease; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -87,70 +42,6 @@
         .btn-logout-drop { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
         .btn-logout-drop:hover { background: var(--danger-bg); }
 
-        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; flex-shrink: 0;}
-
-        /* 🚀 4. MAIN INTERFACE LAYOUT */
-        main { flex-grow: 1; padding: 120px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; }
-        .content-wrapper { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 35px;}
-        
-        .header-title { display: flex; flex-direction: column; align-items: center; text-align: center;}
-        .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--text-main); font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;}
-        .header-title p { font-family: 'Space Mono', monospace; font-size: 0.9rem; color: var(--text-muted); }
-        
-        .back-link { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; color: var(--cyan-glow); font-family: 'Space Mono', monospace; font-size: 0.85rem; text-decoration: none; font-weight: 700; transition: 0.3s; padding: 5px 10px; border: 1px solid transparent; border-radius: 4px; }
-        .back-link:hover { border-color: var(--border-line); background: rgba(0, 229, 255, 0.05); }
-
-        /* CONTROL SPLIT PANEL */
-        .linking-container { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; width: 100%; }
-        @media (max-width: 900px) { .linking-container { grid-template-columns: 1fr; } }
-
-        .control-panel-card { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); height: fit-content;}
-        .panel-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--text-main); letter-spacing: 1px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-line); padding-bottom: 12px;}
-
-        /* SYNC STEPS UI (Replaces QR Code) */
-        .sync-steps { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
-        .sync-step { 
-            display: flex; align-items: flex-start; gap: 15px; background: var(--card-inner); 
-            padding: 15px; border-radius: 8px; border: 1px solid var(--border-line);
-        }
-        .step-num { 
-            width: 30px; height: 30px; background: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); 
-            border: 1px solid var(--cyan-glow); border-radius: 50%; display: flex; 
-            justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; 
-            font-weight: 900; font-size: 0.9rem; flex-shrink: 0; 
-        }
-        .step-text { font-size: 0.85rem; color: var(--text-main); line-height: 1.5; }
-        .step-text strong { color: var(--cyan-glow); font-family: 'Space Mono', monospace; font-size: 0.8rem;}
-
-        .btn-dl-sync {
-            display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%;
-            background: transparent; color: var(--success); border: 1px dashed var(--success);
-            padding: 12px; border-radius: 6px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem;
-            font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 20px;
-            text-decoration: none;
-        }
-        .btn-dl-sync:hover { background: rgba(16, 185, 129, 0.1); box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
-
-        /* SESSIONS ARCHITECTURE */
-        .session-list { display: flex; flex-direction: column; gap: 15px; }
-        .session-item { background: var(--card-inner); border: 1px solid var(--border-line); border-radius: 8px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
-        .session-item:hover { border-color: var(--cyan-glow); }
-        .session-meta { display: flex; flex-direction: column; gap: 5px; }
-        .device-info { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
-        .status-badge { font-size: 0.7rem; font-family: 'Space Mono', monospace; padding: 2px 8px; border-radius: 12px; font-weight: 700; text-transform: uppercase; }
-        .status-badge.active { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
-        .status-badge.pending { background: rgba(245, 158, 11, 0.15); color: #F59E0B; border: 1px solid #F59E0B; }
-        .timestamp { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); }
-
-        .btn-terminate { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 8px 14px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.3s; letter-spacing: 0.5px; }
-        .btn-terminate:hover { background: var(--danger-bg); box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
-        
-        .btn-refresh { background: transparent; border: 1px solid var(--cyan-glow); color: var(--cyan-glow); padding: 10px 20px; border-radius: 6px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; width: 100%; text-align: center; margin-top: 15px;}
-        .btn-refresh:hover { background: rgba(0,229,255,0.1); }
-
-        footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); position: relative; z-index: 10; margin-top: auto;}
-
-        /* MOBILE FIXES */
         .mobile-overlay-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; backdrop-filter: blur(5px); }
         .mobile-overlay { position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: var(--bg-panel); backdrop-filter: blur(20px); z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-left: 2px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 30px; }
         .mobile-overlay.active { right: 0; }
@@ -159,16 +50,44 @@
         .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; transition: 0.3s; display: block; font-weight: 700;}
         .m-nav-links a:hover { color: var(--cyan-glow); }
 
-        @media (max-width: 600px) {
-            .nav { padding: 15px; }
-            .brand-name { font-size: 1rem; }
-            .user-chip { padding: 4px 10px 4px 4px; }
-            .user-avatar { width: 24px; height: 24px; font-size: 0.8rem;}
-            .agent-name-txt { font-size: 0.65rem; max-width: 80px;}
-            .session-item { flex-direction: column; align-items: flex-start; gap: 15px;}
-            .btn-terminate { width: 100%; text-align: center;}
-        }
+        main { flex-grow: 1; padding: 120px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; }
+        .content-wrapper { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 35px;}
+        .header-title { display: flex; flex-direction: column; align-items: center; text-align: center;}
+        .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--text-main); font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;}
+        .header-title p { font-family: 'Space Mono', monospace; font-size: 0.9rem; color: var(--text-muted); }
+        .back-link { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; color: var(--cyan-glow); font-family: 'Space Mono', monospace; font-size: 0.85rem; text-decoration: none; font-weight: 700; transition: 0.3s; padding: 5px 10px; border: 1px solid transparent; border-radius: 4px; }
+        .back-link:hover { border-color: var(--border-line); background: rgba(0, 229, 255, 0.05); }
 
+        .linking-container { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; width: 100%; }
+        .control-panel-card { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); height: fit-content;}
+        .panel-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--text-main); letter-spacing: 1px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-line); padding-bottom: 12px;}
+
+        /* ADD DEVICE FORM */
+        .add-device-form { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
+        .tac-input { width: 100%; padding: 14px; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--border-line); color: var(--text-main); font-size: 0.9rem; font-family: 'Space Mono', monospace; outline: none; transition: 0.3s; }
+        .tac-input:focus { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
+        .btn-dl-sync { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; background: transparent; color: var(--success); border: 1px dashed var(--success); padding: 12px; border-radius: 6px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; text-decoration: none;}
+        .btn-dl-sync:hover { background: rgba(16, 185, 129, 0.1); box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+
+        /* SESSIONS ARCHITECTURE */
+        .session-list { display: flex; flex-direction: column; gap: 15px; min-height: 150px;}
+        .session-item { background: var(--card-inner); border: 1px solid var(--border-line); border-radius: 8px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .session-item:hover { border-color: var(--cyan-glow); }
+        .session-meta { display: flex; flex-direction: column; gap: 5px; }
+        .device-info { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
+        .status-badge { font-size: 0.7rem; font-family: 'Space Mono', monospace; padding: 2px 8px; border-radius: 12px; font-weight: 700; text-transform: uppercase; background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
+        .timestamp { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); }
+        .btn-terminate { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 8px 14px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.3s; letter-spacing: 0.5px; }
+        .btn-terminate:hover { background: var(--danger-bg); box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
+        
+        /* Empty State */
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-family: 'Space Mono', monospace; font-size: 0.9rem; border: 1px dashed var(--border-line); border-radius: 8px;}
+
+        footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); position: relative; z-index: 10; margin-top: auto;}
+
+        @media (max-width: 900px) { .linking-container { grid-template-columns: 1fr; } }
+        @media (max-width: 850px) { .desktop-nav { display: none !important; } .mobile-nav-btn { display: block !important; } }
+        @media (max-width: 600px) { .session-item { flex-direction: column; align-items: flex-start; gap: 15px;} .btn-terminate { width: 100%; text-align: center;} }
         #authLoader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; color: var(--cyan-glow); font-size: 1.5rem; letter-spacing: 2px;}
     </style>
 </head>
@@ -183,22 +102,16 @@
     </svg>
 
     <div id="authLoader">VERIFYING CREDENTIALS...</div>
-
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
     <nav class="nav">
         <a href="services.html" class="return-base-btn">⟵ BACK</a>
-        
-        <div class="brand">
-            <div class="brand-name">DEVICE LINKING</div>
-        </div>
-
+        <div class="brand"><div class="brand-name">DEVICE LINKING</div></div>
         <div class="desktop-nav" id="desktopNavContainer">
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
             <div id="desktopAuthState"></div>
         </div>
-
         <div style="display: flex; align-items: center; gap: 15px;">
             <button class="theme-toggle" style="display: none;" onclick="toggleTheme()" id="themeBtnMob">🌓</button>
             <button class="mobile-nav-btn" onclick="toggleMobileNav()">☰</button>
@@ -217,77 +130,33 @@
 
     <main>
         <div class="content-wrapper">
-            
             <a href="services.html" class="back-link">← BACK TO DASHBOARD</a>
-
             <div class="header-title">
                 <h1>Device Linking Hub</h1>
                 <p>Synchronize core client hardware nodes, authorize mobile applications, and manage tactical communication streams.</p>
             </div>
 
             <div class="linking-container">
-                
                 <div class="control-panel-card">
-                    <div class="panel-title"><span>🔐</span> SECURE APP SYNC</div>
-                    <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.6; margin-bottom: 10px;">
-                        The Sentinel-X hardware client authenticates directly to your secure Firebase tunnel using Agent Credentials. No QR pairing is required.
+                    <div class="panel-title"><span>🔐</span> PAIR NEW CLIENT</div>
+                    <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.6;">
+                        Manually inject a hardware node into your secure Firebase tunnel.
                     </p>
                     
-                    <div class="sync-steps">
-                        <div class="sync-step">
-                            <div class="step-num">1</div>
-                            <div class="step-text">Download and install the <strong>Sentinel-X APK</strong> on the target hardware.</div>
-                        </div>
-                        <div class="sync-step">
-                            <div class="step-num">2</div>
-                            <div class="step-text">Grant the application required <strong>Device Administrator</strong> and tracking permissions.</div>
-                        </div>
-                        <div class="sync-step">
-                            <div class="step-num">3</div>
-                            <div class="step-text">Login via the mobile app using your active <strong>Agent Email</strong> and <strong>Passcode</strong>. The device will automatically appear in your Authorized Nodes list.</div>
-                        </div>
+                    <div class="add-device-form">
+                        <input type="text" id="devName" class="tac-input" placeholder="Device Name (e.g. Redmi Y3)">
+                        <button class="btn-dl-sync" onclick="addDeviceToFirebase()">🔗 AUTHORIZE DEVICE</button>
                     </div>
-
-                    <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk" class="btn-dl-sync">
-                        📥 DOWNLOAD CLIENT APK
-                    </a>
                 </div>
 
                 <div class="control-panel-card">
-                    <div class="panel-title"><span>💻</span> AUTHORIZED HARDWARE NODES</div>
+                    <div class="panel-title"><span>💻</span> YOUR AUTHORIZED NODES</div>
                     
                     <div class="session-list" id="nodesContainer">
-                        
-                        <div class="session-item">
-                            <div class="session-meta">
-                                <div class="device-info">Chrome Web Console <span class="status-badge active">CURRENT</span></div>
-                                <div class="timestamp">IP: 192.168.1.45 • Location: Bengaluru, India</div>
-                            </div>
-                        </div>
-
-                        <div class="session-item" id="node2">
-                            <div class="session-meta">
-                                <div class="device-info">Samsung Galaxy A07 5G <span class="status-badge active">ONLINE</span></div>
-                                <div class="timestamp">App Version: v2.4.0-Beta • Firebase Auth: Verified</div>
-                            </div>
-                            <button class="btn-terminate" onclick="revokeDevice('Samsung Galaxy A07 5G', 'node2')">DISCONNECT</button>
-                        </div>
-
-                        <div class="session-item" id="node3">
-                            <div class="session-meta">
-                                <div class="device-info">Redmi Y3 Node <span class="status-badge pending">OFFLINE</span></div>
-                                <div class="timestamp">Last Active: June 12, 2026 • Firebase Auth: Stale</div>
-                            </div>
-                            <button class="btn-terminate" onclick="revokeDevice('Redmi Y3 Node', 'node3')">REVOKE ACCESS</button>
-                        </div>
-
+                        <div class="empty-state">Fetching secure links...</div>
                     </div>
-
-                    <button class="btn-refresh" onclick="refreshSessions()">⟲ REFRESH SESSIONS</button>
                 </div>
-
             </div>
-
         </div>
     </main>
 
@@ -297,96 +166,86 @@
     </footer>
 
     <script>
-        // Revoke Device Logic
-        function revokeDevice(deviceName, elementId) {
-            if(confirm(`Are you sure you want to completely revoke Firebase credentials for: ${deviceName}? They will be forced to log in again.`)) {
-                document.getElementById(elementId).style.display = 'none';
-                alert(`[AUTH REVOKED] Connection dropped and session terminated for target client: ${deviceName}`);
+        // 🚀 Firebase Setup
+        const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
+        if (!firebase.apps.length) { firebase.initializeApp(fbCfg); }
+        const database = firebase.database();
+        let currentUserId = null;
+
+        // 🚀 1. WRITE TO FIREBASE (Add Device)
+        function addDeviceToFirebase() {
+            const devName = document.getElementById('devName').value.trim();
+            if (!devName) { alert("Please enter a device name to pair."); return; }
+            if (!currentUserId) return;
+
+            const deviceId = 'dev_' + Date.now();
+            const deviceRef = database.ref('agents/' + currentUserId + '/devices/' + deviceId);
+            
+            deviceRef.set({
+                name: devName,
+                status: "ONLINE",
+                timestamp: new Date().toLocaleTimeString()
+            }).then(() => {
+                document.getElementById('devName').value = '';
+                alert(`[SUCCESS] ${devName} has been injected into your secure tunnel.`);
+            }).catch(error => {
+                alert("Database Error: " + error.message);
+            });
+        }
+
+        // 🚀 2. DELETE FROM FIREBASE (Revoke Device)
+        function revokeDevice(deviceId, deviceName) {
+            if(confirm(`Are you sure you want to completely revoke access for: ${deviceName}?`)) {
+                database.ref('agents/' + currentUserId + '/devices/' + deviceId).remove()
+                .then(() => {
+                    alert(`[REVOKED] Connection dropped for: ${deviceName}`);
+                });
             }
         }
 
-        function refreshSessions() {
-            alert('[SYSTEM SCAN] Pinging Firebase Realtime Database for active authenticated tokens... All sessions are up to date.');
-        }
+        // 🚀 3. LISTEN TO FIREBASE (Realtime UI Update)
+        function listenToDevices(uid) {
+            const nodesContainer = document.getElementById('nodesContainer');
+            const devicesRef = database.ref('agents/' + uid + '/devices');
 
-        // Theme Configuration
-        function initTheme() {
-            const savedTheme = localStorage.getItem('tactical_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateMobileThemeBtnVis();
-        }
-        function toggleTheme() {
-            const root = document.documentElement;
-            const currentTheme = root.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            root.setAttribute('data-theme', newTheme);
-            localStorage.setItem('tactical_theme', newTheme);
-        }
-        function updateMobileThemeBtnVis() {
-            if(window.innerWidth <= 850) { document.getElementById('themeBtnMob').style.display = 'flex'; } 
-            else { document.getElementById('themeBtnMob').style.display = 'none'; }
-        }
-        initTheme(); window.addEventListener('resize', updateMobileThemeBtnVis);
+            devicesRef.on('value', (snapshot) => {
+                nodesContainer.innerHTML = ''; // Clear loading
+                const devices = snapshot.val();
 
-        // Mobile Menu
-        function toggleMobileNav() { 
-            document.getElementById('mobileNav').classList.toggle('active'); 
-            document.getElementById('mobileOverlay').classList.toggle('active'); 
-        }
-
-        // Dynamic Geometric Background Script
-        const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let particles = []; let mouse = { x: null, y: null, radius: 200 };
-        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
-        window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
-        for (let i = 0; i < 65; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5, size: Math.random() * 2 + 1 }); }
-        
-        function animateCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-            const rgbLine = isLight ? '29, 78, 216' : '0, 229, 255';
-            const fillPoly = isLight ? 'rgba(29, 78, 216, 0.04)' : 'rgba(0, 229, 255, 0.03)';
-
-            for (let i = 0; i < particles.length; i++) {
-                let p = particles[i]; p.x += p.vx; p.y += p.vy;
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1; if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                for (let j = i + 1; j < particles.length; j++) {
-                    let p2 = particles[j]; let dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
-                    if (dist < 140) {
-                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.2 - dist/700})`; ctx.lineWidth = 0.5; ctx.stroke();
-                        for(let k = j + 1; k < particles.length; k++) {
-                            let p3 = particles[k]; let dist2 = Math.sqrt((p2.x - p3.x)**2 + (p2.y - p3.y)**2); let dist3 = Math.sqrt((p.x - p3.x)**2 + (p.y - p3.y)**2);
-                            if (dist2 < 140 && dist3 < 140) {
-                                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.closePath();
-                                ctx.fillStyle = fillPoly; ctx.fill();
-                            }
-                        }
-                    }
+                if (!devices) {
+                    nodesContainer.innerHTML = '<div class="empty-state">No devices currently linked to your Agent Account.</div>';
+                    return;
                 }
-                if(mouse.x != null) {
-                    let dx = mouse.x - p.x; let dy = mouse.y - p.y; let distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < mouse.radius) {
-                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y);
-                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.8 - distance/mouse.radius})`; ctx.lineWidth = 1; ctx.stroke();
-                    }
-                }
-            } requestAnimationFrame(animateCanvas);
-        } animateCanvas(); window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
 
-        // Firebase Auth Gateway Verification
-        const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
-        firebase.initializeApp(fbCfg);
-        
+                // Render each device dynamically
+                for (let devId in devices) {
+                    let dev = devices[devId];
+                    nodesContainer.innerHTML += `
+                        <div class="session-item">
+                            <div class="session-meta">
+                                <div class="device-info">${dev.name} <span class="status-badge active">${dev.status}</span></div>
+                                <div class="timestamp">Linked at: ${dev.timestamp} • Encrypted Pipeline</div>
+                            </div>
+                            <button class="btn-terminate" onclick="revokeDevice('${devId}', '${dev.name}')">REVOKE</button>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        // 🚀 Auth State Check
         firebase.auth().onAuthStateChanged(user => { 
             if (!user) {
                 window.location.href = 'index.html'; 
             } else {
+                currentUserId = user.uid;
                 document.getElementById('authLoader').style.display = 'none';
+                
+                // Start Listening to this user's specific database node
+                listenToDevices(user.uid);
+
                 const agentName = user.email.split('@')[0].toUpperCase();
                 const initial = agentName.charAt(0);
-                
                 const profileUI = `
                     <div class="user-profile-container">
                         <div class="user-chip">
@@ -401,11 +260,39 @@
                             <button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ LOGOUT</button>
                         </div>
                     </div>`;
-                
                 document.getElementById('desktopAuthState').innerHTML = profileUI;
                 document.getElementById('mobileAuthState').innerHTML = profileUI;
             }
         });
+
+        // UI Helpers
+        function initTheme() { const savedTheme = localStorage.getItem('tactical_theme') || 'dark'; document.documentElement.setAttribute('data-theme', savedTheme); updateMobileThemeBtnVis(); }
+        function toggleTheme() { const root = document.documentElement; const currentTheme = root.getAttribute('data-theme'); const newTheme = currentTheme === 'light' ? 'dark' : 'light'; root.setAttribute('data-theme', newTheme); localStorage.setItem('tactical_theme', newTheme); }
+        function updateMobileThemeBtnVis() { if(window.innerWidth <= 850) { document.getElementById('themeBtnMob').style.display = 'flex'; } else { document.getElementById('themeBtnMob').style.display = 'none'; } }
+        initTheme(); window.addEventListener('resize', updateMobileThemeBtnVis);
+        function toggleMobileNav() { document.getElementById('mobileNav').classList.toggle('active'); document.getElementById('mobileOverlay').classList.toggle('active'); }
+
+        const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particles = []; let mouse = { x: null, y: null, radius: 200 };
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
+        for (let i = 0; i < 65; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5, size: Math.random() * 2 + 1 }); }
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const rgbLine = isLight ? '29, 78, 216' : '0, 229, 255';
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i]; p.x += p.vx; p.y += p.vy;
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1; if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                for (let j = i + 1; j < particles.length; j++) {
+                    let p2 = particles[j]; let dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
+                    if (dist < 140) {
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.strokeStyle = `rgba(${rgbLine}, ${0.2 - dist/700})`; ctx.lineWidth = 0.5; ctx.stroke();
+                    }
+                }
+            } requestAnimationFrame(animateCanvas);
+        } animateCanvas(); window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
     </script>
 </body>
 </html>
