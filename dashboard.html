@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raksha-Suraksha | Main Dashboard</title>
     
-    <!-- Firebase Core SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     
-    <!-- Premium Tech Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
@@ -21,10 +19,9 @@
             --text-main: #F8FAFC;
             --text-muted: #94A3B8;
             --border-line: rgba(0, 229, 255, 0.2);
-            --input-bg: rgba(0,0,0,0.8);
             --shadow-color: rgba(0, 229, 255, 0.3);
             --danger: #EF4444;
-            --warning: #F59E0B;
+            --danger-bg: rgba(239, 68, 68, 0.1);
             --success: #10B981;
         }
 
@@ -35,17 +32,14 @@
             --text-main: #0F172A;
             --text-muted: #475569;
             --border-line: rgba(29, 78, 216, 0.2);
-            --input-bg: #FFFFFF;
             --shadow-color: rgba(29, 78, 216, 0.2);
             --danger: #DC2626;
-            --warning: #D97706;
+            --danger-bg: rgba(220, 38, 38, 0.1);
             --success: #059669;
         }
 
-        /* Essential Reset */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; transition: background-color 0.4s ease; }
-        main { flex-grow: 1; padding: 40px 5%; position: relative; z-index: 10; max-width: 1600px; margin: 0 auto; width: 100%;}
+        body { display: flex; flex-direction: column; height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow: hidden; transition: background-color 0.4s ease; }
 
         /* 🚀 2. DYNAMIC GEOMETRIC CANVAS BACKGROUND */
         #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
@@ -55,32 +49,30 @@
             background-size: 60px 60px; opacity: 0.2;
         }
 
-        /* 🚀 3. RESPONSIVE DESKTOP NAVBAR */
-        .desktop-nav { display: flex; align-items: center; gap: 20px; }
-        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; }
-
-        @media (max-width: 800px) { 
-            .desktop-nav { display: none !important; }
-            .mobile-nav-btn { display: block !important; }
-        }
-
+        /* 🚀 3. ISOLATED TOP NAVBAR */
         .nav {
             display: flex; justify-content: space-between; align-items: center;
             padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); 
             border-bottom: 1px solid var(--border-line); position: relative; z-index: 500;
-            transition: background 0.4s ease, border-color 0.4s ease;
         }
         .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
         .brand-svg { width: 40px; height: 40px; filter: drop-shadow(0 0 8px var(--shadow-color));}
         .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--text-main); letter-spacing: 2px;}
         .brand-name span { color: #FF6B35; }
         
-        .nav-links { display: flex; gap: 25px; list-style: none; }
-        .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700;}
-        .nav-links a:hover { color: var(--cyan-glow); text-shadow: 0 0 8px var(--shadow-color); }
+        .desktop-nav { display: flex; align-items: center; gap: 20px; }
+        .return-base-btn { 
+            font-family: 'Space Mono', monospace; color: var(--cyan-glow); text-decoration: none; 
+            font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; 
+            font-weight: 700; border: 1px solid var(--border-line); padding: 8px 16px; border-radius: 6px;
+            background: rgba(0, 229, 255, 0.05); display: flex; align-items: center; gap: 8px;
+        }
+        .return-base-btn:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 15px var(--shadow-color); }
 
         .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); }
         .theme-toggle:hover { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
+        
+        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; }
 
         /* 🚀 GOOGLE-STYLE PROFILE DROPDOWN */
         .user-profile-container { position: relative; display: inline-block; z-index: 1000; }
@@ -105,83 +97,87 @@
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
         .dropdown-email { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); word-break: break-all; border-bottom: 1px solid var(--border-line); padding-bottom: 15px; margin-bottom: 5px; font-weight: 700;}
-        .btn-switch-account { background: transparent; color: var(--warning); border: 1px solid var(--warning); padding: 10px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;}
-        .btn-switch-account:hover { background: rgba(245, 158, 11, 0.1); }
         .btn-logout-drop { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-logout-drop:hover { background: rgba(239, 68, 68, 0.1); }
+        .btn-logout-drop:hover { background: var(--danger-bg); }
 
-        /* 🚀 4. MOBILE SLIDE-OUT MENU */
-        .mobile-overlay { position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: var(--bg-panel); backdrop-filter: blur(20px); z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-left: 2px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 30px; }
-        .mobile-overlay.active { right: 0; }
-        .m-nav-close { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 2.5rem; color: var(--text-muted); cursor: pointer; }
-        .m-nav-links { list-style: none; display: flex; flex-direction: column; gap: 25px; }
-        .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; transition: 0.3s; display: block; font-weight: 700;}
-        .m-nav-links a:hover { color: var(--cyan-glow); }
-
-        /* 🚀 5. ROLLING BANNER */
-        .rolling-banner { width: 100%; background: var(--cyan-glow); color: var(--bg-deep); padding: 8px 0; font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; display: flex; overflow: hidden; white-space: nowrap; box-shadow: 0 2px 10px var(--shadow-color); position: relative; z-index: 499; align-items: center;}
-        .marquee-content { display: inline-block; animation: marquee 25s linear infinite; }
-        @keyframes marquee { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
-        .marquee-logo { width: 14px; height: 14px; vertical-align: middle; margin-right: 6px; margin-bottom: 2px; }
-
-        /* 🚀 6. DASHBOARD GRID LAYOUT */
-        .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;}
-        .dash-title { font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 900; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px;}
-        .sys-status { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 20px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success); font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.8rem; letter-spacing: 1px; box-shadow: 0 0 15px rgba(16,185,129,0.2); }
-        .pulse-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulseDot 1.5s infinite; }
+        /* 🚀 4. DASHBOARD WRAPPER & SIDEBAR */
+        .dashboard-wrapper { display: flex; flex-grow: 1; overflow: hidden; position: relative; z-index: 10; }
         
-        .dash-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; }
-        .panel { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; padding: 25px; backdrop-filter: blur(10px); display: flex; flex-direction: column; transition: 0.3s; }
-        .panel:hover { border-color: var(--cyan-glow); box-shadow: 0 10px 30px var(--shadow-color); }
-        .p-title { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; font-weight: 700; display: flex; justify-content: space-between; align-items: center;}
-
-        /* Quick Stats (Top Row) */
-        .stat-card { grid-column: span 3; text-align: center; }
-        .stat-val { font-family: 'Orbitron', sans-serif; font-size: 2.5rem; font-weight: 900; color: var(--cyan-glow); text-shadow: 0 0 15px var(--shadow-color); margin-bottom: 5px;}
-        .stat-label { font-family: 'Inter', sans-serif; font-size: 0.9rem; color: var(--text-main); font-weight: 600; }
-
-        /* Main Map (Middle Row - Large) */
-        .map-panel { grid-column: span 8; min-height: 400px; display: flex; flex-direction: column; }
-        .map-placeholder { flex-grow: 1; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px dashed var(--border-line); display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden;}
-        .radar-ring { position: absolute; border: 2px solid var(--cyan-glow); border-radius: 50%; animation: radarPing 3s infinite ease-out; opacity: 0; }
-        .r1 { width: 50px; height: 50px; animation-delay: 0s; }
-        .r2 { width: 50px; height: 50px; animation-delay: 1s; }
-        .map-text { position: absolute; font-family: 'Space Mono', monospace; font-size: 1rem; color: var(--cyan-glow); letter-spacing: 2px; font-weight: 700; text-shadow: 0 0 10px var(--shadow-color);}
-        @keyframes radarPing { 0% { transform: scale(1); opacity: 1; border-width: 3px; } 100% { transform: scale(8); opacity: 0; border-width: 1px; } }
-
-        /* Live Event Log (Middle Row - Side) */
-        .log-panel { grid-column: span 4; min-height: 400px; }
-        .log-box { background: rgba(0,0,0,0.8); border: 1px solid var(--border-line); border-radius: 8px; flex-grow: 1; padding: 15px; overflow-y: auto; font-family: 'Space Mono', monospace; font-size: 0.75rem; display: flex; flex-direction: column; gap: 8px; color: #E2E8F0;}
-        .log-entry { padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .log-time { color: var(--text-muted); margin-right: 8px; }
-        .l-inf { color: var(--cyan-glow); } .l-war { color: var(--warning); } .l-suc { color: var(--success); }
-
-        /* Tactical Controls (Bottom Row) */
-        .control-panel { grid-column: span 12; display: flex; gap: 20px; justify-content: space-between; flex-wrap: wrap; }
-        .btn-tac { flex: 1; min-width: 200px; padding: 15px; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; border: 2px solid transparent;}
-        .btn-tac-blue { background: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); border-color: var(--cyan-glow); }
-        .btn-tac-blue:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 20px var(--shadow-color); }
-        .btn-tac-warn { background: rgba(245, 158, 11, 0.1); color: var(--warning); border-color: var(--warning); }
-        .btn-tac-warn:hover { background: var(--warning); color: #000; box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
-        .btn-tac-dang { background: rgba(239, 68, 68, 0.1); color: var(--danger); border-color: var(--danger); }
-        .btn-tac-dang:hover { background: var(--danger); color: #FFF; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
-
-        @media (max-width: 1024px) {
-            .stat-card { grid-column: span 6; }
-            .map-panel { grid-column: span 12; }
-            .log-panel { grid-column: span 12; }
+        .sidebar {
+            width: 280px; background: var(--bg-panel); backdrop-filter: blur(20px); 
+            border-right: 1px solid var(--border-line); display: flex; flex-direction: column; 
+            padding: 24px; transition: transform 0.3s ease; z-index: 1000; overflow-y: auto; gap: 10px;
         }
-        @media (max-width: 600px) {
-            .stat-card { grid-column: span 12; }
+        .sidebar a {
+            text-decoration: none; color: var(--text-muted); padding: 14px 16px; border-radius: 10px;
+            display: flex; align-items: center; gap: 12px; font-weight: 600; transition: all 0.3s ease; font-family: 'Inter', sans-serif; font-size: 0.95rem;
+        }
+        .sidebar a:hover { background-color: rgba(0, 229, 255, 0.05); color: var(--text-main); border: 1px solid var(--border-line);}
+        .sidebar a.active { background-color: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); font-weight: 800; border: 1px solid var(--cyan-glow); box-shadow: 0 0 15px var(--shadow-color); }
+
+        /* 🚀 5. MAIN CONTENT & OLD 4-CARD GRID */
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 40px; }
+        
+        .header-title { display: flex; flex-direction: column; margin-bottom: 40px;}
+        .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; color: var(--text-main); font-weight: 900; letter-spacing: 1px; text-transform: uppercase;}
+        .sys-status { display: inline-flex; align-items: center; gap: 8px; color: var(--success); font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.85rem; letter-spacing: 1px; margin-top: 5px;}
+        .pulse-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulseDot 1.5s infinite; }
+        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        .dashboard-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px; align-items: start; width: 100%; max-width: 1400px;
         }
 
-        /* PAGE LOADER TO HIDE CONTENT UNTIL AUTH CHECKS */
+        .widget-card {
+            background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; 
+            backdrop-filter: blur(10px); padding: 30px; transition: 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; height: 100%;
+        }
+        .widget-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px var(--shadow-color); border-color: var(--cyan-glow); }
+
+        .widget-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+        .icon-badge {
+            width: 55px; height: 55px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 1.6rem;
+            background: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); border: 1px solid var(--border-line);
+        }
+        
+        .widget-card h3 { font-family: 'Orbitron', sans-serif; color: var(--text-main); font-size: 1.2rem; font-weight: 800; letter-spacing: 1px;}
+        .widget-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px; flex-grow: 1; font-weight: 500;}
+
+        .action-btn {
+            display: inline-flex; justify-content: center; align-items: center; width: 100%;
+            padding: 14px; border-radius: 8px; font-weight: 800; text-decoration: none; font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px;
+            background: var(--cyan-glow); color: var(--bg-deep); border: none; cursor: pointer;
+        }
+        .action-btn:hover { box-shadow: 0 0 20px var(--shadow-color); transform: translateY(-2px);}
+        
+        /* Danger Card Style (Radar) */
+        .card-danger { border-color: var(--danger-bg); }
+        .card-danger:hover { border-color: var(--danger); box-shadow: 0 15px 40px rgba(239, 68, 68, 0.2); }
+        .card-danger .icon-badge { background: var(--danger-bg); color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
+        .card-danger h3 { color: var(--danger); }
+        .btn-danger { background: transparent; color: var(--danger); border: 2px solid var(--danger); }
+        .btn-danger:hover { background: var(--danger); color: #FFF; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+
+        /* 🚀 MOBILE FIXES */
+        .mobile-overlay-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; backdrop-filter: blur(5px); }
+        
+        @media (max-width: 900px) {
+            .desktop-nav { display: none !important; }
+            .mobile-nav-btn { display: block !important; }
+            .sidebar { position: fixed; left: -300px; height: 100%; box-shadow: none; z-index: 2000;}
+            .sidebar.active { left: 0; box-shadow: 10px 0 40px rgba(0,0,0,0.8); }
+            .mobile-overlay-bg.active { display: block; }
+            .main-content { padding: 20px; }
+        }
+
         #authLoader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; color: var(--cyan-glow); font-size: 1.5rem; letter-spacing: 2px;}
     </style>
 </head>
 <body>
 
-    <!-- 🚀 SVG SHIELD TEMPLATE -->
     <svg style="display:none;">
         <symbol id="shield-logo" viewBox="0 0 24 24" fill="none">
             <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/>
@@ -190,121 +186,90 @@
         </symbol>
     </svg>
 
-    <!-- AUTH LOADER (Prevents seeing dashboard before login check) -->
     <div id="authLoader">VERIFYING CREDENTIALS...</div>
 
-    <!-- 🚀 LIVE GEOMETRIC CANVAS -->
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
-    <!-- 🚀 UNIVERSAL NAVIGATION -->
     <nav class="nav">
         <a href="index.html" class="brand">
             <svg class="brand-svg"><use href="#shield-logo"></use></svg>
             <div class="brand-name">RAKSHA<span>-</span>SURAKSHA</div>
         </a>
 
-        <!-- DESKTOP SPECIFIC NAV -->
         <div class="desktop-nav" id="desktopNavContainer">
-            <ul class="nav-links">
-                <li><a href="index.html">HOME</a></li>
-                <li><a href="capabilities.html">CAPABILITIES</a></li>
-                <li><a href="modules.html">MODULES</a></li>
-                <li><a href="faq.html">FAQS</a></li>
-            </ul>
-            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
+            <a href="index.html" class="return-base-btn">⟵ RETURN TO BASE</a>
+            <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
             <div id="desktopAuthState"></div>
         </div>
 
-        <!-- MOBILE SPECIFIC NAV BUTTONS -->
         <div style="display: flex; align-items: center; gap: 15px;">
             <button class="theme-toggle" style="display: none;" onclick="toggleTheme()" id="themeBtnMob">🌓</button>
-            <button class="mobile-nav-btn" onclick="toggleMobileNav()">☰</button>
+            <button class="mobile-nav-btn" onclick="toggleSidebar()">☰</button>
         </div>
     </nav>
 
-    <!-- 🚀 MOBILE SLIDE-OUT MENU -->
-    <div class="mobile-overlay" id="mobileNav">
-        <button class="m-nav-close" onclick="toggleMobileNav()">×</button>
-        <ul class="m-nav-links">
-            <li><a href="index.html">HOME</a></li>
-            <li><a href="capabilities.html">CAPABILITIES</a></li>
-            <li><a href="modules.html">MODULES</a></li>
-            <li><a href="faq.html">FAQS</a></li>
-        </ul>
-        <div id="mobileAuthState" style="margin-top: 40px; border-top: 2px solid var(--border-line); padding-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-            <!-- Injected by JS -->
-        </div>
-    </div>
+    <div class="mobile-overlay-bg" id="mobileOverlay" onclick="toggleSidebar()"></div>
 
-    <!-- 🚀 ROLLING BANNER -->
-    <div class="rolling-banner">
-        <div class="marquee-content">
-            <svg class="marquee-logo"><use href="#shield-logo"></use></svg> RAKSHA-SURAKSHA TACTICAL COMMAND SYSTEM &nbsp;&nbsp;|&nbsp;&nbsp; 📍 CURRENT NODE: MAIN DASHBOARD &nbsp;&nbsp;|&nbsp;&nbsp; ⚠️ SYSTEM STATUS: ALL NODES OPERATIONAL &nbsp;&nbsp;|&nbsp;&nbsp; 
-            <svg class="marquee-logo"><use href="#shield-logo"></use></svg> RAKSHA-SURAKSHA TACTICAL COMMAND SYSTEM &nbsp;&nbsp;|&nbsp;&nbsp; 📍 CURRENT NODE: MAIN DASHBOARD &nbsp;&nbsp;|&nbsp;&nbsp; ⚠️ SYSTEM STATUS: ALL NODES OPERATIONAL
-        </div>
-    </div>
-
-    <!-- 🚀 MAIN DASHBOARD CONTENT -->
-    <main>
-        <div class="dash-header">
-            <h1 class="dash-title">Command Overview</h1>
-            <div class="sys-status"><span class="pulse-dot"></span> SECURE UPLINK ACTIVE</div>
-        </div>
-
-        <div class="dash-grid">
+    <div class="dashboard-wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--cyan-glow); letter-spacing: 2px; margin-bottom: 10px; padding-left: 10px;">DASHBOARD MENU</div>
+            <a href="#" class="active">📊 Overview Dashboard</a>
+            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk">📲 Client Application</a>
+            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/South_India_Pack.zip">🗺️ Offline Maps Pack</a>
+            <a href="mad gradle.pdf" download>📄 User Documentation</a>
             
-            <!-- Quick Stats -->
-            <div class="panel stat-card">
-                <div class="p-title">ACTIVE HARDWARE NODES</div>
-                <div class="stat-val" id="statNodes">3</div>
-                <div class="stat-label">Devices Linked</div>
-            </div>
-            <div class="panel stat-card">
-                <div class="p-title">NETWORK LATENCY</div>
-                <div class="stat-val" style="color: var(--success);" id="statPing">42ms</div>
-                <div class="stat-label">WSS Ping</div>
-            </div>
-            <div class="panel stat-card">
-                <div class="p-title">INTERCEPTED SMS</div>
-                <div class="stat-val" style="color: var(--warning);">14</div>
-                <div class="stat-label">Offline Payloads</div>
-            </div>
-            <div class="panel stat-card">
-                <div class="p-title">ENCRYPTION PROTOCOL</div>
-                <div class="stat-val">AES</div>
-                <div class="stat-label">256-bit Secured</div>
+            <div style="border-top: 1px solid var(--border-line); margin: 15px 0;"></div>
+            <div style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); letter-spacing: 2px; margin-bottom: 10px; padding-left: 10px;">SYSTEM</div>
+            <a href="index.html" style="color: var(--danger);">⟵ Disconnect & Return</a>
+        </aside>
+
+        <main class="main-content">
+            <div class="header-title">
+                <h1>System Overview</h1>
+                <div class="sys-status"><span class="pulse-dot"></span> CONNECTION SECURED</div>
             </div>
 
-            <!-- Main Live Map Area -->
-            <div class="panel map-panel">
-                <div class="p-title"><span>📍 GLOBAL ASSET TRACKER</span> <span style="font-size: 0.7rem; color: var(--success);">LIVE</span></div>
-                <div class="map-placeholder">
-                    <div class="radar-ring r1"></div>
-                    <div class="radar-ring r2"></div>
-                    <div class="map-text">AWAITING GPS TELEMETRY...</div>
+            <div class="dashboard-grid">
+                <div class="widget-card">
+                    <div class="widget-header">
+                        <div class="icon-badge">🎛️</div>
+                        <h3>Command Gateway</h3>
+                    </div>
+                    <p>Access core system architecture, manage linked devices, and view secure evidence records.</p>
+                    <a href="master-control.html" class="action-btn">Open Master Control</a>
+                </div>
+
+                <div class="widget-card">
+                    <div class="widget-header">
+                        <div class="icon-badge">🔗</div>
+                        <h3>Device Synchronization</h3>
+                    </div>
+                    <p>Manage synchronized physical devices, active sessions, and secondary guardian nodes.</p>
+                    <a href="app-linking.html" class="action-btn">Manage Devices</a>
+                </div>
+
+                <div class="widget-card">
+                    <div class="widget-header">
+                        <div class="icon-badge">🌤️</div>
+                        <h3>Atmospheric Data</h3>
+                    </div>
+                    <p>Monitor local weather conditions and environmental metrics for safe routing.</p>
+                    <a href="weather.html" class="action-btn">View Weather</a>
+                </div>
+
+                <div class="widget-card card-danger">
+                    <div class="widget-header">
+                        <div class="icon-badge">📍</div>
+                        <h3>Live Location Radar</h3>
+                    </div>
+                    <p>Launch the dedicated map interface to pinpoint target devices and establish routing.</p>
+                    <a href="map.html" class="action-btn btn-danger">Initialize Map</a>
                 </div>
             </div>
+        </main>
+    </div>
 
-            <!-- Live Event Log -->
-            <div class="panel log-panel">
-                <div class="p-title"><span>📡 TACTICAL EVENT LOG</span></div>
-                <div class="log-box" id="eventLog">
-                    <!-- Logs generated by JS -->
-                </div>
-            </div>
-
-            <!-- Tactical Controls -->
-            <div class="panel control-panel">
-                <button class="btn-tac btn-tac-blue">📡 PING ALL NODES</button>
-                <button class="btn-tac btn-tac-warn">📨 BROADCAST OFFLINE SMS</button>
-                <button class="btn-tac btn-tac-dang">⚠️ INITIATE LOCKDOWN</button>
-            </div>
-
-        </div>
-    </main>
-
-    <!-- 🚀 JAVASCRIPT LOGIC -->
     <script>
         // 1. THEME TOGGLE LOGIC
         function initTheme() {
@@ -329,8 +294,11 @@
         initTheme();
         window.addEventListener('resize', updateMobileThemeBtnVis);
 
-        // 2. MOBILE MENU TOGGLE
-        function toggleMobileNav() { document.getElementById('mobileNav').classList.toggle('active'); }
+        // 2. SIDEBAR TOGGLE (MOBILE)
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('mobileOverlay').classList.toggle('active');
+        }
 
         // 3. INTERACTIVE CURSOR PARTICLES
         const canvas = document.getElementById('interactiveCanvas');
@@ -384,17 +352,15 @@
         
         firebase.auth().onAuthStateChanged(user => { 
             if (!user) {
-                // Security Kickout: Not logged in.
-                window.location.href = 'index.html'; 
+                window.location.href = 'index.html'; // Security Kickout
             } else {
-                document.getElementById('authLoader').style.display = 'none'; // Reveal Dashboard
+                document.getElementById('authLoader').style.display = 'none';
 
                 const agentName = user.email.split('@')[0].toUpperCase();
                 const initial = agentName.charAt(0);
                 const dContainer = document.getElementById('desktopAuthState');
-                const mContainer = document.getElementById('mobileAuthState');
                 
-                const userProfileHTML = `
+                dContainer.innerHTML = `
                     <div class="user-profile-container">
                         <div class="user-chip">
                             <div class="user-avatar">${initial}</div>
@@ -402,49 +368,12 @@
                         </div>
                         <div class="user-dropdown">
                             <div class="dropdown-email">${user.email}</div>
-                            <button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ LOGOUT</button>
+                            <button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ SECURE LOGOUT</button>
                         </div>
                     </div>
                 `;
-                dContainer.innerHTML = userProfileHTML;
-                mContainer.innerHTML = userProfileHTML;
             }
         });
-
-        // 5. LIVE DASHBOARD DATA SIMULATION
-        function getTimestamp() {
-            const now = new Date();
-            return `[${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}]`;
-        }
-
-        const eventLog = document.getElementById('eventLog');
-        const pingEl = document.getElementById('statPing');
-        
-        const logs = [
-            {c: 'l-suc', t: 'WSS Payload delivered successfully.'},
-            {c: 'l-inf', t: 'Background memory scan complete. Zero anomalies.'},
-            {c: 'l-war', t: 'Node-2 latency spike detected.'},
-            {c: 'l-inf', t: 'Syncing geo-coordinates from database...'},
-            {c: 'l-suc', t: 'Deep-link bridge active.'}
-        ];
-
-        function pushLog() {
-            const l = logs[Math.floor(Math.random() * logs.length)];
-            const div = document.createElement('div');
-            div.className = 'log-entry';
-            div.innerHTML = `<span class="log-time">${getTimestamp()}</span> <span class="${l.c}">${l.t}</span>`;
-            eventLog.appendChild(div);
-            if (eventLog.childNodes.length > 20) { eventLog.removeChild(eventLog.firstChild); }
-            eventLog.scrollTop = eventLog.scrollHeight;
-            
-            // Randomize ping visually
-            pingEl.textContent = Math.floor(Math.random() * 20 + 30) + 'ms';
-            
-            setTimeout(pushLog, Math.random() * 3000 + 1000);
-        }
-
-        setTimeout(pushLog, 1000);
     </script>
 </body>
 </html>
-
