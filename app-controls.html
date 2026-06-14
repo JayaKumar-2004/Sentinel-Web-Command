@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raksha-Suraksha | App Controls</title>
+    
+    <!-- Firebase Core SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <!-- Premium Tech Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 🚀 1. DYNAMIC THEME VARIABLES */
+        :root[data-theme="dark"] {
+            --bg-deep: #030712;
+            --bg-panel: rgba(15, 23, 42, 0.85);
+            --cyan-glow: #00E5FF;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-line: rgba(0, 229, 255, 0.2);
+            --shadow-color: rgba(0, 229, 255, 0.3);
+            --danger: #EF4444;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --warning: #F59E0B;
+            --warning-bg: rgba(245, 158, 11, 0.1);
+            --success: #10B981;
+            --input-bg: rgba(0,0,0,0.8);
+            --terminal-text: #10B981;
+        }
+
+        :root[data-theme="light"] {
+            --bg-deep: #F1F5F9; 
+            --bg-panel: rgba(255, 255, 255, 0.95);
+            --cyan-glow: #1D4ED8; 
+            --text-main: #0F172A;
+            --text-muted: #475569;
+            --border-line: rgba(29, 78, 216, 0.2);
+            --shadow-color: rgba(29, 78, 216, 0.2);
+            --danger: #DC2626;
+            --danger-bg: rgba(220, 38, 38, 0.1);
+            --warning: #D97706;
+            --warning-bg: rgba(217, 119, 6, 0.1);
+            --success: #059669;
+            --input-bg: #FFFFFF;
+            --terminal-text: #059669;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; transition: background-color 0.4s ease; }
+
+        /* 🚀 2. DYNAMIC GEOMETRIC CANVAS BACKGROUND */
+        #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
+        .grid-overlay {
+            position: fixed; inset: 0; z-index: -2; pointer-events: none;
+            background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
+            background-size: 60px 60px; opacity: 0.2;
+        }
+
+        /* 🚀 3. TOP NAVBAR */
+        .nav {
+            display: flex; justify-content: space-between; align-items: center; gap: 20px;
+            padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); 
+            border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0;}
+        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--text-main); letter-spacing: 2px; text-transform: uppercase;}
+        
+        .desktop-nav { display: flex; align-items: center; gap: 20px; flex-wrap: nowrap;}
+        
+        .return-base-btn { 
+            font-family: 'Space Mono', monospace; color: var(--cyan-glow); text-decoration: none; 
+            font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; 
+            font-weight: 700; border: 1px solid var(--border-line); padding: 8px 16px; border-radius: 6px;
+            background: rgba(0, 229, 255, 0.05); display: flex; align-items: center; gap: 8px; white-space: nowrap;
+        }
+        .return-base-btn:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 15px var(--shadow-color); }
+
+        .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); flex-shrink: 0;}
+        .theme-toggle:hover { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
+
+        /* 🚀 GOOGLE-STYLE PROFILE DROPDOWN */
+        .user-profile-container { position: relative; display: inline-block; z-index: 1000; flex-shrink: 0;}
+        .user-chip { display: flex; align-items: center; gap: 10px; background: var(--bg-panel); border: 1px solid var(--cyan-glow); padding: 6px 16px 6px 6px; border-radius: 30px; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); transition: 0.3s; font-weight: 700; }
+        .user-chip:hover { box-shadow: 0 0 15px var(--shadow-color); }
+        .user-avatar { width: 28px; height: 28px; background: var(--cyan-glow); color: var(--bg-deep); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 1rem; flex-shrink: 0; }
+        .agent-name-txt { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; font-size: 0.7rem; text-align: left; line-height: 1.2;}
+        
+        .user-dropdown { position: absolute; top: 130%; right: 0; background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 8px; padding: 20px; width: 240px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px); display: none; flex-direction: column; gap: 10px; text-align: center; }
+        .user-profile-container:hover .user-dropdown { display: flex; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-email { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); word-break: break-all; border-bottom: 1px solid var(--border-line); padding-bottom: 15px; margin-bottom: 5px; font-weight: 700;}
+        .btn-logout-drop { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-logout-drop:hover { background: var(--danger-bg); }
+
+        /* 🚀 4. MAIN CONTENT & MODULE PANELS */
+        main { flex-grow: 1; padding: 100px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; }
+        .content-wrapper { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 30px;}
+        
+        .module-panel {
+            background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; 
+            backdrop-filter: blur(10px); padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .panel-header { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: var(--text-main); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px;}
+
+        /* Buttons Structure */
+        .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;}
+        .btn-ctrl { 
+            flex: 1; min-width: 80px; padding: 10px 5px; background: transparent; border: 1px solid var(--cyan-glow);
+            color: var(--cyan-glow); font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700;
+            border-radius: 4px; cursor: pointer; transition: 0.3s; text-align: center; text-transform: uppercase;
+        }
+        .btn-ctrl:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 10px var(--shadow-color); }
+        
+        .btn-danger { border-color: var(--danger); color: var(--danger); }
+        .btn-danger:hover { background: var(--danger); color: #FFF; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); border-color: var(--danger);}
+
+        .btn-warning { border-color: var(--warning); color: var(--warning); }
+        .btn-warning:hover { background: var(--warning); color: #000; box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); border-color: var(--warning);}
+
+        .btn-full { width: 100%; margin-bottom: 20px; }
+
+        .sub-label { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); margin-bottom: 10px; font-weight: 700;}
+
+        /* Live Terminal */
+        .terminal-box {
+            background: var(--input-bg); border: 1px solid var(--border-line); border-radius: 6px;
+            padding: 15px; font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--terminal-text);
+            height: 100px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; margin-top: 10px;
+        }
+
+        /* Toggle Switch */
+        .toggle-wrapper { display: flex; justify-content: center; align-items: center; gap: 15px; margin: 20px 0 30px 0;}
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--danger-bg); border: 1px solid var(--danger); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 3px; background-color: var(--danger); transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: rgba(16, 185, 129, 0.2); border-color: var(--success); }
+        input:checked + .slider:before { transform: translateX(24px); background-color: var(--success); }
+        .toggle-label { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; color: var(--danger); font-weight: 800; letter-spacing: 1px; transition: 0.3s;}
+        input:checked ~ .toggle-label { color: var(--success); }
+
+        /* Disabled Buttons */
+        .btn-disabled { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+
+        /* SOS Vault Inputs */
+        .sos-input-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;}
+        .sos-input { flex: 1; min-width: 150px; background: transparent; border: 1px solid var(--border-line); padding: 10px; color: var(--text-main); font-family: 'Space Mono', monospace; font-size: 0.85rem; border-radius: 4px; outline: none; transition: 0.3s;}
+        .sos-input:focus { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color);}
+        
+        .sos-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px;}
+        .sos-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border: 1px solid var(--success); border-left: 4px solid var(--success); background: rgba(16, 185, 129, 0.05); border-radius: 4px;}
+        .sos-text { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); font-weight: 700;}
+        .sos-actions { display: flex; gap: 10px; }
+
+        #authLoader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; color: var(--cyan-glow); font-size: 1.5rem; letter-spacing: 2px;}
+
+        @media (max-width: 600px) {
+            .nav { padding: 15px; }
+            .brand-name { font-size: 1rem; }
+            .user-chip { padding: 4px 10px 4px 4px; }
+            .user-avatar { width: 24px; height: 24px; font-size: 0.8rem;}
+            .agent-name-txt { font-size: 0.65rem; max-width: 80px;}
+        }
+    </style>
+</head>
+<body>
+
+    <div id="authLoader">VERIFYING CREDENTIALS...</div>
+
+    <!-- 🚀 LIVE GEOMETRIC CANVAS -->
+    <canvas id="interactiveCanvas"></canvas>
+    <div class="grid-overlay"></div>
+
+    <!-- 🚀 TOP NAVBAR -->
+    <nav class="nav">
+        <a href="services.html" class="return-base-btn">⟵ BACK</a>
+        
+        <div class="brand">
+            <div class="brand-name">APP CONTROLS</div>
+        </div>
+
+        <div class="desktop-nav" id="desktopNavContainer">
+            <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+            <div id="desktopAuthState"></div>
+        </div>
+    </nav>
+
+    <!-- 🚀 MAIN CONTENT -->
+    <main>
+        <div class="content-wrapper">
+            
+            <!-- SECTION 1: HARDWARE OVERRIDE -->
+            <div class="module-panel">
+                <div class="panel-header">🎛️ HARDWARE OVERRIDE</div>
+                
+                <button class="btn-ctrl btn-danger btn-full" onclick="logAction('> INITIATING INSTANT LOCK (Accessibility Override)...')">🔒 INSTANT LOCK (Accessibility Override)</button>
+
+                <div class="sub-label">Screen Timeout</div>
+                <div class="btn-row">
+                    <button class="btn-ctrl" onclick="logAction('> Screen timeout set to 1 SEC.')">1 SEC</button>
+                    <button class="btn-ctrl" onclick="logAction('> Screen timeout set to 10 SEC.')">10 SEC</button>
+                    <button class="btn-ctrl" onclick="logAction('> Screen timeout set to 1 MIN.')">1 MIN</button>
+                    <button class="btn-ctrl" onclick="logAction('> Screen timeout set to 5 MIN.')">5 MIN</button>
+                </div>
+
+                <div class="sub-label">Display Brightness</div>
+                <div class="btn-row">
+                    <button class="btn-ctrl" onclick="logAction('> Display brightness locked at 0%.')">0%</button>
+                    <button class="btn-ctrl" onclick="logAction('> Display brightness locked at 30%.')">30%</button>
+                    <button class="btn-ctrl" onclick="logAction('> Display brightness locked at 50%.')">50%</button>
+                    <button class="btn-ctrl" onclick="logAction('> Display brightness locked at 80%.')">80%</button>
+                    <button class="btn-ctrl" onclick="logAction('> Display brightness locked at 100%.')">100%</button>
+                </div>
+
+                <div class="sub-label">Media Volume Override</div>
+                <div class="btn-row">
+                    <button class="btn-ctrl" onclick="logAction('> Media volume locked at 0%.')">0%</button>
+                    <button class="btn-ctrl" onclick="logAction('> Media volume locked at 30%.')">30%</button>
+                    <button class="btn-ctrl" onclick="logAction('> Media volume locked at 60%.')">60%</button>
+                    <button class="btn-ctrl" onclick="logAction('> Media volume locked at 80%.')">80%</button>
+                    <button class="btn-ctrl" onclick="logAction('> Media volume locked at 100%.')">100%</button>
+                </div>
+
+                <div class="sub-label" style="color: var(--danger);">Anti-Theft Siren & Strobe</div>
+                <div class="btn-row">
+                    <button class="btn-ctrl btn-danger" onclick="logAction('> ⚠️ ANTI-THEFT SIREN TRIGGERED.')">🚨 TRIGGER SIREN</button>
+                    <button class="btn-ctrl" onclick="logAction('> Anti-Theft siren disarmed.')">🔇 DISARM SIREN</button>
+                    <button class="btn-ctrl btn-warning" onclick="logAction('> ⚠️ STROBE FLASH ENGAGED.')">⚡ STROBE FLASH</button>
+                    <button class="btn-ctrl" onclick="logAction('> Strobe flash disabled.')">❌ FLASH OFF</button>
+                </div>
+
+                <div class="terminal-box" id="termLog">
+                    <div>> UPLINK ESTABLISHED.</div>
+                    <div>> SYSTEM SECURE AND READY.</div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: EMERGENCY COMMUNICATIONS -->
+            <div class="module-panel">
+                <div class="panel-header" style="color: var(--danger);">🚨 EMERGENCY COMMUNICATIONS</div>
+                <div style="text-align: center; font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--text-muted);">Force target device to auto-dial critical numbers.</div>
+
+                <div class="toggle-wrapper">
+                    <label class="switch">
+                        <input type="checkbox" id="globalToggle" onchange="toggleEmergency()">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="toggle-label" id="toggleText">UNLOCK GLOBAL SERVICES</span>
+                </div>
+
+                <div class="btn-row" id="emergencyGroup">
+                    <button class="btn-ctrl btn-danger btn-disabled" onclick="logAction('> FORCE DIALING: POLICE (112)')">POLICE (112)</button>
+                    <button class="btn-ctrl btn-danger btn-disabled" onclick="logAction('> FORCE DIALING: AMBULANCE (108)')">AMBULANCE (108)</button>
+                    <button class="btn-ctrl btn-danger btn-disabled" onclick="logAction('> FORCE DIALING: FIRE (101)')">FIRE (101)</button>
+                    <button class="btn-ctrl btn-danger btn-disabled" onclick="logAction('> FORCE DIALING: WOMEN HELP (1091)')">WOMEN HELP (1091)</button>
+                    <button class="btn-ctrl btn-danger btn-disabled" onclick="logAction('> FORCE DIALING: CYBER CRIME (1930)')">CYBER CRIME (1930)</button>
+                </div>
+
+                <div class="sub-label" style="margin-top: 20px; color: var(--success);">Custom SOS Vault (Max 10)</div>
+                <div class="sos-input-row">
+                    <input type="text" id="sosName" class="sos-input" placeholder="Name (e.g. Dad)">
+                    <input type="text" id="sosNum" class="sos-input" placeholder="Phone Number">
+                </div>
+                <button class="btn-ctrl btn-full" style="border-color: var(--success); color: var(--success);" onclick="addSOS()">+ ADD CONTACT</button>
+
+                <div class="sos-list" id="sosList">
+                    <!-- SOS Items Injected Here -->
+                    <div class="sos-item" id="sos-mock1">
+                        <div class="sos-text">Mom (6306145176)</div>
+                        <div class="sos-actions">
+                            <button class="btn-ctrl" style="min-width: 50px; padding: 5px; border-color: var(--success); color: var(--success);" onclick="logAction('> FORCE DIALING: Mom (6306145176)')">DIAL</button>
+                            <button class="btn-ctrl btn-danger" style="min-width: 40px; padding: 5px;" onclick="document.getElementById('sos-mock1').remove()">X</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: OFFLINE SMS PAYLOAD -->
+            <div class="module-panel" style="border-color: var(--warning); background: rgba(245, 158, 11, 0.02);">
+                <div class="panel-header" style="color: var(--warning);">📡 OFFLINE SMS PAYLOAD GENERATOR</div>
+                <div style="text-align: center; font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">Generate encrypted SMS commands if the target device loses internet connectivity.</div>
+
+                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                    <input type="text" id="targetNum" class="sos-input" style="max-width: 300px; text-align: center; color: var(--warning); border-color: var(--warning);" placeholder="Target Device Number" value="6388220889">
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn-ctrl btn-warning" onclick="logAction('> OFFLINE SMS DISPATCHED: PING RADAR')">📍 SMS: PING RADAR</button>
+                    <button class="btn-ctrl btn-warning" onclick="logAction('> OFFLINE SMS DISPATCHED: TRIGGER SIREN')">🚨 SMS: TRIGGER SIREN</button>
+                    <button class="btn-ctrl btn-warning" onclick="logAction('> OFFLINE SMS DISPATCHED: INSTANT LOCK')">🔒 SMS: INSTANT LOCK</button>
+                    <button class="btn-ctrl btn-warning" onclick="logAction('> OFFLINE SMS DISPATCHED: STROBE FLASH')">⚡ SMS: STROBE FLASH</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // 🚀 UI Logic: Terminal Logger
+        const terminal = document.getElementById('termLog');
+        function logAction(msg) {
+            const div = document.createElement('div');
+            div.textContent = msg;
+            terminal.appendChild(div);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        // 🚀 UI Logic: Emergency Toggle
+        function toggleEmergency() {
+            const isChecked = document.getElementById('globalToggle').checked;
+            const label = document.getElementById('toggleText');
+            const btns = document.querySelectorAll('#emergencyGroup .btn-ctrl');
+            
+            if(isChecked) {
+                label.textContent = "GLOBAL SERVICES UNLOCKED";
+                btns.forEach(b => b.classList.remove('btn-disabled'));
+                logAction('> WARNING: Global Emergency Services Unlocked.');
+            } else {
+                label.textContent = "UNLOCK GLOBAL SERVICES";
+                btns.forEach(b => b.classList.add('btn-disabled'));
+                logAction('> Global Emergency Services Locked.');
+            }
+        }
+
+        // 🚀 UI Logic: Custom SOS Adder
+        let sosCount = 1; // 1 mock item already exists
+        function addSOS() {
+            const name = document.getElementById('sosName').value.trim();
+            const num = document.getElementById('sosNum').value.trim();
+            if(!name || !num) { alert("Please enter both Name and Number."); return; }
+            if(sosCount >= 10) { alert("Vault Full. Maximum 10 contacts allowed."); return; }
+
+            const list = document.getElementById('sosList');
+            const id = 'sos-' + Date.now();
+            
+            const div = document.createElement('div');
+            div.className = 'sos-item';
+            div.id = id;
+            div.innerHTML = `
+                <div class="sos-text">${name} (${num})</div>
+                <div class="sos-actions">
+                    <button class="btn-ctrl" style="min-width: 50px; padding: 5px; border-color: var(--success); color: var(--success);" onclick="logAction('> FORCE DIALING: ${name} (${num})')">DIAL</button>
+                    <button class="btn-ctrl btn-danger" style="min-width: 40px; padding: 5px;" onclick="document.getElementById('${id}').remove(); sosCount--;">X</button>
+                </div>
+            `;
+            list.appendChild(div);
+            
+            document.getElementById('sosName').value = '';
+            document.getElementById('sosNum').value = '';
+            sosCount++;
+            logAction(`> Added ${name} to SOS Vault.`);
+        }
+
+        // 🚀 Theme Logic
+        function initTheme() {
+            const savedTheme = localStorage.getItem('tactical_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        function toggleTheme() {
+            const root = document.documentElement;
+            const currentTheme = root.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            root.setAttribute('data-theme', newTheme);
+            localStorage.setItem('tactical_theme', newTheme);
+        }
+        initTheme();
+
+        // 🚀 Geometric Canvas Animation
+        const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particles = []; let mouse = { x: null, y: null, radius: 200 };
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
+        for (let i = 0; i < 65; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5, size: Math.random() * 2 + 1 }); }
+        
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const rgbLine = isLight ? '29, 78, 216' : '0, 229, 255';
+            const fillPoly = isLight ? 'rgba(29, 78, 216, 0.04)' : 'rgba(0, 229, 255, 0.03)';
+
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i]; p.x += p.vx; p.y += p.vy;
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1; if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                for (let j = i + 1; j < particles.length; j++) {
+                    let p2 = particles[j]; let dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
+                    if (dist < 140) {
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.2 - dist/700})`; ctx.lineWidth = 0.5; ctx.stroke();
+                        for(let k = j + 1; k < particles.length; k++) {
+                            let p3 = particles[k]; let dist2 = Math.sqrt((p2.x - p3.x)**2 + (p2.y - p3.y)**2); let dist3 = Math.sqrt((p.x - p3.x)**2 + (p.y - p3.y)**2);
+                            if (dist2 < 140 && dist3 < 140) {
+                                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.closePath();
+                                ctx.fillStyle = fillPoly; ctx.fill();
+                            }
+                        }
+                    }
+                }
+                if(mouse.x != null) {
+                    let dx = mouse.x - p.x; let dy = mouse.y - p.y; let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < mouse.radius) {
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y);
+                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.8 - distance/mouse.radius})`; ctx.lineWidth = 1; ctx.stroke();
+                    }
+                }
+            } requestAnimationFrame(animateCanvas);
+        } animateCanvas(); window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+        // 🚀 Firebase Auth (Protect Page)
+        const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
+        firebase.initializeApp(fbCfg);
+        
+        firebase.auth().onAuthStateChanged(user => { 
+            if (!user) {
+                window.location.href = 'index.html'; 
+            } else {
+                document.getElementById('authLoader').style.display = 'none';
+                const agentName = user.email.split('@')[0].toUpperCase(); const initial = agentName.charAt(0);
+                
+                document.getElementById('desktopAuthState').innerHTML = `
+                    <div class="user-profile-container">
+                        <div class="user-chip">
+                            <div class="user-avatar">${initial}</div>
+                            <div style="display:flex; flex-direction:column; line-height:1.2;">
+                                <span style="font-size:0.5rem; color:var(--text-muted);">AGENT</span>
+                                <span class="agent-name-txt">${agentName}</span>
+                            </div>
+                        </div>
+                        <div class="user-dropdown">
+                            <div class="dropdown-email">${user.email}</div>
+                            <button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ LOGOUT</button>
+                        </div>
+                    </div>`;
+            }
+        });
+    </script>
+</body>
+</html>
