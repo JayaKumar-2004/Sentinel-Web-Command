@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha-Suraksha | Command Services</title>
+    <title>Raksha-Suraksha | Active Services</title>
     
-    <!-- Firebase Core SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     
-    <!-- Premium Tech Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
@@ -25,7 +23,6 @@
             --danger: #EF4444;
             --danger-bg: rgba(239, 68, 68, 0.1);
             --success: #10B981;
-            --input-bg: rgba(0,0,0,0.8);
         }
 
         :root[data-theme="light"] {
@@ -39,10 +36,8 @@
             --danger: #DC2626;
             --danger-bg: rgba(220, 38, 38, 0.1);
             --success: #059669;
-            --input-bg: #FFFFFF;
         }
 
-        /* Essential Reset */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; transition: background-color 0.4s ease; }
 
@@ -54,30 +49,29 @@
             background-size: 60px 60px; opacity: 0.2;
         }
 
-        /* 🚀 3. TOP NAVBAR */
+        /* 🚀 3. SMART TOP NAVBAR (FIXED OVERLAP ISSUE) */
         .nav {
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex; justify-content: space-between; align-items: center; gap: 20px;
             padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); 
             border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500;
-            transition: background 0.4s ease, border-color 0.4s ease;
         }
         .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0;}
         .brand-svg { width: 40px; height: 40px; filter: drop-shadow(0 0 8px var(--shadow-color));}
         .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--text-main); letter-spacing: 2px;}
         .brand-name span { color: #FF6B35; }
         
-        .desktop-nav { display: flex; align-items: center; gap: 20px; }
-        .nav-links { display: flex; gap: 25px; list-style: none; margin-right: 15px; }
-        .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700;}
+        .desktop-nav { display: flex; align-items: center; gap: 20px; flex-wrap: nowrap;}
+        .nav-links { display: flex; gap: 20px; list-style: none; margin-right: 10px; }
+        .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700; white-space: nowrap;}
         .nav-links a:hover, .nav-links a.active { color: var(--cyan-glow); text-shadow: 0 0 8px var(--shadow-color); }
 
         .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); flex-shrink: 0;}
         .theme-toggle:hover { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
         
-        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; }
+        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; flex-shrink: 0;}
 
         /* 🚀 GOOGLE-STYLE PROFILE DROPDOWN */
-        .user-profile-container { position: relative; display: inline-block; z-index: 1000; }
+        .user-profile-container { position: relative; display: inline-block; z-index: 1000; flex-shrink: 0;}
         .user-chip { 
             display: flex; align-items: center; gap: 10px; background: var(--bg-panel); 
             border: 1px solid var(--cyan-glow); padding: 6px 16px 6px 6px; border-radius: 30px; 
@@ -89,7 +83,8 @@
             border-radius: 50%; display: flex; justify-content: center; align-items: center; 
             font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 1rem; flex-shrink: 0;
         }
-        .agent-name-txt { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; }
+        .agent-name-txt { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; }
+        
         .user-dropdown { 
             position: absolute; top: 130%; right: 0; background: var(--bg-panel); 
             border: 1px solid var(--border-line); border-radius: 8px; padding: 20px; width: 240px; 
@@ -103,9 +98,6 @@
         .btn-logout-drop { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
         .btn-logout-drop:hover { background: var(--danger-bg); }
 
-        .auth-btn { background: rgba(0, 229, 255, 0.05); color: var(--cyan-glow); border: 2px solid var(--cyan-glow); padding: 10px 24px; border-radius: 6px; font-weight: 800; cursor: pointer; transition: all 0.3s; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; text-transform: uppercase;}
-        .auth-btn:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 20px var(--shadow-color); transform: translateY(-2px); }
-
         /* 🚀 4. MOBILE SLIDE-OUT MENU */
         .mobile-overlay { position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: var(--bg-panel); backdrop-filter: blur(20px); z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-left: 2px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 30px; }
         .mobile-overlay.active { right: 0; }
@@ -114,69 +106,57 @@
         .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; transition: 0.3s; display: block; font-weight: 700;}
         .m-nav-links a:hover, .m-nav-links a.active { color: var(--cyan-glow); }
 
-        /* 🚀 5. MAIN CONTENT HUB */
+        /* 🚀 5. MAIN CONTENT & GRID */
         main { flex-grow: 1; padding: 120px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; }
-        .content-wrapper { width: 100%; max-width: 1300px; display: flex; flex-direction: column; gap: 60px;}
+        .content-wrapper { width: 100%; max-width: 1300px; display: flex; flex-direction: column; gap: 40px;}
         
-        .header-title { display: flex; flex-direction: column; align-items: center; text-align: center;}
-        .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(2rem, 6vw, 3.5rem); color: var(--text-main); font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 15px;}
+        .header-title { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 20px;}
+        .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); color: var(--text-main); font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 15px;}
         .sys-status { display: inline-flex; align-items: center; gap: 8px; color: var(--success); font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.85rem; letter-spacing: 1px; padding: 8px 20px; border: 1px solid var(--success); border-radius: 30px; background: rgba(16, 185, 129, 0.1);}
         .pulse-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulseDot 1.5s infinite; }
         @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        /* 🚀 6. TACTICAL SERVICES GRID */
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; width: 100%; }
+        /* 🚀 TALL CARDS GRID */
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; width: 100%; }
 
-        .widget-card { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; backdrop-filter: blur(10px); padding: 40px 30px; transition: 0.3s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; min-height: 340px; justify-content: space-between; }
-        .widget-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px var(--shadow-color); border-color: var(--cyan-glow); }
-
-        .widget-header { display: flex; align-items: center; gap: 16px; margin-bottom: 25px; }
-        .icon-badge { width: 60px; height: 60px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; background: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); border: 1px solid var(--border-line); flex-shrink: 0;}
+        .service-card { 
+            background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; 
+            padding: 35px 30px; display: flex; flex-direction: column; 
+            min-height: 380px; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .service-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px var(--shadow-color); border-color: var(--cyan-glow);}
         
-        .widget-card h3 { font-family: 'Orbitron', sans-serif; color: var(--text-main); font-size: 1.25rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;}
-        .widget-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 35px; flex-grow: 1; font-weight: 500;}
-
-        .action-btn { display: inline-flex; justify-content: center; align-items: center; width: 100%; padding: 16px; border-radius: 8px; font-weight: 800; text-decoration: none; font-family: 'Orbitron', sans-serif; transition: all 0.3s; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; background: transparent; color: var(--cyan-glow); border: 2px solid var(--cyan-glow); cursor: pointer; }
-        .action-btn:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 20px var(--shadow-color); transform: translateY(-2px);}
+        .c-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px;}
+        .c-icon { font-size: 1.6rem; color: var(--cyan-glow); filter: drop-shadow(0 0 5px var(--shadow-color));}
+        .c-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; }
         
-        /* Tier-3 Vault Danger Card */
-        .card-danger { border-color: var(--danger-bg); background: rgba(239, 68, 68, 0.02);}
+        .service-card p { font-family: 'Space Mono', monospace; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 30px; line-height: 1.7; flex-grow: 1;}
+        
+        .btn-outline { 
+            padding: 14px; border-radius: 6px; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; 
+            font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; 
+            background: transparent; color: var(--cyan-glow); border: 1px solid var(--cyan-glow); 
+            width: 100%; display: inline-block; text-align: center; text-decoration: none;
+        }
+        .btn-outline:hover { background: rgba(0, 229, 255, 0.1); box-shadow: 0 0 15px var(--shadow-color);}
+
+        /* Tier-3 Evidence Vault Styling */
+        .card-danger { border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.02); }
         .card-danger:hover { border-color: var(--danger); box-shadow: 0 15px 40px rgba(239, 68, 68, 0.2); }
-        .card-danger .icon-badge { background: var(--danger-bg); color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
-        .card-danger h3 { color: var(--danger); }
-        .btn-danger { color: var(--danger); border-color: var(--danger); }
-        .btn-danger:hover { background: var(--danger); color: #FFF; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
-
-        /* 🚀 7. ALL-IN-ONE AUTH MODAL */
-        .modal-wrap { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 4000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; padding: 20px; }
-        .modal-wrap.active { opacity: 1; display: flex; }
-        .auth-box { background: var(--bg-panel); border: 2px solid var(--cyan-glow); border-radius: 12px; padding: 40px; width: 100%; max-width: 420px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; }
-        .m-close-modal { position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: 0.3s; font-weight: bold;}
-        .m-close-modal:hover { color: var(--text-main); }
-        .m-title { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--cyan-glow); margin-bottom: 25px; text-align: center; font-weight: 900; letter-spacing: 1px;}
-        .inp-group { margin-bottom: 20px; }
-        .inp-label { display: block; font-family: 'Space Mono', monospace; font-weight: 700; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
-        .tac-input { width: 100%; padding: 14px; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--border-line); color: var(--text-main); font-size: 1rem; font-weight: 600; outline: none; transition: 0.3s; }
-        .tac-input:focus { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
-        .btn-submit { width: 100%; padding: 15px; background: var(--cyan-glow); color: var(--bg-deep); border: none; border-radius: 6px; font-weight: 800; font-family: 'Orbitron', sans-serif; font-size: 1rem; cursor: pointer; transition: 0.3s; margin-top: 10px; letter-spacing: 1px; }
-        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 20px var(--shadow-color);}
-        .auth-view { display: none; }
-        .auth-view.active { display: block; animation: fadeIn 0.4s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .m-links { display: flex; justify-content: space-between; margin-top: 25px; font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700;}
-        .m-links a { color: var(--text-muted); text-decoration: none; transition: 0.3s; cursor: pointer;}
-        .m-links a:hover { color: var(--cyan-glow); }
-        .m-err, .m-succ { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 0.8rem; display: block; text-align: center; margin-top: 15px; min-height: 20px; }
-        .m-err { color: #EF4444; } .m-succ { color: #10B981; }
+        .card-danger .c-icon, .card-danger .c-title { color: var(--danger); filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.4)); }
+        .btn-outline-danger { border-color: var(--danger); color: var(--danger); }
+        .btn-outline-danger:hover { background: rgba(239, 68, 68, 0.1); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); color: var(--danger); }
 
         footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); position: relative; z-index: 10; margin-top: auto;}
-        
-        #authLoader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; color: var(--cyan-glow); font-size: 1.5rem; letter-spacing: 2px;}
 
-        @media (max-width: 900px) {
+        /* INCREASED BREAKPOINT TO PREVENT NAVBAR SQUISH */
+        @media (max-width: 1150px) {
             .desktop-nav { display: none !important; }
             .mobile-nav-btn { display: block !important; }
+            .brand-name { font-size: 1.2rem; }
         }
+
+        #authLoader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; color: var(--cyan-glow); font-size: 1.5rem; letter-spacing: 2px;}
     </style>
 </head>
 <body>
@@ -191,11 +171,9 @@
 
     <div id="authLoader">VERIFYING CREDENTIALS...</div>
 
-    <!-- 🚀 LIVE GEOMETRIC CANVAS -->
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
-    <!-- 🚀 TOP NAVBAR -->
     <nav class="nav">
         <a href="index.html" class="brand">
             <svg class="brand-svg"><use href="#shield-logo"></use></svg>
@@ -210,9 +188,7 @@
                 <li><a href="mad gradle.pdf" download>MANUAL</a></li>
             </ul>
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
-            <div id="desktopAuthState">
-                <button class="auth-btn" onclick="openModal('login')">SECURE LOGIN</button>
-            </div>
+            <div id="desktopAuthState"></div>
         </div>
 
         <div style="display: flex; align-items: center; gap: 15px;">
@@ -224,17 +200,15 @@
     <div class="mobile-overlay" id="mobileNav">
         <button class="m-nav-close" onclick="toggleMobileNav()">×</button>
         <ul class="m-nav-links">
-            <li><a href="index.html" onclick="toggleMobileNav()">HOME</a></li>
-            <li><a href="services.html" onclick="toggleMobileNav()">SERVICES</a></li>
-            <li><a href="index.html#downloads" onclick="toggleMobileNav()">DOWNLOADS</a></li>
-            <li><a href="mad gradle.pdf" download onclick="toggleMobileNav()">MANUAL</a></li>
+            <li><a href="index.html">HOME</a></li>
+            <li><a href="services.html" class="active">SERVICES</a></li>
+            <li><a href="index.html#downloads">DOWNLOADS</a></li>
+            <li><a href="mad gradle.pdf" download>MANUAL</a></li>
         </ul>
         <div id="mobileAuthState" style="margin-top: 40px; border-top: 2px solid var(--border-line); padding-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-            <button class="auth-btn" style="width: 100%;" onclick="openModal('login'); toggleMobileNav();">SECURE LOGIN</button>
-        </div>
+            </div>
     </div>
 
-    <!-- 🚀 MAIN CONTENT HUB -->
     <main>
         <div class="content-wrapper">
             
@@ -243,52 +217,69 @@
                 <div class="sys-status"><span class="pulse-dot"></span> SECURE UPLINK ESTABLISHED</div>
             </div>
 
-            <!-- SERVICES GRID -->
-            <div class="dashboard-grid">
+            <div class="services-grid">
                 
-                <div class="widget-card">
-                    <div class="widget-header">
-                        <div class="icon-badge">🎛️</div>
-                        <h3>App Controls</h3>
+                <div class="service-card">
+                    <div class="c-head">
+                        <div class="c-icon">🎛️</div>
+                        <div class="c-title">APP CONTROLS</div>
                     </div>
                     <p>Remote device locking, hardware overrides, and system parameter modification.</p>
-                    <button class="action-btn" onclick="triggerAction('App Controls Module')">OPEN MODULE</button>
+                    <button class="btn-outline" onclick="triggerModule('App Controls')">OPEN MODULE</button>
                 </div>
 
-                <div class="widget-card">
-                    <div class="widget-header">
-                        <div class="icon-badge">📍</div>
-                        <h3>App Location</h3>
+                <div class="service-card">
+                    <div class="c-head">
+                        <div class="c-icon">📍</div>
+                        <div class="c-title">APP LOCATION</div>
                     </div>
                     <p>Access precision GPS coordinates and real-time ghost device tracking networks.</p>
-                    <button class="action-btn" onclick="triggerAction('Live Location Radar')">OPEN MODULE</button>
+                    <button class="btn-outline" onclick="triggerModule('App Location Radar')">OPEN MODULE</button>
                 </div>
 
-                <div class="widget-card">
-                    <div class="widget-header">
-                        <div class="icon-badge">💬</div>
-                        <h3>Message Control</h3>
+                <div class="service-card">
+                    <div class="c-head">
+                        <div class="c-icon">💬</div>
+                        <div class="c-title">MESSAGE CONTROL</div>
                     </div>
                     <p>Manage SMS routing, Auto-Responder settings, and offline trusted contacts logic.</p>
-                    <button class="action-btn" onclick="triggerAction('Message Control Gateway')">OPEN MODULE</button>
+                    <button class="btn-outline" onclick="triggerModule('Message Gateway')">OPEN MODULE</button>
                 </div>
 
-                <div class="widget-card">
-                    <div class="widget-header">
-                        <div class="icon-badge">🔗</div>
-                        <h3>Device Linking</h3>
+                <div class="service-card">
+                    <div class="c-head">
+                        <div class="c-icon">🔗</div>
+                        <div class="c-title">DEVICE LINKING</div>
                     </div>
                     <p>Synchronize external hardware, review active sessions, and verify authorization.</p>
-                    <button class="action-btn" onclick="triggerAction('Device Synchronization')">OPEN MODULE</button>
+                    <button class="btn-outline" onclick="triggerModule('Device Sync Logic')">OPEN MODULE</button>
                 </div>
 
-                <div class="widget-card card-danger">
-                    <div class="widget-header">
-                        <div class="icon-badge">🛡️</div>
-                        <h3>Tier-3 Evidence Vault</h3>
+                <div class="service-card">
+                    <div class="c-head">
+                        <div class="c-icon">🌤️</div>
+                        <div class="c-title">WEATHER CORE INTEL</div>
+                    </div>
+                    <p>Pull live local meteorological tracking indices to safeguard assets against adverse ambient environments.</p>
+                    <button class="btn-outline" onclick="triggerModule('Atmospheric Scanner')">OPEN MODULE</button>
+                </div>
+
+                <div class="service-card">
+                    <div class="c-head">
+                        <div class="c-icon">📡</div>
+                        <div class="c-title">SITE LOCATION TRACKING</div>
+                    </div>
+                    <p>Initialize real-time graphical coordinate mapping pipelines to pinpoint target devices across geographic grids.</p>
+                    <button class="btn-outline" onclick="triggerModule('Site Location Mapping')">OPEN MODULE</button>
+                </div>
+
+                <div class="service-card card-danger">
+                    <div class="c-head">
+                        <div class="c-icon">🛡️</div>
+                        <div class="c-title">TIER-3 EVIDENCE VAULT</div>
                     </div>
                     <p>Authorized agents only. Access the highly secure cloud video and audio extraction portal.</p>
-                    <button class="action-btn btn-danger" onclick="triggerAction('Tier-3 Secure Vault')">ENTER VAULT</button>
+                    <button class="btn-outline btn-outline-danger" onclick="triggerModule('Tier-3 Secure Vault')">ENTER VAULT</button>
                 </div>
 
             </div>
@@ -301,63 +292,13 @@
         <div>All Systems Normal</div>
     </footer>
 
-    <!-- 🚀 AUTH MODAL -->
-    <div class="modal-wrap" id="modal">
-        <div class="auth-box">
-            <button class="m-close-modal" onclick="closeModal()">×</button>
-            <div id="view-login" class="auth-view active">
-                <div class="m-title">AGENT LOGIN</div>
-                <div class="inp-group">
-                    <label class="inp-label">Agent ID (Email)</label>
-                    <input type="email" id="logEmail" class="tac-input" placeholder="agent@tactical.ops">
-                </div>
-                <div class="inp-group">
-                    <label class="inp-label">Passcode</label>
-                    <input type="password" id="logPass" class="tac-input" placeholder="••••••••">
-                </div>
-                <button class="btn-submit" id="btn-login-exec" onclick="execLogin()">AUTHENTICATE</button>
-                <span class="m-err" id="logErr"></span>
-                <div class="m-links">
-                    <a onclick="switchAuthView('reset')">Forgot Password?</a>
-                    <a onclick="switchAuthView('signup')">Register Agent →</a>
-                </div>
-            </div>
-
-            <div id="view-signup" class="auth-view">
-                <div class="m-title">REGISTER AGENT</div>
-                <div class="inp-group">
-                    <label class="inp-label">Secure Email</label>
-                    <input type="email" id="regEmail" class="tac-input" placeholder="new.agent@tactical.ops">
-                </div>
-                <div class="inp-group">
-                    <label class="inp-label">Master Passcode (Min 8 Chars)</label>
-                    <input type="password" id="regPass" class="tac-input" placeholder="••••••••">
-                </div>
-                <button class="btn-submit" id="btn-reg-exec" onclick="execSignup()">CREATE SECURE ACCOUNT</button>
-                <span class="m-err" id="regErr"></span>
-                <div class="m-links"><a onclick="switchAuthView('login')">← Back to Login</a></div>
-            </div>
-
-            <div id="view-reset" class="auth-view">
-                <div class="m-title">RESET PASSCODE</div>
-                <div class="inp-group">
-                    <label class="inp-label">Registered Email</label>
-                    <input type="email" id="resEmail" class="tac-input" placeholder="agent@tactical.ops">
-                </div>
-                <button class="btn-submit" id="btn-res-exec" onclick="execReset()">SEND OVERRIDE LINK</button>
-                <span class="m-err" id="resErr"></span><span class="m-succ" id="resSucc"></span>
-                <div class="m-links"><a onclick="switchAuthView('login')">← Back to Login</a></div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Presentation Fake Trigger
-        function triggerAction(moduleName) {
-            alert(`[SECURE UPLINK] Initializing ${moduleName}. Awaiting remote handshake...`);
+        // 🚀 Presentation Trigger
+        function triggerModule(moduleName) {
+            alert(`[SECURE COMMAND] Executing handshake protocol for ${moduleName}... Stand by.`);
         }
 
-        // Theme Logic
+        // 🚀 Theme Logic
         function initTheme() {
             const savedTheme = localStorage.getItem('tactical_theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
@@ -371,21 +312,22 @@
             localStorage.setItem('tactical_theme', newTheme);
         }
         function updateMobileThemeBtnVis() {
-            if(window.innerWidth <= 850) { document.getElementById('themeBtnMob').style.display = 'flex'; } 
+            if(window.innerWidth <= 1150) { document.getElementById('themeBtnMob').style.display = 'flex'; } 
             else { document.getElementById('themeBtnMob').style.display = 'none'; }
         }
         initTheme(); window.addEventListener('resize', updateMobileThemeBtnVis);
 
-        // Mobile Menu
+        // 🚀 Mobile Menu
         function toggleMobileNav() { document.getElementById('mobileNav').classList.toggle('active'); }
 
-        // Geometric Background
+        // 🚀 Geometric Canvas Animation
         const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         let particles = []; let mouse = { x: null, y: null, radius: 200 };
         window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
         window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
         for (let i = 0; i < 65; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5, size: Math.random() * 2 + 1 }); }
+        
         function animateCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const isLight = document.documentElement.getAttribute('data-theme') === 'light';
@@ -419,18 +361,21 @@
             } requestAnimationFrame(animateCanvas);
         } animateCanvas(); window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
 
-        // Firebase Auth (Protect Services)
+        // 🚀 Firebase Auth (Protect Services Page)
         const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
         firebase.initializeApp(fbCfg);
         
         firebase.auth().onAuthStateChanged(user => { 
             if (!user) {
-                window.location.href = 'index.html'; // Security kickout
+                // If not logged in, boot back to index
+                window.location.href = 'index.html'; 
             } else {
                 document.getElementById('authLoader').style.display = 'none';
-                const agentName = user.email.split('@')[0].toUpperCase(); const initial = agentName.charAt(0);
-                const dContainer = document.getElementById('desktopAuthState');
-                dContainer.innerHTML = `
+
+                const agentName = user.email.split('@')[0].toUpperCase();
+                const initial = agentName.charAt(0);
+                
+                const profileUI = `
                     <div class="user-profile-container">
                         <div class="user-chip">
                             <div class="user-avatar">${initial}</div>
@@ -440,16 +385,13 @@
                             <div class="dropdown-email">${user.email}</div>
                             <button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ SECURE LOGOUT</button>
                         </div>
-                    </div>`;
+                    </div>
+                `;
+                
+                document.getElementById('desktopAuthState').innerHTML = profileUI;
+                document.getElementById('mobileAuthState').innerHTML = profileUI;
             }
         });
-
-        function execLogin() { const email = document.getElementById('logEmail').value; const pass = document.getElementById('logPass').value; const btn = document.getElementById('btn-login-exec'); const err = document.getElementById('logErr'); btn.textContent = 'VERIFYING...'; err.textContent = ''; firebase.auth().signInWithEmailAndPassword(email, pass).then(() => { location.reload(); }).catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'AUTHENTICATE'; }); }
-        function execSignup() { const email = document.getElementById('regEmail').value; const pass = document.getElementById('regPass').value; const btn = document.getElementById('btn-reg-exec'); const err = document.getElementById('regErr'); if(pass.length < 8) { err.textContent = '⚠ Passcode min 8 chars.'; return; } btn.textContent = 'ENCRYPTING...'; err.textContent = ''; firebase.auth().createUserWithEmailAndPassword(email, pass).then(() => { location.reload(); }).catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'CREATE SECURE ACCOUNT'; }); }
-        function execReset() { const email = document.getElementById('resEmail').value; const btn = document.getElementById('btn-res-exec'); const err = document.getElementById('resErr'); const succ = document.getElementById('resSucc'); btn.textContent = 'TRANSMITTING...'; err.textContent = ''; succ.textContent = ''; firebase.auth().sendPasswordResetEmail(email).then(() => { succ.textContent = '✓ Link transmitted.'; btn.textContent = 'SEND OVERRIDE LINK'; }).catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'SEND OVERRIDE LINK'; }); }
-        function openModal(view) { switchAuthView(view); document.getElementById('modal').classList.add('active'); }
-        function closeModal() { document.getElementById('modal').classList.remove('active'); }
-        function switchAuthView(viewId) { document.querySelectorAll('.auth-view').forEach(v => v.classList.remove('active')); document.getElementById('view-' + viewId).classList.add('active'); document.querySelectorAll('.m-err, .m-succ').forEach(e => e.textContent = ''); }
     </script>
 </body>
-                    </html>
+</html>
