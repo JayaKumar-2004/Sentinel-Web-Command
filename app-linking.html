@@ -12,29 +12,81 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* [THEME VARIABLES & CORE STYLES REMAIN IDENTICAL] */
-        :root[data-theme="dark"] { --bg-deep: #030712; --bg-panel: rgba(15, 23, 42, 0.85); --cyan-glow: #00E5FF; --text-main: #F8FAFC; --text-muted: #94A3B8; --border-line: rgba(0, 229, 255, 0.2); --shadow-color: rgba(0, 229, 255, 0.3); --danger: #EF4444; --danger-bg: rgba(239, 68, 68, 0.1); --success: #10B981; --card-inner: rgba(30, 41, 59, 0.5); --input-bg: rgba(0,0,0,0.8); }
-        :root[data-theme="light"] { --bg-deep: #F1F5F9; --bg-panel: rgba(255, 255, 255, 0.95); --cyan-glow: #1D4ED8; --text-main: #0F172A; --text-muted: #475569; --border-line: rgba(29, 78, 216, 0.2); --shadow-color: rgba(29, 78, 216, 0.2); --danger: #DC2626; --danger-bg: rgba(220, 38, 38, 0.1); --success: #059669; --card-inner: rgba(226, 232, 240, 0.6); --input-bg: #FFFFFF; }
+        /* 🚀 1. DYNAMIC THEME VARIABLES */
+        :root[data-theme="dark"] {
+            --bg-deep: #030712;
+            --bg-panel: rgba(15, 23, 42, 0.85);
+            --cyan-glow: #00E5FF;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-line: rgba(0, 229, 255, 0.2);
+            --shadow-color: rgba(0, 229, 255, 0.3);
+            --danger: #EF4444;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --success: #10B981;
+            --warning: #F59E0B;
+            --card-inner: rgba(30, 41, 59, 0.5);
+            --input-bg: rgba(0,0,0,0.8);
+        }
+
+        :root[data-theme="light"] {
+            --bg-deep: #F1F5F9; 
+            --bg-panel: rgba(255, 255, 255, 0.95);
+            --cyan-glow: #1D4ED8; 
+            --text-main: #0F172A;
+            --text-muted: #475569;
+            --border-line: rgba(29, 78, 216, 0.2);
+            --shadow-color: rgba(29, 78, 216, 0.2);
+            --danger: #DC2626;
+            --danger-bg: rgba(220, 38, 38, 0.1);
+            --success: #059669;
+            --warning: #D97706;
+            --card-inner: rgba(226, 232, 240, 0.6);
+            --input-bg: #FFFFFF;
+        }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; transition: background-color 0.4s ease; }
+
+        /* 🚀 2. DYNAMIC GEOMETRIC CANVAS BACKGROUND */
         #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
-        .grid-overlay { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.2; }
-        .nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500; }
+        .grid-overlay {
+            position: fixed; inset: 0; z-index: -2; pointer-events: none;
+            background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
+            background-size: 60px 60px; opacity: 0.2;
+        }
+
+        /* 🚀 3. SMART TOP NAVBAR */
+        .nav {
+            display: flex; justify-content: space-between; align-items: center; gap: 20px;
+            padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); 
+            border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500;
+        }
         .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0;}
+        .brand-svg { width: 40px; height: 40px; filter: drop-shadow(0 0 8px var(--shadow-color));}
         .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--text-main); letter-spacing: 2px; text-transform: uppercase;}
+        .brand-name span { color: #FF6B35; }
+        
         .desktop-nav { display: flex; align-items: center; gap: 20px; flex-wrap: nowrap;}
-        .return-base-btn { font-family: 'Space Mono', monospace; color: var(--cyan-glow); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700; border: 1px solid var(--border-line); padding: 8px 16px; border-radius: 6px; background: rgba(0, 229, 255, 0.05); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+        
+        .return-base-btn { 
+            font-family: 'Space Mono', monospace; color: var(--cyan-glow); text-decoration: none; 
+            font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; 
+            font-weight: 700; border: 1px solid var(--border-line); padding: 8px 16px; border-radius: 6px;
+            background: rgba(0, 229, 255, 0.05); display: flex; align-items: center; gap: 8px; white-space: nowrap;
+        }
         .return-base-btn:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 15px var(--shadow-color); }
+
         .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); flex-shrink: 0;}
         .theme-toggle:hover { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
-        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; flex-shrink: 0;}
 
+        /* PROFILE DROPDOWN */
         .user-profile-container { position: relative; display: inline-block; z-index: 1000; flex-shrink: 0;}
         .user-chip { display: flex; align-items: center; gap: 10px; background: var(--bg-panel); border: 1px solid var(--cyan-glow); padding: 6px 16px 6px 6px; border-radius: 30px; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); transition: 0.3s; font-weight: 700; }
         .user-chip:hover { box-shadow: 0 0 15px var(--shadow-color); }
         .user-avatar { width: 28px; height: 28px; background: var(--cyan-glow); color: var(--bg-deep); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 1rem; flex-shrink: 0; }
         .agent-name-txt { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; font-size: 0.7rem; text-align: left; line-height: 1.2;}
+        
         .user-dropdown { position: absolute; top: 130%; right: 0; background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 8px; padding: 20px; width: 240px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px); display: none; flex-direction: column; gap: 10px; text-align: center; }
         .user-profile-container:hover .user-dropdown { display: flex; animation: slideDown 0.3s ease; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -42,6 +94,7 @@
         .btn-logout-drop { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
         .btn-logout-drop:hover { background: var(--danger-bg); }
 
+        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; flex-shrink: 0;}
         .mobile-overlay-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; backdrop-filter: blur(5px); }
         .mobile-overlay { position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: var(--bg-panel); backdrop-filter: blur(20px); z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-left: 2px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 30px; }
         .mobile-overlay.active { right: 0; }
@@ -50,28 +103,34 @@
         .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; transition: 0.3s; display: block; font-weight: 700;}
         .m-nav-links a:hover { color: var(--cyan-glow); }
 
+        /* 🚀 4. MAIN INTERFACE LAYOUT */
         main { flex-grow: 1; padding: 120px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; }
         .content-wrapper { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 35px;}
+        
         .header-title { display: flex; flex-direction: column; align-items: center; text-align: center;}
         .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--text-main); font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;}
         .header-title p { font-family: 'Space Mono', monospace; font-size: 0.9rem; color: var(--text-muted); }
+        
         .back-link { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; color: var(--cyan-glow); font-family: 'Space Mono', monospace; font-size: 0.85rem; text-decoration: none; font-weight: 700; transition: 0.3s; padding: 5px 10px; border: 1px solid transparent; border-radius: 4px; }
         .back-link:hover { border-color: var(--border-line); background: rgba(0, 229, 255, 0.05); }
 
+        /* CONTROL SPLIT PANEL */
         .linking-container { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; width: 100%; }
         .control-panel-card { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); height: fit-content;}
         .panel-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--text-main); letter-spacing: 1px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-line); padding-bottom: 12px;}
 
-        /* ADD DEVICE FORM */
-        .add-device-form { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
-        .tac-input { width: 100%; padding: 14px; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--border-line); color: var(--text-main); font-size: 0.9rem; font-family: 'Space Mono', monospace; outline: none; transition: 0.3s; }
-        .tac-input:focus { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
-        .btn-dl-sync { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; background: transparent; color: var(--success); border: 1px dashed var(--success); padding: 12px; border-radius: 6px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; text-decoration: none;}
-        .btn-dl-sync:hover { background: rgba(16, 185, 129, 0.1); box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+        /* GMAIL SYNC UI */
+        .secret-key-display { font-family: 'Space Mono', monospace; background: var(--card-inner); padding: 15px; border-radius: 6px; border: 1px dashed var(--cyan-glow); font-size: 1rem; font-weight: 700; color: var(--text-main); letter-spacing: 1px; width: 100%; text-align: center; margin-bottom: 10px;}
+        
+        .sync-steps { display: flex; flex-direction: column; gap: 15px; margin-top: 25px; }
+        .sync-step { display: flex; align-items: flex-start; gap: 15px; background: var(--card-inner); padding: 15px; border-radius: 8px; border: 1px solid var(--border-line); }
+        .step-num { width: 30px; height: 30px; background: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); border: 1px solid var(--cyan-glow); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 0.9rem; flex-shrink: 0; }
+        .step-text { font-size: 0.85rem; color: var(--text-main); line-height: 1.5; }
 
         /* SESSIONS ARCHITECTURE */
         .session-list { display: flex; flex-direction: column; gap: 15px; min-height: 150px;}
-        .session-item { background: var(--card-inner); border: 1px solid var(--border-line); border-radius: 8px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .session-item { background: var(--card-inner); border: 1px solid var(--border-line); border-radius: 8px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; animation: fadeIn 0.4s ease;}
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .session-item:hover { border-color: var(--cyan-glow); }
         .session-meta { display: flex; flex-direction: column; gap: 5px; }
         .device-info { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
@@ -80,7 +139,6 @@
         .btn-terminate { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 8px 14px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.3s; letter-spacing: 0.5px; }
         .btn-terminate:hover { background: var(--danger-bg); box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
         
-        /* Empty State */
         .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-family: 'Space Mono', monospace; font-size: 0.9rem; border: 1px dashed var(--border-line); border-radius: 8px;}
 
         footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); position: relative; z-index: 10; margin-top: auto;}
@@ -102,6 +160,7 @@
     </svg>
 
     <div id="authLoader">VERIFYING CREDENTIALS...</div>
+
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
@@ -131,21 +190,33 @@
     <main>
         <div class="content-wrapper">
             <a href="services.html" class="back-link">← BACK TO DASHBOARD</a>
+            
             <div class="header-title">
                 <h1>Device Linking Hub</h1>
-                <p>Synchronize core client hardware nodes, authorize mobile applications, and manage tactical communication streams.</p>
+                <p>Synchronize core client hardware nodes directly via Firebase Authentication pipelines.</p>
             </div>
 
             <div class="linking-container">
+                
                 <div class="control-panel-card">
-                    <div class="panel-title"><span>🔐</span> PAIR NEW CLIENT</div>
-                    <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.6;">
-                        Manually inject a hardware node into your secure Firebase tunnel.
+                    <div class="panel-title"><span>📧</span> GMAIL SYNCHRONIZATION</div>
+                    <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.6; margin-bottom: 15px;">
+                        Your web dashboard is currently securely bound to the following authenticated account:
                     </p>
                     
-                    <div class="add-device-form">
-                        <input type="text" id="devName" class="tac-input" placeholder="Device Name (e.g. Redmi Y3)">
-                        <button class="btn-dl-sync" onclick="addDeviceToFirebase()">🔗 AUTHORIZE DEVICE</button>
+                    <div class="secret-key-display" id="activeGmail" style="border-color: var(--success); color: var(--success);">
+                        AWAITING AUTH...
+                    </div>
+                    
+                    <div class="sync-steps">
+                        <div class="sync-step">
+                            <div class="step-num" style="background: rgba(16, 185, 129, 0.1); border-color: var(--success); color: var(--success);">✓</div>
+                            <div class="step-text">To link your physical phone to this dashboard, install the Sentinel-X App on the target hardware.</div>
+                        </div>
+                        <div class="sync-step">
+                            <div class="step-num" style="background: rgba(16, 185, 129, 0.1); border-color: var(--success); color: var(--success);">✓</div>
+                            <div class="step-text">Open the app and log in using the <strong>exact same Email and Password</strong> shown above. Firebase will automatically establish the secure socket connection and the device will appear here instantly.</div>
+                        </div>
                     </div>
                 </div>
 
@@ -153,7 +224,7 @@
                     <div class="panel-title"><span>💻</span> YOUR AUTHORIZED NODES</div>
                     
                     <div class="session-list" id="nodesContainer">
-                        <div class="empty-state">Fetching secure links...</div>
+                        <div class="empty-state">Waiting for Sentinel-X app connection...</div>
                     </div>
                 </div>
             </div>
@@ -172,68 +243,52 @@
         const database = firebase.database();
         let currentUserId = null;
 
-        // 🚀 1. WRITE TO FIREBASE (Add Device)
-        function addDeviceToFirebase() {
-            const devName = document.getElementById('devName').value.trim();
-            if (!devName) { alert("Please enter a device name to pair."); return; }
-            if (!currentUserId) return;
-
-            const deviceId = 'dev_' + Date.now();
-            const deviceRef = database.ref('agents/' + currentUserId + '/devices/' + deviceId);
-            
-            deviceRef.set({
-                name: devName,
-                status: "ONLINE",
-                timestamp: new Date().toLocaleTimeString()
-            }).then(() => {
-                document.getElementById('devName').value = '';
-                alert(`[SUCCESS] ${devName} has been injected into your secure tunnel.`);
-            }).catch(error => {
-                alert("Database Error: " + error.message);
-            });
-        }
-
-        // 🚀 2. DELETE FROM FIREBASE (Revoke Device)
+        // 🚀 REVOKE DEVICE (DELETE FROM FIREBASE)
         function revokeDevice(deviceId, deviceName) {
-            if(confirm(`Are you sure you want to completely revoke access for: ${deviceName}?`)) {
+            if(confirm(`Are you sure you want to completely revoke access for: ${deviceName}? They will be forced to log out of the Android app.`)) {
                 database.ref('agents/' + currentUserId + '/devices/' + deviceId).remove()
                 .then(() => {
-                    alert(`[REVOKED] Connection dropped for: ${deviceName}`);
+                    alert(`[REVOKED] Connection dropped and session terminated for: ${deviceName}`);
                 });
             }
         }
 
-        // 🚀 3. LISTEN TO FIREBASE (Realtime UI Update)
+        // 🚀 LISTEN TO FIREBASE (REALTIME UI UPDATE)
         function listenToDevices(uid) {
             const nodesContainer = document.getElementById('nodesContainer');
+            // Listens to the devices node under the specific logged-in user
             const devicesRef = database.ref('agents/' + uid + '/devices');
 
             devicesRef.on('value', (snapshot) => {
-                nodesContainer.innerHTML = ''; // Clear loading
+                nodesContainer.innerHTML = ''; // Clear loading/previous state
                 const devices = snapshot.val();
 
                 if (!devices) {
-                    nodesContainer.innerHTML = '<div class="empty-state">No devices currently linked to your Agent Account.</div>';
+                    nodesContainer.innerHTML = '<div class="empty-state">Waiting for Sentinel-X app connection...<br><br>Log into your mobile app to link a device.</div>';
                     return;
                 }
 
-                // Render each device dynamically
+                // Render each device dynamically directly from the Android App's database writes
                 for (let devId in devices) {
                     let dev = devices[devId];
+                    let devName = dev.name || "Unknown Android Device";
+                    let devStatus = dev.status || "ONLINE";
+                    let devTime = dev.timestamp || "Just Now";
+
                     nodesContainer.innerHTML += `
                         <div class="session-item">
                             <div class="session-meta">
-                                <div class="device-info">${dev.name} <span class="status-badge active">${dev.status}</span></div>
-                                <div class="timestamp">Linked at: ${dev.timestamp} • Encrypted Pipeline</div>
+                                <div class="device-info">${devName} <span class="status-badge active">${devStatus}</span></div>
+                                <div class="timestamp">Last Sync: ${devTime} • Active Firebase Socket</div>
                             </div>
-                            <button class="btn-terminate" onclick="revokeDevice('${devId}', '${dev.name}')">REVOKE</button>
+                            <button class="btn-terminate" onclick="revokeDevice('${devId}', '${devName}')">REVOKE</button>
                         </div>
                     `;
                 }
             });
         }
 
-        // 🚀 Auth State Check
+        // 🚀 Auth State Check & Initialization
         firebase.auth().onAuthStateChanged(user => { 
             if (!user) {
                 window.location.href = 'index.html'; 
@@ -241,6 +296,9 @@
                 currentUserId = user.uid;
                 document.getElementById('authLoader').style.display = 'none';
                 
+                // Display the Logged in Email in the UI Panel
+                document.getElementById('activeGmail').innerText = user.email;
+
                 // Start Listening to this user's specific database node
                 listenToDevices(user.uid);
 
