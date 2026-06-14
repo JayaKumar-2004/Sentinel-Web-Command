@@ -106,7 +106,7 @@
         .m-nav-close { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 2.5rem; color: var(--text-muted); cursor: pointer; }
         .m-nav-links { list-style: none; display: flex; flex-direction: column; gap: 25px; }
         .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; transition: 0.3s; display: block; font-weight: 700;}
-        .m-nav-links a:hover { color: var(--cyan-glow); }
+        .m-nav-links a:hover, .m-nav-links a.active { color: var(--cyan-glow); }
 
         /* 🚀 5. MAIN CONTENT & GRID */
         main { flex-grow: 1; padding: 120px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; }
@@ -151,7 +151,6 @@
 
         footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); position: relative; z-index: 10; margin-top: auto;}
 
-        /* 🔥 HOME PAGE IDENTICAL BREAKPOINT FIX */
         @media (max-width: 850px) {
             .desktop-nav { display: none !important; }
             .mobile-nav-btn { display: block !important; }
@@ -222,7 +221,7 @@
                 <div class="sys-status"><span class="pulse-dot"></span> SECURE UPLINK ESTABLISHED</div>
             </div>
 
-            <!-- 🚀 TALL CARDS GRID (7 MODULES) -->
+            <!-- 🚀 TALL CARDS GRID (7 MODULES WITH REAL LINKS) -->
             <div class="services-grid">
                 
                 <!-- 1. App Controls -->
@@ -232,7 +231,7 @@
                         <div class="c-title">APP CONTROLS</div>
                     </div>
                     <p>Remote device locking, hardware overrides, and system parameter modification.</p>
-                    <button class="btn-outline" onclick="triggerModule('App Controls')">OPEN MODULE</button>
+                    <a href="app-controls.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
                 <!-- 2. App Location -->
@@ -242,7 +241,7 @@
                         <div class="c-title">APP LOCATION</div>
                     </div>
                     <p>Access precision GPS coordinates and real-time ghost device tracking networks.</p>
-                    <button class="btn-outline" onclick="triggerModule('App Location Radar')">OPEN MODULE</button>
+                    <a href="map.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
                 <!-- 3. Message Control -->
@@ -252,7 +251,7 @@
                         <div class="c-title">MESSAGE CONTROL</div>
                     </div>
                     <p>Manage SMS routing, Auto-Responder settings, and offline trusted contacts logic.</p>
-                    <button class="btn-outline" onclick="triggerModule('Message Gateway')">OPEN MODULE</button>
+                    <a href="message-control.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
                 <!-- 4. Device Linking -->
@@ -262,7 +261,7 @@
                         <div class="c-title">DEVICE LINKING</div>
                     </div>
                     <p>Synchronize external hardware, review active sessions, and verify authorization.</p>
-                    <button class="btn-outline" onclick="triggerModule('Device Sync Logic')">OPEN MODULE</button>
+                    <a href="app-linking.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
                 <!-- 5. Weather Core Intel -->
@@ -272,7 +271,7 @@
                         <div class="c-title">WEATHER CORE INTEL</div>
                     </div>
                     <p>Pull live local meteorological tracking indices to safeguard assets against adverse ambient environments.</p>
-                    <button class="btn-outline" onclick="triggerModule('Atmospheric Scanner')">OPEN MODULE</button>
+                    <a href="weather.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
                 <!-- 6. Site Location Tracking -->
@@ -282,7 +281,7 @@
                         <div class="c-title">SITE LOCATION TRACKING</div>
                     </div>
                     <p>Initialize real-time graphical coordinate mapping pipelines to pinpoint target devices across geographic grids.</p>
-                    <button class="btn-outline" onclick="triggerModule('Site Location Mapping')">OPEN MODULE</button>
+                    <a href="site-tracking.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
                 <!-- 7. Tier-3 Evidence Vault -->
@@ -292,7 +291,7 @@
                         <div class="c-title">TIER-3 EVIDENCE VAULT</div>
                     </div>
                     <p>Authorized agents only. Access the highly secure cloud video and audio extraction portal.</p>
-                    <button class="btn-outline btn-outline-danger" onclick="triggerModule('Tier-3 Secure Vault')">ENTER VAULT</button>
+                    <a href="evidence-vault.html" class="btn-outline btn-outline-danger">ENTER VAULT</a>
                 </div>
 
             </div>
@@ -306,11 +305,6 @@
     </footer>
 
     <script>
-        // 🚀 Presentation Trigger
-        function triggerModule(moduleName) {
-            alert(`[SECURE COMMAND] Executing handshake protocol for ${moduleName}... Stand by.`);
-        }
-
         // 🚀 Theme Logic
         function initTheme() {
             const savedTheme = localStorage.getItem('tactical_theme') || 'dark';
