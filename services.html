@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha-Suraksha | Main Dashboard</title>
+    <title>Raksha-Suraksha | Command Services</title>
     
+    <!-- Firebase Core SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     
+    <!-- Premium Tech Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
@@ -115,7 +117,7 @@
         .sidebar a:hover { background-color: rgba(0, 229, 255, 0.05); color: var(--text-main); border: 1px solid var(--border-line);}
         .sidebar a.active { background-color: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); font-weight: 800; border: 1px solid var(--cyan-glow); box-shadow: 0 0 15px var(--shadow-color); }
 
-        /* 🚀 5. MAIN CONTENT & OLD 4-CARD GRID */
+        /* 🚀 5. MAIN CONTENT & SYSTEM SERVICES GRID */
         .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 40px; }
         
         .header-title { display: flex; flex-direction: column; margin-bottom: 40px;}
@@ -153,7 +155,7 @@
         }
         .action-btn:hover { box-shadow: 0 0 20px var(--shadow-color); transform: translateY(-2px);}
         
-        /* Danger Card Style (Radar) */
+        /* Danger Card Style (Radar Map Tracking) */
         .card-danger { border-color: var(--danger-bg); }
         .card-danger:hover { border-color: var(--danger); box-shadow: 0 15px 40px rgba(239, 68, 68, 0.2); }
         .card-danger .icon-badge { background: var(--danger-bg); color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
@@ -213,11 +215,9 @@
 
     <div class="dashboard-wrapper">
         <aside class="sidebar" id="sidebar">
-            <div style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--cyan-glow); letter-spacing: 2px; margin-bottom: 10px; padding-left: 10px;">DASHBOARD MENU</div>
-            <a href="#" class="active">📊 Overview Dashboard</a>
-            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk">📲 Client Application</a>
+            <div style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--cyan-glow); letter-spacing: 2px; margin-bottom: 10px; padding-left: 10px;">TACTICAL DOWNLOADS</div>
+            <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk">📲 Client Application (APK)</a>
             <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/South_India_Pack.zip">🗺️ Offline Maps Pack</a>
-            <a href="mad gradle.pdf" download>📄 User Documentation</a>
             
             <div style="border-top: 1px solid var(--border-line); margin: 15px 0;"></div>
             <div style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); letter-spacing: 2px; margin-bottom: 10px; padding-left: 10px;">SYSTEM</div>
@@ -226,45 +226,49 @@
 
         <main class="main-content">
             <div class="header-title">
-                <h1>System Overview</h1>
-                <div class="sys-status"><span class="pulse-dot"></span> CONNECTION SECURED</div>
+                <h1>Command Services</h1>
+                <div class="sys-status"><span class="pulse-dot"></span> SECURITY SYSTEM OPERATIONAL</div>
             </div>
 
             <div class="dashboard-grid">
+                <!-- Service 1 -->
                 <div class="widget-card">
                     <div class="widget-header">
                         <div class="icon-badge">🎛️</div>
-                        <h3>Command Gateway</h3>
+                        <h3>Master Controls</h3>
                     </div>
-                    <p>Access core system architecture, manage linked devices, and view secure evidence records.</p>
+                    <p>Access core architecture overrides, sound anti-theft alarms, configure critical tracking routines, and send emergency fallback signals.</p>
                     <a href="master-control.html" class="action-btn">Open Master Control</a>
                 </div>
 
+                <!-- Service 2 -->
                 <div class="widget-card">
                     <div class="widget-header">
                         <div class="icon-badge">🔗</div>
-                        <h3>Device Synchronization</h3>
+                        <h3>Device Linking</h3>
                     </div>
-                    <p>Manage synchronized physical devices, active sessions, and secondary guardian nodes.</p>
+                    <p>Register external hardware client instances, track authorized active sessions, and review telemetry link authentication states.</p>
                     <a href="app-linking.html" class="action-btn">Manage Devices</a>
                 </div>
 
+                <!-- Service 3 -->
                 <div class="widget-card">
                     <div class="widget-header">
                         <div class="icon-badge">🌤️</div>
-                        <h3>Atmospheric Data</h3>
+                        <h3>Weather Core Intel</h3>
                     </div>
-                    <p>Monitor local weather conditions and environmental metrics for safe routing.</p>
+                    <p>Pull live local meteorological tracking indices and atmospheric metrics to safeguard assets against adverse ambient environments.</p>
                     <a href="weather.html" class="action-btn">View Weather</a>
                 </div>
 
+                <!-- Service 4 (Radar Style Map Tracking) -->
                 <div class="widget-card card-danger">
                     <div class="widget-header">
                         <div class="icon-badge">📍</div>
-                        <h3>Live Location Radar</h3>
+                        <h3>Site Location Tracking</h3>
                     </div>
-                    <p>Launch the dedicated map interface to pinpoint target devices and establish routing.</p>
-                    <a href="map.html" class="action-btn btn-danger">Initialize Map</a>
+                    <p>Initialize real-time graphical coordinate mapping pipelines to pinpoint and trace active linked assets across geographic grids.</p>
+                    <a href="map.html" class="action-btn btn-danger">Initialize Map Tracker</a>
                 </div>
             </div>
         </main>
@@ -300,44 +304,71 @@
             document.getElementById('mobileOverlay').classList.toggle('active');
         }
 
-        // 3. INTERACTIVE CURSOR PARTICLES
+        // 3. LIVE GEOMETRIC FACETED MESH BACKGROUND
         const canvas = document.getElementById('interactiveCanvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let particles = []; let mouse = { x: null, y: null, radius: 200 };
+        
+        let particles = [];
+        let mouse = { x: null, y: null, radius: 200 };
+
         window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
         window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
-        for (let i = 0; i < 70; i++) {
-            particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6, size: Math.random() * 2 + 1 });
+
+        for (let i = 0; i < 65; i++) {
+            particles.push({
+                x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
+                size: Math.random() * 2 + 1
+            });
         }
+
         function animateCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
             const isLight = document.documentElement.getAttribute('data-theme') === 'light';
             const rgbLine = isLight ? '29, 78, 216' : '0, 229, 255';
             const fillPoly = isLight ? 'rgba(29, 78, 216, 0.04)' : 'rgba(0, 229, 255, 0.03)';
 
             for (let i = 0; i < particles.length; i++) {
-                let p = particles[i]; p.x += p.vx; p.y += p.vy;
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1; if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                let p = particles[i];
+                p.x += p.vx; p.y += p.vy;
+                
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                
                 for (let j = i + 1; j < particles.length; j++) {
-                    let p2 = particles[j]; let dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
-                    if (dist < 150) {
+                    let p2 = particles[j];
+                    let dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
+                    
+                    if (dist < 140) {
                         ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.2 - dist/750})`; ctx.lineWidth = 0.5; ctx.stroke();
+                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.2 - dist/700})`; 
+                        ctx.lineWidth = 0.5; ctx.stroke();
+
                         for(let k = j + 1; k < particles.length; k++) {
-                            let p3 = particles[k]; let dist2 = Math.sqrt((p2.x - p3.x)**2 + (p2.y - p3.y)**2); let dist3 = Math.sqrt((p.x - p3.x)**2 + (p.y - p3.y)**2);
-                            if (dist2 < 150 && dist3 < 150) {
-                                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.closePath();
-                                ctx.fillStyle = fillPoly; ctx.fill();
+                            let p3 = particles[k];
+                            let dist2 = Math.sqrt((p2.x - p3.x)**2 + (p2.y - p3.y)**2);
+                            let dist3 = Math.sqrt((p.x - p3.x)**2 + (p.y - p3.y)**2);
+                            
+                            if (dist2 < 140 && dist3 < 140) {
+                                ctx.beginPath();
+                                ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y);
+                                ctx.closePath();
+                                ctx.fillStyle = fillPoly; 
+                                ctx.fill();
                             }
                         }
                     }
                 }
+
                 if(mouse.x != null) {
-                    let dx = mouse.x - p.x; let dy = mouse.y - p.y; let distance = Math.sqrt(dx * dx + dy * dy);
+                    let dx = mouse.x - p.x; let dy = mouse.y - p.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
                     if (distance < mouse.radius) {
                         ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y);
-                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.8 - distance/mouse.radius})`; ctx.lineWidth = 1; ctx.stroke();
+                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.8 - distance/mouse.radius})`;
+                        ctx.lineWidth = 1; ctx.stroke();
                     }
                 }
             }
@@ -346,13 +377,13 @@
         animateCanvas();
         window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
 
-        // 4. FIREBASE AUTHENTICATION (PROTECT DASHBOARD)
+        // 4. FIREBASE AUTHENTICATION (PROTECT SERVICES PANEL)
         const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
         firebase.initializeApp(fbCfg);
         
         firebase.auth().onAuthStateChanged(user => { 
             if (!user) {
-                window.location.href = 'index.html'; // Security Kickout
+                window.location.href = 'index.html'; // Kickout unauthenticated guests
             } else {
                 document.getElementById('authLoader').style.display = 'none';
 
