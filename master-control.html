@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raksha-Suraksha | Master Controls</title>
+    
+    <!-- Firebase Core SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <!-- Premium Tech Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 🚀 1. DYNAMIC THEME VARIABLES */
+        :root[data-theme="dark"] {
+            --bg-deep: #030712;
+            --bg-panel: rgba(15, 23, 42, 0.85);
+            --cyan-glow: #00E5FF;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-line: rgba(0, 229, 255, 0.2);
+            --shadow-color: rgba(0, 229, 255, 0.3);
+            --danger: #EF4444;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --success: #10B981;
+            --input-bg: rgba(0,0,0,0.8);
+        }
+
+        :root[data-theme="light"] {
+            --bg-deep: #F1F5F9; 
+            --bg-panel: rgba(255, 255, 255, 0.95);
+            --cyan-glow: #1D4ED8; 
+            --text-main: #0F172A;
+            --text-muted: #475569;
+            --border-line: rgba(29, 78, 216, 0.2);
+            --shadow-color: rgba(29, 78, 216, 0.2);
+            --danger: #DC2626;
+            --danger-bg: rgba(220, 38, 38, 0.1);
+            --success: #059669;
+            --input-bg: #FFFFFF;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { display: flex; flex-direction: column; height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow: hidden; transition: background-color 0.4s ease; }
+
+        /* 🚀 2. DYNAMIC GEOMETRIC CANVAS BACKGROUND */
+        #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
+        .grid-overlay {
+            position: fixed; inset: 0; z-index: -2; pointer-events: none;
+            background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
+            background-size: 60px 60px; opacity: 0.2;
+        }
+
+        /* 🚀 3. TOP NAVBAR */
+        .nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); 
+            border-bottom: 1px solid var(--border-line); position: relative; z-index: 500;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0;}
+        .brand-svg { width: 40px; height: 40px; filter: drop-shadow(0 0 8px var(--shadow-color));}
+        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--text-main); letter-spacing: 2px;}
+        .brand-name span { color: #FF6B35; }
+        
+        .desktop-nav { display: flex; align-items: center; gap: 15px; }
+        
+        .return-base-btn { 
+            font-family: 'Space Mono', monospace; color: var(--cyan-glow); text-decoration: none; 
+            font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; 
+            font-weight: 700; border: 1px solid var(--border-line); padding: 8px 16px; border-radius: 6px;
+            background: rgba(0, 229, 255, 0.05); display: flex; align-items: center; gap: 8px; white-space: nowrap;
+        }
+        .return-base-btn:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 15px var(--shadow-color); }
+
+        .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); flex-shrink: 0;}
+        .theme-toggle:hover { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
+        
+        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; }
+
+        /* 🚀 GOOGLE-STYLE PROFILE DROPDOWN */
+        .user-profile-container { position: relative; display: inline-block; z-index: 1000; }
+        .user-chip { 
+            display: flex; align-items: center; gap: 10px; background: var(--bg-panel); 
+            border: 1px solid var(--cyan-glow); padding: 6px 16px 6px 6px; border-radius: 30px; 
+            cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); transition: 0.3s; font-weight: 700;
+        }
+        .user-chip:hover { box-shadow: 0 0 15px var(--shadow-color); }
+        .user-avatar { 
+            width: 28px; height: 28px; background: var(--cyan-glow); color: var(--bg-deep); 
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 1rem; flex-shrink: 0;
+        }
+        .agent-name-txt { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; }
+        
+        .user-dropdown { 
+            position: absolute; top: 130%; right: 0; background: var(--bg-panel); 
+            border: 1px solid var(--border-line); border-radius: 8px; padding: 20px; width: 240px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px); 
+            display: none; flex-direction: column; gap: 10px; text-align: center;
+        }
+        .user-profile-container:hover .user-dropdown { display: flex; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .dropdown-email { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); word-break: break-all; border-bottom: 1px solid var(--border-line); padding-bottom: 15px; margin-bottom: 5px; font-weight: 700;}
+        .btn-logout-drop { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-logout-drop:hover { background: var(--danger-bg); }
+
+        /* 🚀 4. DASHBOARD WRAPPER & UNBREAKABLE SIDEBAR */
+        .dashboard-wrapper { display: flex; flex-grow: 1; position: relative; z-index: 10; overflow: hidden; }
+        
+        .sidebar {
+            width: 260px; min-width: 260px; flex-shrink: 0;
+            background: var(--bg-panel); backdrop-filter: blur(20px); 
+            border-right: 1px solid var(--border-line); display: flex; flex-direction: column; 
+            padding: 24px; transition: transform 0.3s ease; z-index: 1000; gap: 10px;
+        }
+        .sidebar a {
+            text-decoration: none; color: var(--text-muted); padding: 14px 16px; border-radius: 10px;
+            display: flex; align-items: center; gap: 12px; font-weight: 600; transition: all 0.3s ease; font-family: 'Inter', sans-serif; font-size: 0.95rem; line-height: 1.4;
+        }
+        .sidebar a:hover { background-color: rgba(0, 229, 255, 0.05); color: var(--text-main); border: 1px solid var(--border-line);}
+        .sidebar a.active { background-color: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); font-weight: 800; border: 1px solid var(--cyan-glow); box-shadow: 0 0 15px var(--shadow-color); }
+
+        /* 🚀 5. MAIN CONTENT - MASTER CONTROLS */
+        .main-content { 
+            flex-grow: 1; display: flex; flex-direction: column; 
+            align-items: center; padding: 40px 5%; overflow-y: auto;
+        }
+        
+        .content-wrapper { width: 100%; max-width: 1000px; display: flex; flex-direction: column; }
+        
+        .header-title { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; flex-wrap: wrap; gap: 15px;}
+        .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; color: var(--text-main); font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px;}
+        .sys-status { display: inline-flex; align-items: center; gap: 8px; color: var(--success); font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.85rem; letter-spacing: 1px; }
+        .pulse-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulseDot 1.5s infinite; }
+        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        .control-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px; width: 100%; margin-bottom: 40px;
+        }
+
+        .control-card {
+            background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; 
+            backdrop-filter: blur(10px); padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+            display: flex; flex-direction: column;
+        }
+        
+        .control-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--border-line); padding-bottom: 15px;}
+        .c-icon { font-size: 1.5rem; color: var(--cyan-glow); }
+        .control-card h3 { font-family: 'Orbitron', sans-serif; color: var(--text-main); font-size: 1.1rem; font-weight: 800; letter-spacing: 1px;}
+        
+        .c-label { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: block; font-weight: 700;}
+        
+        /* Form Elements */
+        .tac-select { width: 100%; padding: 12px; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--border-line); color: var(--text-main); font-family: 'Space Mono', monospace; font-size: 0.9rem; outline: none; margin-bottom: 20px;}
+        .tac-select:focus { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
+        
+        /* Toggle Switch */
+        .switch-wrap { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 6px; border: 1px solid var(--border-line);}
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--text-muted); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        /* Buttons */
+        .btn-exec {
+            display: flex; justify-content: center; align-items: center; width: 100%;
+            padding: 14px; border-radius: 6px; font-weight: 800; font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;
+            background: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); border: 1px solid var(--cyan-glow); cursor: pointer; margin-top: auto;
+        }
+        .btn-exec:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 15px var(--shadow-color); }
+
+        /* Danger Zone */
+        .danger-zone { border: 2px dashed var(--danger); background: var(--danger-bg); grid-column: 1 / -1;}
+        .danger-zone .c-icon { color: var(--danger); }
+        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); border-color: var(--danger); }
+        .btn-danger:hover { background: var(--danger); color: #FFF; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+
+        .status-msg { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--success); display: block; text-align: center; margin-top: 10px; min-height: 15px;}
+
+        /* 🚀 MOBILE FIXES */
+        .mobile-overlay-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; backdrop-filter: blur(5px); }
+        
+        @media (max-width: 900px) {
+            .desktop-nav { display: none !important; }
+            .mobile-nav-btn { display: block !important; }
+            .sidebar { position: fixed; left: -300px; height: 100%; box-shadow: none; z-index: 2000; overflow-y: auto;}
+            .sidebar.active { left: 0; box-shadow: 10px 0 40px rgba(0,0,0,0.8); }
+            .mobile-overlay-bg.active { display: block; }
+            .main-content { padding: 30px 20px; }
+            .brand-name { font-size: 1.1rem; }
+        }
+
+        #authLoader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; color: var(--cyan-glow); font-size: 1.5rem; letter-spacing: 2px;}
+    </style>
+</head>
+<body>
+
+    <svg style="display:none;">
+        <symbol id="shield-logo" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/>
+            <path d="M12 5.5L6 7.5V11.5C6 15.2 8.5 18.6 12 19.5C15.5 18.6 18 15.2 18 11.5V7.5L12 5.5Z" fill="#FF6B35"/>
+            <path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="#FFFFFF"/>
+        </symbol>
+    </svg>
+
+    <div id="authLoader">VERIFYING CREDENTIALS...</div>
+
+    <canvas id="interactiveCanvas"></canvas>
+    <div class="grid-overlay"></div>
+
+    <nav class="nav">
+        <a href="index.html" class="brand">
+            <svg class="brand-svg"><use href="#shield-logo"></use></svg>
+            <div class="brand-name">RAKSHA<span>-</span>SURAKSHA</div>
+        </a>
+
+        <div class="desktop-nav" id="desktopNavContainer">
+            <a href="services.html" class="return-base-btn">⟵ BACK TO SERVICES</a>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
+            <div id="desktopAuthState"></div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button class="theme-toggle" style="display: none;" onclick="toggleTheme()" id="themeBtnMob">🌓</button>
+            <button class="mobile-nav-btn" onclick="toggleSidebar()">☰</button>
+        </div>
+    </nav>
+
+    <div class="mobile-overlay-bg" id="mobileOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="dashboard-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--cyan-glow); letter-spacing: 2px; margin-bottom: 10px; padding-left: 10px;">NAVIGATION</div>
+            <a href="services.html">📊 Command Services</a>
+            <a href="#" class="active">🎛️ Master Controls</a>
+            
+            <div style="border-top: 1px solid var(--border-line); margin: 15px 0;"></div>
+            <div style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); letter-spacing: 2px; margin-bottom: 10px; padding-left: 10px;">SYSTEM</div>
+            <a href="#" style="color: var(--danger);" onclick="firebase.auth().signOut()">⟵ Disconnect & Logout</a>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                <div class="header-title">
+                    <div>
+                        <h1>Master Controls</h1>
+                        <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 5px;">Execute high-level overrides and hardware payloads.</p>
+                    </div>
+                    <div class="sys-status"><span class="pulse-dot"></span> SECURE WSS ESTABLISHED</div>
+                </div>
+
+                <div class="control-grid">
+                    
+                    <!-- MODULE: Telemetry Config -->
+                    <div class="control-card">
+                        <div class="control-header">
+                            <span class="c-icon">📡</span>
+                            <h3>Telemetry Sync</h3>
+                        </div>
+                        <span class="c-label">Adjust GPS Ping Interval</span>
+                        <select class="tac-select">
+                            <option value="10">Aggressive (10 Seconds) - High Drain</option>
+                            <option value="30" selected>Standard (30 Seconds)</option>
+                            <option value="60">Economy (60 Seconds)</option>
+                            <option value="300">Stealth (5 Minutes) - Low Drain</option>
+                        </select>
+                        <button class="btn-exec" onclick="simCommand(this, '✓ TELEMETRY UPDATED')">UPDATE PROTOCOL</button>
+                        <span class="status-msg"></span>
+                    </div>
+
+                    <!-- MODULE: Stealth Mode -->
+                    <div class="control-card">
+                        <div class="control-header">
+                            <span class="c-icon">🕵️</span>
+                            <h3>Stealth Protocol</h3>
+                        </div>
+                        <span class="c-label">Hide App Icon on Target Device</span>
+                        <div class="switch-wrap">
+                            <span style="font-family: 'Inter'; font-weight: 600; font-size: 0.9rem;">App Visibility</span>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <button class="btn-exec" onclick="simCommand(this, '✓ PAYLOAD DELIVERED')">APPLY OVERRIDE</button>
+                        <span class="status-msg"></span>
+                    </div>
+
+                    <!-- MODULE: Siren Alert -->
+                    <div class="control-card">
+                        <div class="control-header">
+                            <span class="c-icon">🚨</span>
+                            <h3>Tactical Siren</h3>
+                        </div>
+                        <span class="c-label">Trigger Max-Volume Hardware Alarm</span>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Bypasses "Do Not Disturb" and silent modes on the remote device.</p>
+                        <button class="btn-exec" style="border-color: #F59E0B; color: #F59E0B;" onclick="simCommand(this, '✓ ALARM TRIGGERED')">SOUND ALARM</button>
+                        <span class="status-msg" style="color: #F59E0B;"></span>
+                    </div>
+
+                    <!-- MODULE: DEFCON 1 - Wipe Device -->
+                    <div class="control-card danger-zone">
+                        <div class="control-header" style="border-color: rgba(239, 68, 68, 0.3);">
+                            <span class="c-icon">⚠️</span>
+                            <h3>DEFCON 1: Data Wipe</h3>
+                        </div>
+                        <span class="c-label" style="color: var(--danger);">Critical Operation</span>
+                        <p style="font-size: 0.85rem; color: var(--text-main); margin-bottom: 20px; font-weight: 600;">Initiates a remote factory reset. All local data will be permanently destroyed. This action cannot be reversed.</p>
+                        <button class="btn-exec btn-danger" onclick="simCommand(this, '✓ WIPE COMMAND SENT')">INITIATE FACTORY RESET</button>
+                        <span class="status-msg" style="color: var(--danger);"></span>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 1. THEME TOGGLE LOGIC
+        function initTheme() {
+            const savedTheme = localStorage.getItem('tactical_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateMobileThemeBtnVis();
+        }
+        function toggleTheme() {
+            const root = document.documentElement;
+            const currentTheme = root.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            root.setAttribute('data-theme', newTheme);
+            localStorage.setItem('tactical_theme', newTheme);
+        }
+        function updateMobileThemeBtnVis() {
+            if(window.innerWidth <= 800) {
+                document.getElementById('themeBtnMob').style.display = 'flex';
+            } else {
+                document.getElementById('themeBtnMob').style.display = 'none';
+            }
+        }
+        initTheme();
+        window.addEventListener('resize', updateMobileThemeBtnVis);
+
+        // 2. SIDEBAR TOGGLE (MOBILE)
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('mobileOverlay').classList.toggle('active');
+        }
+
+        // 3. LIVE GEOMETRIC FACETED MESH BACKGROUND
+        const canvas = document.getElementById('interactiveCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        
+        let particles = [];
+        let mouse = { x: null, y: null, radius: 200 };
+
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
+
+        for (let i = 0; i < 65; i++) {
+            particles.push({
+                x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
+                size: Math.random() * 2 + 1
+            });
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const rgbLine = isLight ? '29, 78, 216' : '0, 229, 255';
+            const fillPoly = isLight ? 'rgba(29, 78, 216, 0.04)' : 'rgba(0, 229, 255, 0.03)';
+
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i]; p.x += p.vx; p.y += p.vy;
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1; if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                
+                for (let j = i + 1; j < particles.length; j++) {
+                    let p2 = particles[j];
+                    let dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
+                    if (dist < 140) {
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.2 - dist/700})`; ctx.lineWidth = 0.5; ctx.stroke();
+                        for(let k = j + 1; k < particles.length; k++) {
+                            let p3 = particles[k];
+                            let dist2 = Math.sqrt((p2.x - p3.x)**2 + (p2.y - p3.y)**2);
+                            let dist3 = Math.sqrt((p.x - p3.x)**2 + (p.y - p3.y)**2);
+                            if (dist2 < 140 && dist3 < 140) {
+                                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.closePath();
+                                ctx.fillStyle = fillPoly; ctx.fill();
+                            }
+                        }
+                    }
+                }
+                if(mouse.x != null) {
+                    let dx = mouse.x - p.x; let dy = mouse.y - p.y; let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < mouse.radius) {
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y);
+                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.8 - distance/mouse.radius})`; ctx.lineWidth = 1; ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+        // 4. FIREBASE AUTHENTICATION (PROTECT PAGE)
+        const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
+        firebase.initializeApp(fbCfg);
+        
+        firebase.auth().onAuthStateChanged(user => { 
+            if (!user) {
+                window.location.href = 'index.html'; 
+            } else {
+                document.getElementById('authLoader').style.display = 'none';
+
+                const agentName = user.email.split('@')[0].toUpperCase();
+                const initial = agentName.charAt(0);
+                const dContainer = document.getElementById('desktopAuthState');
+                
+                dContainer.innerHTML = `
+                    <div class="user-profile-container">
+                        <div class="user-chip">
+                            <div class="user-avatar">${initial}</div>
+                            <span class="agent-name-txt">AGENT ${agentName}</span>
+                        </div>
+                        <div class="user-dropdown">
+                            <div class="dropdown-email">${user.email}</div>
+                            <button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ SECURE LOGOUT</button>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        // 5. SIMULATED COMMAND EXECUTION FOR PRESENTATION
+        function simCommand(btn, successMsg) {
+            const originalText = btn.textContent;
+            const statusSpan = btn.nextElementSibling;
+            
+            btn.textContent = 'TRANSMITTING...';
+            btn.disabled = true;
+            statusSpan.textContent = '';
+
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.disabled = false;
+                statusSpan.textContent = successMsg;
+                
+                // Clear message after 4 seconds
+                setTimeout(() => { statusSpan.textContent = ''; }, 4000);
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
