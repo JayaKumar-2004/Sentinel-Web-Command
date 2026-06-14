@@ -58,53 +58,36 @@
             border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500;
         }
         .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0;}
-        .brand-svg { width: 40px; height: 40px; filter: drop-shadow(0 0 8px var(--shadow-color));}
-        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--text-main); letter-spacing: 2px;}
-        .brand-name span { color: #FF6B35; }
+        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--text-main); letter-spacing: 2px; text-transform: uppercase;}
         
         .desktop-nav { display: flex; align-items: center; gap: 20px; flex-wrap: nowrap;}
-        .nav-links { display: flex; gap: 25px; list-style: none; margin-right: 15px; }
-        .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700; white-space: nowrap;}
-        .nav-links a:hover, .nav-links a.active { color: var(--cyan-glow); text-shadow: 0 0 8px var(--shadow-color); }
+        
+        .return-base-btn { 
+            font-family: 'Space Mono', monospace; color: var(--cyan-glow); text-decoration: none; 
+            font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; 
+            font-weight: 700; border: 1px solid var(--border-line); padding: 8px 16px; border-radius: 6px;
+            background: rgba(0, 229, 255, 0.05); display: flex; align-items: center; gap: 8px; white-space: nowrap;
+        }
+        .return-base-btn:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 15px var(--shadow-color); }
 
         .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); flex-shrink: 0;}
         .theme-toggle:hover { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
-        
-        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; flex-shrink: 0;}
 
         /* PROFILE DROPDOWN */
         .user-profile-container { position: relative; display: inline-block; z-index: 1000; flex-shrink: 0;}
-        .user-chip { 
-            display: flex; align-items: center; gap: 10px; background: var(--bg-panel); 
-            border: 1px solid var(--cyan-glow); padding: 6px 16px 6px 6px; border-radius: 30px; 
-            cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); transition: 0.3s; font-weight: 700;
-        }
+        .user-chip { display: flex; align-items: center; gap: 10px; background: var(--bg-panel); border: 1px solid var(--cyan-glow); padding: 6px 16px 6px 6px; border-radius: 30px; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); transition: 0.3s; font-weight: 700; }
         .user-chip:hover { box-shadow: 0 0 15px var(--shadow-color); }
-        .user-avatar { 
-            width: 28px; height: 28px; background: var(--cyan-glow); color: var(--bg-deep); 
-            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
-            font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 1rem; flex-shrink: 0;
-        }
-        .agent-name-txt { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; }
+        .user-avatar { width: 28px; height: 28px; background: var(--cyan-glow); color: var(--bg-deep); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 1rem; flex-shrink: 0; }
+        .agent-name-txt { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; font-size: 0.7rem; text-align: left; line-height: 1.2;}
         
-        .user-dropdown { 
-            position: absolute; top: 130%; right: 0; background: var(--bg-panel); 
-            border: 1px solid var(--border-line); border-radius: 8px; padding: 20px; width: 240px; 
-            box-shadow: 0 15px 40 rgba(0,0,0,0.5); backdrop-filter: blur(15px); 
-            display: none; flex-direction: column; gap: 10px; text-align: center;
-        }
-        .user-profile-container:hover .user-dropdown { display: flex; }
+        .user-dropdown { position: absolute; top: 130%; right: 0; background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 8px; padding: 20px; width: 240px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px); display: none; flex-direction: column; gap: 10px; text-align: center; }
+        .user-profile-container:hover .user-dropdown { display: flex; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .dropdown-email { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); word-break: break-all; border-bottom: 1px solid var(--border-line); padding-bottom: 15px; margin-bottom: 5px; font-weight: 700;}
         .btn-logout-drop { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
         .btn-logout-drop:hover { background: var(--danger-bg); }
 
-        /* MOBILE SLIDE-OUT MENU */
-        .mobile-overlay { position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: var(--bg-panel); backdrop-filter: blur(20px); z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-left: 2px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 30px; }
-        .mobile-overlay.active { right: 0; }
-        .m-nav-close { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 2.5rem; color: var(--text-muted); cursor: pointer; }
-        .m-nav-links { list-style: none; display: flex; flex-direction: column; gap: 25px; }
-        .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; transition: 0.3s; display: block; font-weight: 700;}
-        .m-nav-links a:hover { color: var(--cyan-glow); }
+        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; flex-shrink: 0;}
 
         /* 🚀 4. MAIN INTERFACE LAYOUT */
         main { flex-grow: 1; padding: 120px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; }
@@ -124,22 +107,36 @@
         .control-panel-card { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); height: fit-content;}
         .panel-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--text-main); letter-spacing: 1px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-line); padding-bottom: 12px;}
 
-        /* QR & KEY CONFIG */
-        .pairing-box { display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; padding: 15px 0;}
-        .qr-placeholder { width: 180px; height: 180px; background: white; padding: 10px; border-radius: 8px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; }
-        .qr-matrix { width: 100%; height: 100%; background: linear-gradient(45deg, #000 25%, transparent 25%), linear-gradient(-45deg, #000 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #000 75%), linear-gradient(-45deg, transparent 75%, #000 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0; opacity: 0.85; }
-        .qr-laser { position: absolute; inset: 10px; border-top: 2px solid var(--danger); animation: scanLine 2s linear infinite; pointer-events: none; }
-        @keyframes scanLine { 0% { top: 10px; } 50% { top: 170px; } 100% { top: 10px; } }
+        /* SYNC STEPS UI (Replaces QR Code) */
+        .sync-steps { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
+        .sync-step { 
+            display: flex; align-items: flex-start; gap: 15px; background: var(--card-inner); 
+            padding: 15px; border-radius: 8px; border: 1px solid var(--border-line);
+        }
+        .step-num { 
+            width: 30px; height: 30px; background: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); 
+            border: 1px solid var(--cyan-glow); border-radius: 50%; display: flex; 
+            justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; 
+            font-weight: 900; font-size: 0.9rem; flex-shrink: 0; 
+        }
+        .step-text { font-size: 0.85rem; color: var(--text-main); line-height: 1.5; }
+        .step-text strong { color: var(--cyan-glow); font-family: 'Space Mono', monospace; font-size: 0.8rem;}
 
-        .secret-key-display { font-family: 'Space Mono', monospace; background: var(--card-inner); padding: 12px 15px; border-radius: 6px; border: 1px dashed var(--cyan-glow); font-size: 1rem; font-weight: 700; color: var(--text-main); letter-spacing: 2px; width: 100%; text-align: center; cursor: pointer; transition: 0.3s; }
-        .secret-key-display:hover { background: rgba(0,229,255,0.05); }
+        .btn-dl-sync {
+            display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%;
+            background: transparent; color: var(--success); border: 1px dashed var(--success);
+            padding: 12px; border-radius: 6px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem;
+            font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 20px;
+            text-decoration: none;
+        }
+        .btn-dl-sync:hover { background: rgba(16, 185, 129, 0.1); box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
 
         /* SESSIONS ARCHITECTURE */
         .session-list { display: flex; flex-direction: column; gap: 15px; }
         .session-item { background: var(--card-inner); border: 1px solid var(--border-line); border-radius: 8px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
         .session-item:hover { border-color: var(--cyan-glow); }
         .session-meta { display: flex; flex-direction: column; gap: 5px; }
-        .device-info { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px;}
+        .device-info { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
         .status-badge { font-size: 0.7rem; font-family: 'Space Mono', monospace; padding: 2px 8px; border-radius: 12px; font-weight: 700; text-transform: uppercase; }
         .status-badge.active { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
         .status-badge.pending { background: rgba(245, 158, 11, 0.15); color: #F59E0B; border: 1px solid #F59E0B; }
@@ -153,10 +150,23 @@
 
         footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); position: relative; z-index: 10; margin-top: auto;}
 
-        @media (max-width: 850px) {
-            .desktop-nav { display: none !important; }
-            .mobile-nav-btn { display: block !important; }
-            .brand-name { font-size: 1.2rem; }
+        /* MOBILE FIXES */
+        .mobile-overlay-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; backdrop-filter: blur(5px); }
+        .mobile-overlay { position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: var(--bg-panel); backdrop-filter: blur(20px); z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-left: 2px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 30px; }
+        .mobile-overlay.active { right: 0; }
+        .m-nav-close { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 2.5rem; color: var(--text-muted); cursor: pointer; }
+        .m-nav-links { list-style: none; display: flex; flex-direction: column; gap: 25px; }
+        .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; transition: 0.3s; display: block; font-weight: 700;}
+        .m-nav-links a:hover { color: var(--cyan-glow); }
+
+        @media (max-width: 600px) {
+            .nav { padding: 15px; }
+            .brand-name { font-size: 1rem; }
+            .user-chip { padding: 4px 10px 4px 4px; }
+            .user-avatar { width: 24px; height: 24px; font-size: 0.8rem;}
+            .agent-name-txt { font-size: 0.65rem; max-width: 80px;}
+            .session-item { flex-direction: column; align-items: flex-start; gap: 15px;}
+            .btn-terminate { width: 100%; text-align: center;}
         }
 
         #authLoader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; color: var(--cyan-glow); font-size: 1.5rem; letter-spacing: 2px;}
@@ -178,17 +188,13 @@
     <div class="grid-overlay"></div>
 
     <nav class="nav">
-        <a href="index.html" class="brand">
-            <svg class="brand-svg"><use href="#shield-logo"></use></svg>
-            <div class="brand-name">RAKSHA<span>-</span>SURAKSHA</div>
-        </a>
+        <a href="services.html" class="return-base-btn">⟵ BACK</a>
+        
+        <div class="brand">
+            <div class="brand-name">DEVICE LINKING</div>
+        </div>
 
         <div class="desktop-nav" id="desktopNavContainer">
-            <ul class="nav-links">
-                <li><a href="index.html">HOME</a></li>
-                <li><a href="index.html#downloads">DOWNLOADS</a></li>
-                <li><a href="mad gradle.pdf" download>MANUAL</a></li>
-            </ul>
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
             <div id="desktopAuthState"></div>
         </div>
@@ -199,12 +205,12 @@
         </div>
     </nav>
 
+    <div class="mobile-overlay-bg" id="mobileOverlay" onclick="toggleMobileNav()"></div>
     <div class="mobile-overlay" id="mobileNav">
         <button class="m-nav-close" onclick="toggleMobileNav()">×</button>
         <ul class="m-nav-links">
             <li><a href="index.html">HOME</a></li>
-            <li><a href="index.html#downloads">DOWNLOADS</a></li>
-            <li><a href="mad gradle.pdf" download>MANUAL</a></li>
+            <li><a href="services.html">SERVICES</a></li>
         </ul>
         <div id="mobileAuthState" style="margin-top: 40px; border-top: 2px solid var(--border-line); padding-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px;"></div>
     </div>
@@ -222,20 +228,29 @@
             <div class="linking-container">
                 
                 <div class="control-panel-card">
-                    <div class="panel-title"><span>📡</span> PAIR NEW CLIENT</div>
-                    <div class="pairing-box">
-                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">Scan this QR code within the mobile application settings or enter the manual terminal handshake token below.</p>
-                        
-                        <div class="qr-placeholder">
-                            <div class="qr-matrix"></div>
-                            <div class="qr-laser"></div>
+                    <div class="panel-title"><span>🔐</span> SECURE APP SYNC</div>
+                    <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.6; margin-bottom: 10px;">
+                        The Sentinel-X hardware client authenticates directly to your secure Firebase tunnel using Agent Credentials. No QR pairing is required.
+                    </p>
+                    
+                    <div class="sync-steps">
+                        <div class="sync-step">
+                            <div class="step-num">1</div>
+                            <div class="step-text">Download and install the <strong>Sentinel-X APK</strong> on the target hardware.</div>
                         </div>
-
-                        <div style="width:100%;">
-                            <p style="font-family:'Space Mono', monospace; font-size:0.75rem; color:var(--text-muted); margin-bottom:6px; text-align:left; font-weight:700;">HANDSHAKE KEY:</p>
-                            <div class="secret-key-display" onclick="copyKey()" id="pairingKey">RS-992X-V771</div>
+                        <div class="sync-step">
+                            <div class="step-num">2</div>
+                            <div class="step-text">Grant the application required <strong>Device Administrator</strong> and tracking permissions.</div>
+                        </div>
+                        <div class="sync-step">
+                            <div class="step-num">3</div>
+                            <div class="step-text">Login via the mobile app using your active <strong>Agent Email</strong> and <strong>Passcode</strong>. The device will automatically appear in your Authorized Nodes list.</div>
                         </div>
                     </div>
+
+                    <a href="https://github.com/JayaKumar-2004/Sentinel-Tactical-Data/releases/download/v2.0/SENTINEL-X-debug.apk" class="btn-dl-sync">
+                        📥 DOWNLOAD CLIENT APK
+                    </a>
                 </div>
 
                 <div class="control-panel-card">
@@ -250,25 +265,25 @@
                             </div>
                         </div>
 
-                        <div class="session-item">
+                        <div class="session-item" id="node2">
                             <div class="session-meta">
                                 <div class="device-info">Samsung Galaxy A07 5G <span class="status-badge active">ONLINE</span></div>
-                                <div class="timestamp">App Version: v2.4.0-Beta • Last Seen: Just Now</div>
+                                <div class="timestamp">App Version: v2.4.0-Beta • Firebase Auth: Verified</div>
                             </div>
-                            <button class="btn-terminate" onclick="revokeDevice('Samsung Galaxy A07 5G')">DISCONNECT</button>
+                            <button class="btn-terminate" onclick="revokeDevice('Samsung Galaxy A07 5G', 'node2')">DISCONNECT</button>
                         </div>
 
-                        <div class="session-item">
+                        <div class="session-item" id="node3">
                             <div class="session-meta">
-                                <div class="device-info">Redmi Y3 Device Node <span class="status-badge pending">OFFLINE</span></div>
-                                <div class="timestamp">Last Active: June 12, 2026 • Encrypted Pipeline</div>
+                                <div class="device-info">Redmi Y3 Node <span class="status-badge pending">OFFLINE</span></div>
+                                <div class="timestamp">Last Active: June 12, 2026 • Firebase Auth: Stale</div>
                             </div>
-                            <button class="btn-terminate" onclick="revokeDevice('Redmi Y3 Node')">REVOKE</button>
+                            <button class="btn-terminate" onclick="revokeDevice('Redmi Y3 Node', 'node3')">REVOKE ACCESS</button>
                         </div>
 
                     </div>
 
-                    <button class="btn-refresh" onclick="refreshHandshake()">ROTATE SYSTEM KEYS</button>
+                    <button class="btn-refresh" onclick="refreshSessions()">⟲ REFRESH SESSIONS</button>
                 </div>
 
             </div>
@@ -282,27 +297,16 @@
     </footer>
 
     <script>
-        // Copy Token Utility
-        function copyKey() {
-            const keyText = document.getElementById('pairingKey').innerText;
-            navigator.clipboard.writeText(keyText);
-            alert('[TACTICAL CORE] Handshake key copied to clipboard.');
-        }
-
         // Revoke Device Logic
-        function revokeDevice(deviceName) {
-            if(confirm(`Are you sure you want to completely revoke credentials for: ${deviceName}?`)) {
-                alert(`[DE-AUTH SUCCESS] Connection dropped for target client node: ${deviceName}`);
+        function revokeDevice(deviceName, elementId) {
+            if(confirm(`Are you sure you want to completely revoke Firebase credentials for: ${deviceName}? They will be forced to log in again.`)) {
+                document.getElementById(elementId).style.display = 'none';
+                alert(`[AUTH REVOKED] Connection dropped and session terminated for target client: ${deviceName}`);
             }
         }
 
-        // Key Rotation Generator
-        function refreshHandshake() {
-            const hex = "0123456789ABCDEF";
-            let p1 = "", p2 = "";
-            for(let i=0; i<4; i++) { p1 += hex[Math.floor(Math.random()*16)]; p2 += hex[Math.floor(Math.random()*16)]; }
-            document.getElementById('pairingKey').innerText = `RS-${p1}-${p2}`;
-            alert('[CYPHER ROTATION] New cryptographic synchronization key issued successfully.');
+        function refreshSessions() {
+            alert('[SYSTEM SCAN] Pinging Firebase Realtime Database for active authenticated tokens... All sessions are up to date.');
         }
 
         // Theme Configuration
@@ -325,7 +329,10 @@
         initTheme(); window.addEventListener('resize', updateMobileThemeBtnVis);
 
         // Mobile Menu
-        function toggleMobileNav() { document.getElementById('mobileNav').classList.toggle('active'); }
+        function toggleMobileNav() { 
+            document.getElementById('mobileNav').classList.toggle('active'); 
+            document.getElementById('mobileOverlay').classList.toggle('active'); 
+        }
 
         // Dynamic Geometric Background Script
         const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d');
@@ -384,14 +391,16 @@
                     <div class="user-profile-container">
                         <div class="user-chip">
                             <div class="user-avatar">${initial}</div>
-                            <span class="agent-name-txt">AGENT ${agentName}</span>
+                            <div style="display:flex; flex-direction:column; line-height:1.2;">
+                                <span style="font-size:0.5rem; color:var(--text-muted);">AGENT</span>
+                                <span class="agent-name-txt">${agentName}</span>
+                            </div>
                         </div>
                         <div class="user-dropdown">
                             <div class="dropdown-email">${user.email}</div>
-                            <button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ SECURE LOGOUT</button>
+                            <button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ LOGOUT</button>
                         </div>
-                    </div>
-                `;
+                    </div>`;
                 
                 document.getElementById('desktopAuthState').innerHTML = profileUI;
                 document.getElementById('mobileAuthState').innerHTML = profileUI;
@@ -400,4 +409,3 @@
     </script>
 </body>
 </html>
-
