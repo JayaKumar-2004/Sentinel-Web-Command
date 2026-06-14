@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raksha-Suraksha | Active Services</title>
     
+    <!-- Firebase Core SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     
+    <!-- Premium Tech Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
@@ -49,7 +51,7 @@
             background-size: 60px 60px; opacity: 0.2;
         }
 
-        /* 🚀 3. SMART TOP NAVBAR (FIXED OVERLAP ISSUE) */
+        /* 🚀 3. SMART TOP NAVBAR */
         .nav {
             display: flex; justify-content: space-between; align-items: center; gap: 20px;
             padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); 
@@ -149,7 +151,6 @@
 
         footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); position: relative; z-index: 10; margin-top: auto;}
 
-        /* INCREASED BREAKPOINT TO PREVENT NAVBAR SQUISH */
         @media (max-width: 1150px) {
             .desktop-nav { display: none !important; }
             .mobile-nav-btn { display: block !important; }
@@ -171,9 +172,11 @@
 
     <div id="authLoader">VERIFYING CREDENTIALS...</div>
 
+    <!-- 🚀 LIVE GEOMETRIC CANVAS -->
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
+    <!-- 🚀 SMART TOP NAVBAR (Updated) -->
     <nav class="nav">
         <a href="index.html" class="brand">
             <svg class="brand-svg"><use href="#shield-logo"></use></svg>
@@ -183,7 +186,6 @@
         <div class="desktop-nav" id="desktopNavContainer">
             <ul class="nav-links">
                 <li><a href="index.html">HOME</a></li>
-                <li><a href="services.html" class="active">SERVICES</a></li>
                 <li><a href="index.html#downloads">DOWNLOADS</a></li>
                 <li><a href="mad gradle.pdf" download>MANUAL</a></li>
             </ul>
@@ -197,18 +199,20 @@
         </div>
     </nav>
 
+    <!-- 🚀 MOBILE OVERLAY MENU (Updated) -->
     <div class="mobile-overlay" id="mobileNav">
         <button class="m-nav-close" onclick="toggleMobileNav()">×</button>
         <ul class="m-nav-links">
             <li><a href="index.html">HOME</a></li>
-            <li><a href="services.html" class="active">SERVICES</a></li>
             <li><a href="index.html#downloads">DOWNLOADS</a></li>
             <li><a href="mad gradle.pdf" download>MANUAL</a></li>
         </ul>
         <div id="mobileAuthState" style="margin-top: 40px; border-top: 2px solid var(--border-line); padding-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-            </div>
+            <!-- Injected by Auth State -->
+        </div>
     </div>
 
+    <!-- 🚀 MAIN CONTENT -->
     <main>
         <div class="content-wrapper">
             
@@ -217,8 +221,10 @@
                 <div class="sys-status"><span class="pulse-dot"></span> SECURE UPLINK ESTABLISHED</div>
             </div>
 
+            <!-- 🚀 TALL CARDS GRID (7 MODULES) -->
             <div class="services-grid">
                 
+                <!-- 1. App Controls -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">🎛️</div>
@@ -228,6 +234,7 @@
                     <button class="btn-outline" onclick="triggerModule('App Controls')">OPEN MODULE</button>
                 </div>
 
+                <!-- 2. App Location -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">📍</div>
@@ -237,6 +244,7 @@
                     <button class="btn-outline" onclick="triggerModule('App Location Radar')">OPEN MODULE</button>
                 </div>
 
+                <!-- 3. Message Control -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">💬</div>
@@ -246,6 +254,7 @@
                     <button class="btn-outline" onclick="triggerModule('Message Gateway')">OPEN MODULE</button>
                 </div>
 
+                <!-- 4. Device Linking -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">🔗</div>
@@ -255,6 +264,7 @@
                     <button class="btn-outline" onclick="triggerModule('Device Sync Logic')">OPEN MODULE</button>
                 </div>
 
+                <!-- 5. Weather Core Intel -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">🌤️</div>
@@ -264,6 +274,7 @@
                     <button class="btn-outline" onclick="triggerModule('Atmospheric Scanner')">OPEN MODULE</button>
                 </div>
 
+                <!-- 6. Site Location Tracking -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">📡</div>
@@ -273,6 +284,7 @@
                     <button class="btn-outline" onclick="triggerModule('Site Location Mapping')">OPEN MODULE</button>
                 </div>
 
+                <!-- 7. Tier-3 Evidence Vault -->
                 <div class="service-card card-danger">
                     <div class="c-head">
                         <div class="c-icon">🛡️</div>
@@ -394,4 +406,4 @@
         });
     </script>
 </body>
-</html>
+                        </html>
