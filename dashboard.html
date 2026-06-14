@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raksha-Suraksha | Main Dashboard</title>
+    
+    <!-- Firebase Core SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <!-- Premium Tech Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 🚀 1. DYNAMIC THEME VARIABLES */
+        :root[data-theme="dark"] {
+            --bg-deep: #030712;
+            --bg-panel: rgba(15, 23, 42, 0.85);
+            --cyan-glow: #00E5FF;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-line: rgba(0, 229, 255, 0.2);
+            --input-bg: rgba(0,0,0,0.8);
+            --shadow-color: rgba(0, 229, 255, 0.3);
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+        }
+
+        :root[data-theme="light"] {
+            --bg-deep: #F1F5F9; 
+            --bg-panel: rgba(255, 255, 255, 0.95);
+            --cyan-glow: #1D4ED8; 
+            --text-main: #0F172A;
+            --text-muted: #475569;
+            --border-line: rgba(29, 78, 216, 0.2);
+            --input-bg: #FFFFFF;
+            --shadow-color: rgba(29, 78, 216, 0.2);
+            --danger: #DC2626;
+            --warning: #D97706;
+            --success: #059669;
+        }
+
+        /* Essential Reset */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; transition: background-color 0.4s ease; }
+        main { flex-grow: 1; padding: 40px 5%; position: relative; z-index: 10; max-width: 1600px; margin: 0 auto; width: 100%;}
+
+        /* 🚀 2. DYNAMIC GEOMETRIC CANVAS BACKGROUND */
+        #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
+        .grid-overlay {
+            position: fixed; inset: 0; z-index: -2; pointer-events: none;
+            background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
+            background-size: 60px 60px; opacity: 0.2;
+        }
+
+        /* 🚀 3. RESPONSIVE DESKTOP NAVBAR */
+        .desktop-nav { display: flex; align-items: center; gap: 20px; }
+        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; }
+
+        @media (max-width: 800px) { 
+            .desktop-nav { display: none !important; }
+            .mobile-nav-btn { display: block !important; }
+        }
+
+        .nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); 
+            border-bottom: 1px solid var(--border-line); position: relative; z-index: 500;
+            transition: background 0.4s ease, border-color 0.4s ease;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand-svg { width: 40px; height: 40px; filter: drop-shadow(0 0 8px var(--shadow-color));}
+        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--text-main); letter-spacing: 2px;}
+        .brand-name span { color: #FF6B35; }
+        
+        .nav-links { display: flex; gap: 25px; list-style: none; }
+        .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700;}
+        .nav-links a:hover { color: var(--cyan-glow); text-shadow: 0 0 8px var(--shadow-color); }
+
+        .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); }
+        .theme-toggle:hover { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
+
+        /* 🚀 GOOGLE-STYLE PROFILE DROPDOWN */
+        .user-profile-container { position: relative; display: inline-block; z-index: 1000; }
+        .user-chip { 
+            display: flex; align-items: center; gap: 10px; background: var(--bg-panel); 
+            border: 1px solid var(--cyan-glow); padding: 6px 16px 6px 6px; border-radius: 30px; 
+            cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); transition: 0.3s; font-weight: 700;
+        }
+        .user-chip:hover { box-shadow: 0 0 15px var(--shadow-color); }
+        .user-avatar { 
+            width: 28px; height: 28px; background: var(--cyan-glow); color: var(--bg-deep); 
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 1rem;
+        }
+        .user-dropdown { 
+            position: absolute; top: 130%; right: 0; background: var(--bg-panel); 
+            border: 1px solid var(--border-line); border-radius: 8px; padding: 20px; width: 240px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px); 
+            display: none; flex-direction: column; gap: 10px; text-align: center;
+        }
+        .user-profile-container:hover .user-dropdown { display: flex; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .dropdown-email { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); word-break: break-all; border-bottom: 1px solid var(--border-line); padding-bottom: 15px; margin-bottom: 5px; font-weight: 700;}
+        .btn-switch-account { background: transparent; color: var(--warning); border: 1px solid var(--warning); padding: 10px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;}
+        .btn-switch-account:hover { background: rgba(245, 158, 11, 0.1); }
+        .btn-logout-drop { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-logout-drop:hover { background: rgba(239, 68, 68, 0.1); }
+
+        /* 🚀 4. MOBILE SLIDE-OUT MENU */
+        .mobile-overlay { position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: var(--bg-panel); backdrop-filter: blur(20px); z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-left: 2px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 30px; }
+        .mobile-overlay.active { right: 0; }
+        .m-nav-close { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 2.5rem; color: var(--text-muted); cursor: pointer; }
+        .m-nav-links { list-style: none; display: flex; flex-direction: column; gap: 25px; }
+        .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; transition: 0.3s; display: block; font-weight: 700;}
+        .m-nav-links a:hover { color: var(--cyan-glow); }
+
+        /* 🚀 5. ROLLING BANNER */
+        .rolling-banner { width: 100%; background: var(--cyan-glow); color: var(--bg-deep); padding: 8px 0; font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; display: flex; overflow: hidden; white-space: nowrap; box-shadow: 0 2px 10px var(--shadow-color); position: relative; z-index: 499; align-items: center;}
+        .marquee-content { display: inline-block; animation: marquee 25s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
+        .marquee-logo { width: 14px; height: 14px; vertical-align: middle; margin-right: 6px; margin-bottom: 2px; }
+
+        /* 🚀 6. DASHBOARD GRID LAYOUT */
+        .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;}
+        .dash-title { font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 900; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px;}
+        .sys-status { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 20px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success); font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.8rem; letter-spacing: 1px; box-shadow: 0 0 15px rgba(16,185,129,0.2); }
+        .pulse-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulseDot 1.5s infinite; }
+        
+        .dash-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; }
+        .panel { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; padding: 25px; backdrop-filter: blur(10px); display: flex; flex-direction: column; transition: 0.3s; }
+        .panel:hover { border-color: var(--cyan-glow); box-shadow: 0 10px 30px var(--shadow-color); }
+        .p-title { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; font-weight: 700; display: flex; justify-content: space-between; align-items: center;}
+
+        /* Quick Stats (Top Row) */
+        .stat-card { grid-column: span 3; text-align: center; }
+        .stat-val { font-family: 'Orbitron', sans-serif; font-size: 2.5rem; font-weight: 900; color: var(--cyan-glow); text-shadow: 0 0 15px var(--shadow-color); margin-bottom: 5px;}
+        .stat-label { font-family: 'Inter', sans-serif; font-size: 0.9rem; color: var(--text-main); font-weight: 600; }
+
+        /* Main Map (Middle Row - Large) */
+        .map-panel { grid-column: span 8; min-height: 400px; display: flex; flex-direction: column; }
+        .map-placeholder { flex-grow: 1; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px dashed var(--border-line); display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden;}
+        .radar-ring { position: absolute; border: 2px solid var(--cyan-glow); border-radius: 50%; animation: radarPing 3s infinite ease-out; opacity: 0; }
+        .r1 { width: 50px; height: 50px; animation-delay: 0s; }
+        .r2 { width: 50px; height: 50px; animation-delay: 1s; }
+        .map-text { position: absolute; font-family: 'Space Mono', monospace; font-size: 1rem; color: var(--cyan-glow); letter-spacing: 2px; font-weight: 700; text-shadow: 0 0 10px var(--shadow-color);}
+        @keyframes radarPing { 0% { transform: scale(1); opacity: 1; border-width: 3px; } 100% { transform: scale(8); opacity: 0; border-width: 1px; } }
+
+        /* Live Event Log (Middle Row - Side) */
+        .log-panel { grid-column: span 4; min-height: 400px; }
+        .log-box { background: rgba(0,0,0,0.8); border: 1px solid var(--border-line); border-radius: 8px; flex-grow: 1; padding: 15px; overflow-y: auto; font-family: 'Space Mono', monospace; font-size: 0.75rem; display: flex; flex-direction: column; gap: 8px; color: #E2E8F0;}
+        .log-entry { padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .log-time { color: var(--text-muted); margin-right: 8px; }
+        .l-inf { color: var(--cyan-glow); } .l-war { color: var(--warning); } .l-suc { color: var(--success); }
+
+        /* Tactical Controls (Bottom Row) */
+        .control-panel { grid-column: span 12; display: flex; gap: 20px; justify-content: space-between; flex-wrap: wrap; }
+        .btn-tac { flex: 1; min-width: 200px; padding: 15px; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; border: 2px solid transparent;}
+        .btn-tac-blue { background: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); border-color: var(--cyan-glow); }
+        .btn-tac-blue:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 20px var(--shadow-color); }
+        .btn-tac-warn { background: rgba(245, 158, 11, 0.1); color: var(--warning); border-color: var(--warning); }
+        .btn-tac-warn:hover { background: var(--warning); color: #000; box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
+        .btn-tac-dang { background: rgba(239, 68, 68, 0.1); color: var(--danger); border-color: var(--danger); }
+        .btn-tac-dang:hover { background: var(--danger); color: #FFF; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+
+        @media (max-width: 1024px) {
+            .stat-card { grid-column: span 6; }
+            .map-panel { grid-column: span 12; }
+            .log-panel { grid-column: span 12; }
+        }
+        @media (max-width: 600px) {
+            .stat-card { grid-column: span 12; }
+        }
+
+        /* PAGE LOADER TO HIDE CONTENT UNTIL AUTH CHECKS */
+        #authLoader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; color: var(--cyan-glow); font-size: 1.5rem; letter-spacing: 2px;}
+    </style>
+</head>
+<body>
+
+    <!-- 🚀 SVG SHIELD TEMPLATE -->
+    <svg style="display:none;">
+        <symbol id="shield-logo" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/>
+            <path d="M12 5.5L6 7.5V11.5C6 15.2 8.5 18.6 12 19.5C15.5 18.6 18 15.2 18 11.5V7.5L12 5.5Z" fill="#FF6B35"/>
+            <path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="#FFFFFF"/>
+        </symbol>
+    </svg>
+
+    <!-- AUTH LOADER (Prevents seeing dashboard before login check) -->
+    <div id="authLoader">VERIFYING CREDENTIALS...</div>
+
+    <!-- 🚀 LIVE GEOMETRIC CANVAS -->
+    <canvas id="interactiveCanvas"></canvas>
+    <div class="grid-overlay"></div>
+
+    <!-- 🚀 UNIVERSAL NAVIGATION -->
+    <nav class="nav">
+        <a href="index.html" class="brand">
+            <svg class="brand-svg"><use href="#shield-logo"></use></svg>
+            <div class="brand-name">RAKSHA<span>-</span>SURAKSHA</div>
+        </a>
+
+        <!-- DESKTOP SPECIFIC NAV -->
+        <div class="desktop-nav" id="desktopNavContainer">
+            <ul class="nav-links">
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="capabilities.html">CAPABILITIES</a></li>
+                <li><a href="modules.html">MODULES</a></li>
+                <li><a href="faq.html">FAQS</a></li>
+            </ul>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
+            <div id="desktopAuthState"></div>
+        </div>
+
+        <!-- MOBILE SPECIFIC NAV BUTTONS -->
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button class="theme-toggle" style="display: none;" onclick="toggleTheme()" id="themeBtnMob">🌓</button>
+            <button class="mobile-nav-btn" onclick="toggleMobileNav()">☰</button>
+        </div>
+    </nav>
+
+    <!-- 🚀 MOBILE SLIDE-OUT MENU -->
+    <div class="mobile-overlay" id="mobileNav">
+        <button class="m-nav-close" onclick="toggleMobileNav()">×</button>
+        <ul class="m-nav-links">
+            <li><a href="index.html">HOME</a></li>
+            <li><a href="capabilities.html">CAPABILITIES</a></li>
+            <li><a href="modules.html">MODULES</a></li>
+            <li><a href="faq.html">FAQS</a></li>
+        </ul>
+        <div id="mobileAuthState" style="margin-top: 40px; border-top: 2px solid var(--border-line); padding-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px;">
+            <!-- Injected by JS -->
+        </div>
+    </div>
+
+    <!-- 🚀 ROLLING BANNER -->
+    <div class="rolling-banner">
+        <div class="marquee-content">
+            <svg class="marquee-logo"><use href="#shield-logo"></use></svg> RAKSHA-SURAKSHA TACTICAL COMMAND SYSTEM &nbsp;&nbsp;|&nbsp;&nbsp; 📍 CURRENT NODE: MAIN DASHBOARD &nbsp;&nbsp;|&nbsp;&nbsp; ⚠️ SYSTEM STATUS: ALL NODES OPERATIONAL &nbsp;&nbsp;|&nbsp;&nbsp; 
+            <svg class="marquee-logo"><use href="#shield-logo"></use></svg> RAKSHA-SURAKSHA TACTICAL COMMAND SYSTEM &nbsp;&nbsp;|&nbsp;&nbsp; 📍 CURRENT NODE: MAIN DASHBOARD &nbsp;&nbsp;|&nbsp;&nbsp; ⚠️ SYSTEM STATUS: ALL NODES OPERATIONAL
+        </div>
+    </div>
+
+    <!-- 🚀 MAIN DASHBOARD CONTENT -->
+    <main>
+        <div class="dash-header">
+            <h1 class="dash-title">Command Overview</h1>
+            <div class="sys-status"><span class="pulse-dot"></span> SECURE UPLINK ACTIVE</div>
+        </div>
+
+        <div class="dash-grid">
+            
+            <!-- Quick Stats -->
+            <div class="panel stat-card">
+                <div class="p-title">ACTIVE HARDWARE NODES</div>
+                <div class="stat-val" id="statNodes">3</div>
+                <div class="stat-label">Devices Linked</div>
+            </div>
+            <div class="panel stat-card">
+                <div class="p-title">NETWORK LATENCY</div>
+                <div class="stat-val" style="color: var(--success);" id="statPing">42ms</div>
+                <div class="stat-label">WSS Ping</div>
+            </div>
+            <div class="panel stat-card">
+                <div class="p-title">INTERCEPTED SMS</div>
+                <div class="stat-val" style="color: var(--warning);">14</div>
+                <div class="stat-label">Offline Payloads</div>
+            </div>
+            <div class="panel stat-card">
+                <div class="p-title">ENCRYPTION PROTOCOL</div>
+                <div class="stat-val">AES</div>
+                <div class="stat-label">256-bit Secured</div>
+            </div>
+
+            <!-- Main Live Map Area -->
+            <div class="panel map-panel">
+                <div class="p-title"><span>📍 GLOBAL ASSET TRACKER</span> <span style="font-size: 0.7rem; color: var(--success);">LIVE</span></div>
+                <div class="map-placeholder">
+                    <div class="radar-ring r1"></div>
+                    <div class="radar-ring r2"></div>
+                    <div class="map-text">AWAITING GPS TELEMETRY...</div>
+                </div>
+            </div>
+
+            <!-- Live Event Log -->
+            <div class="panel log-panel">
+                <div class="p-title"><span>📡 TACTICAL EVENT LOG</span></div>
+                <div class="log-box" id="eventLog">
+                    <!-- Logs generated by JS -->
+                </div>
+            </div>
+
+            <!-- Tactical Controls -->
+            <div class="panel control-panel">
+                <button class="btn-tac btn-tac-blue">📡 PING ALL NODES</button>
+                <button class="btn-tac btn-tac-warn">📨 BROADCAST OFFLINE SMS</button>
+                <button class="btn-tac btn-tac-dang">⚠️ INITIATE LOCKDOWN</button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 🚀 JAVASCRIPT LOGIC -->
+    <script>
+        // 1. THEME TOGGLE LOGIC
+        function initTheme() {
+            const savedTheme = localStorage.getItem('tactical_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateMobileThemeBtnVis();
+        }
+        function toggleTheme() {
+            const root = document.documentElement;
+            const currentTheme = root.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            root.setAttribute('data-theme', newTheme);
+            localStorage.setItem('tactical_theme', newTheme);
+        }
+        function updateMobileThemeBtnVis() {
+            if(window.innerWidth <= 800) {
+                document.getElementById('themeBtnMob').style.display = 'flex';
+            } else {
+                document.getElementById('themeBtnMob').style.display = 'none';
+            }
+        }
+        initTheme();
+        window.addEventListener('resize', updateMobileThemeBtnVis);
+
+        // 2. MOBILE MENU TOGGLE
+        function toggleMobileNav() { document.getElementById('mobileNav').classList.toggle('active'); }
+
+        // 3. INTERACTIVE CURSOR PARTICLES
+        const canvas = document.getElementById('interactiveCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particles = []; let mouse = { x: null, y: null, radius: 200 };
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
+        for (let i = 0; i < 70; i++) {
+            particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6, size: Math.random() * 2 + 1 });
+        }
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const rgbLine = isLight ? '29, 78, 216' : '0, 229, 255';
+            const fillPoly = isLight ? 'rgba(29, 78, 216, 0.04)' : 'rgba(0, 229, 255, 0.03)';
+
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i]; p.x += p.vx; p.y += p.vy;
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1; if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                for (let j = i + 1; j < particles.length; j++) {
+                    let p2 = particles[j]; let dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
+                    if (dist < 150) {
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.2 - dist/750})`; ctx.lineWidth = 0.5; ctx.stroke();
+                        for(let k = j + 1; k < particles.length; k++) {
+                            let p3 = particles[k]; let dist2 = Math.sqrt((p2.x - p3.x)**2 + (p2.y - p3.y)**2); let dist3 = Math.sqrt((p.x - p3.x)**2 + (p.y - p3.y)**2);
+                            if (dist2 < 150 && dist3 < 150) {
+                                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.closePath();
+                                ctx.fillStyle = fillPoly; ctx.fill();
+                            }
+                        }
+                    }
+                }
+                if(mouse.x != null) {
+                    let dx = mouse.x - p.x; let dy = mouse.y - p.y; let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < mouse.radius) {
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y);
+                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.8 - distance/mouse.radius})`; ctx.lineWidth = 1; ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+        // 4. FIREBASE AUTHENTICATION (PROTECT DASHBOARD)
+        const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
+        firebase.initializeApp(fbCfg);
+        
+        firebase.auth().onAuthStateChanged(user => { 
+            if (!user) {
+                // Security Kickout: Not logged in.
+                window.location.href = 'index.html'; 
+            } else {
+                document.getElementById('authLoader').style.display = 'none'; // Reveal Dashboard
+
+                const agentName = user.email.split('@')[0].toUpperCase();
+                const initial = agentName.charAt(0);
+                const dContainer = document.getElementById('desktopAuthState');
+                const mContainer = document.getElementById('mobileAuthState');
+                
+                const userProfileHTML = `
+                    <div class="user-profile-container">
+                        <div class="user-chip">
+                            <div class="user-avatar">${initial}</div>
+                            AGENT ${agentName}
+                        </div>
+                        <div class="user-dropdown">
+                            <div class="dropdown-email">${user.email}</div>
+                            <button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ LOGOUT</button>
+                        </div>
+                    </div>
+                `;
+                dContainer.innerHTML = userProfileHTML;
+                mContainer.innerHTML = userProfileHTML;
+            }
+        });
+
+        // 5. LIVE DASHBOARD DATA SIMULATION
+        function getTimestamp() {
+            const now = new Date();
+            return `[${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}]`;
+        }
+
+        const eventLog = document.getElementById('eventLog');
+        const pingEl = document.getElementById('statPing');
+        
+        const logs = [
+            {c: 'l-suc', t: 'WSS Payload delivered successfully.'},
+            {c: 'l-inf', t: 'Background memory scan complete. Zero anomalies.'},
+            {c: 'l-war', t: 'Node-2 latency spike detected.'},
+            {c: 'l-inf', t: 'Syncing geo-coordinates from database...'},
+            {c: 'l-suc', t: 'Deep-link bridge active.'}
+        ];
+
+        function pushLog() {
+            const l = logs[Math.floor(Math.random() * logs.length)];
+            const div = document.createElement('div');
+            div.className = 'log-entry';
+            div.innerHTML = `<span class="log-time">${getTimestamp()}</span> <span class="${l.c}">${l.t}</span>`;
+            eventLog.appendChild(div);
+            if (eventLog.childNodes.length > 20) { eventLog.removeChild(eventLog.firstChild); }
+            eventLog.scrollTop = eventLog.scrollHeight;
+            
+            // Randomize ping visually
+            pingEl.textContent = Math.floor(Math.random() * 20 + 30) + 'ms';
+            
+            setTimeout(pushLog, Math.random() * 3000 + 1000);
+        }
+
+        setTimeout(pushLog, 1000);
+    </script>
+</body>
+</html>
+
