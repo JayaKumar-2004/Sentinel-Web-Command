@@ -51,7 +51,7 @@
             background-size: 60px 60px; opacity: 0.2;
         }
 
-        /* 🚀 3. ISOLATED TOP NAVBAR */
+        /* 🚀 3. TOP NAVBAR */
         .nav {
             display: flex; justify-content: space-between; align-items: center;
             padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); 
@@ -63,13 +63,11 @@
         .brand-name span { color: #FF6B35; }
         
         .desktop-nav { display: flex; align-items: center; gap: 20px; }
-        .return-base-btn { 
-            font-family: 'Space Mono', monospace; color: var(--cyan-glow); text-decoration: none; 
-            font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; 
-            font-weight: 700; border: 1px solid var(--border-line); padding: 8px 16px; border-radius: 6px;
-            background: rgba(0, 229, 255, 0.05); display: flex; align-items: center; gap: 8px;
-        }
-        .return-base-btn:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 15px var(--shadow-color); }
+        
+        /* FULL NAVIGATION FOR SERVICES PAGE */
+        .nav-links { display: flex; gap: 25px; list-style: none; margin-right: 15px;}
+        .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700;}
+        .nav-links a:hover, .nav-links a.active { color: var(--cyan-glow); text-shadow: 0 0 8px var(--shadow-color); }
 
         .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); }
         .theme-toggle:hover { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
@@ -117,8 +115,11 @@
         .sidebar a:hover { background-color: rgba(0, 229, 255, 0.05); color: var(--text-main); border: 1px solid var(--border-line);}
         .sidebar a.active { background-color: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); font-weight: 800; border: 1px solid var(--cyan-glow); box-shadow: 0 0 15px var(--shadow-color); }
 
-        /* 🚀 5. MAIN CONTENT & SYSTEM SERVICES GRID */
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 40px; }
+        /* 🚀 5. MAIN CONTENT - VERTICALLY CENTERED TO COVER GAP */
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 40px 5%; align-items: center; }
+        
+        /* THIS WRAPPER MAGICALLY CENTERS THE CONTENT VERTICALLY */
+        .content-wrapper { width: 100%; max-width: 1400px; margin: auto 0; display: flex; flex-direction: column; }
         
         .header-title { display: flex; flex-direction: column; margin-bottom: 40px;}
         .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; color: var(--text-main); font-weight: 900; letter-spacing: 1px; text-transform: uppercase;}
@@ -127,30 +128,32 @@
         @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
         .dashboard-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px; align-items: start; width: 100%; max-width: 1400px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 30px; align-items: stretch; width: 100%;
         }
 
+        /* CARDS ARE CHUNKIER TO FILL SPACE */
         .widget-card {
             background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; 
-            backdrop-filter: blur(10px); padding: 30px; transition: 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; height: 100%;
+            backdrop-filter: blur(10px); padding: 40px 30px; transition: 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; 
+            height: 100%; min-height: 320px;
         }
         .widget-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px var(--shadow-color); border-color: var(--cyan-glow); }
 
-        .widget-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+        .widget-header { display: flex; align-items: center; gap: 16px; margin-bottom: 25px; }
         .icon-badge {
-            width: 55px; height: 55px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 1.6rem;
+            width: 60px; height: 60px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 1.8rem;
             background: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); border: 1px solid var(--border-line);
         }
         
-        .widget-card h3 { font-family: 'Orbitron', sans-serif; color: var(--text-main); font-size: 1.2rem; font-weight: 800; letter-spacing: 1px;}
-        .widget-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px; flex-grow: 1; font-weight: 500;}
+        .widget-card h3 { font-family: 'Orbitron', sans-serif; color: var(--text-main); font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;}
+        .widget-card p { color: var(--text-muted); font-size: 1rem; line-height: 1.6; margin-bottom: 35px; flex-grow: 1; font-weight: 500;}
 
         .action-btn {
             display: inline-flex; justify-content: center; align-items: center; width: 100%;
-            padding: 14px; border-radius: 8px; font-weight: 800; text-decoration: none; font-family: 'Orbitron', sans-serif;
-            transition: all 0.3s; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px;
+            padding: 16px; border-radius: 8px; font-weight: 800; text-decoration: none; font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;
             background: var(--cyan-glow); color: var(--bg-deep); border: none; cursor: pointer;
         }
         .action-btn:hover { box-shadow: 0 0 20px var(--shadow-color); transform: translateY(-2px);}
@@ -200,8 +203,13 @@
         </a>
 
         <div class="desktop-nav" id="desktopNavContainer">
-            <a href="index.html" class="return-base-btn">⟵ RETURN TO BASE</a>
-            <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+            <ul class="nav-links">
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="services.html" class="active">SERVICES</a></li>
+                <li><a href="about.html">ABOUT US</a></li>
+                <li><a href="faq.html">FAQS</a></li>
+            </ul>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
             <div id="desktopAuthState"></div>
         </div>
 
@@ -221,54 +229,57 @@
             
             <div style="border-top: 1px solid var(--border-line); margin: 15px 0;"></div>
             <div style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); letter-spacing: 2px; margin-bottom: 10px; padding-left: 10px;">SYSTEM</div>
-            <a href="index.html" style="color: var(--danger);">⟵ Disconnect & Return</a>
+            <a href="#" style="color: var(--danger);" onclick="firebase.auth().signOut()">⟵ Disconnect & Logout</a>
         </aside>
 
+        <!-- 🚀 THIS CONTENT WRAPPER VERTICALLY CENTERS THE GRID -->
         <main class="main-content">
-            <div class="header-title">
-                <h1>Command Services</h1>
-                <div class="sys-status"><span class="pulse-dot"></span> SECURITY SYSTEM OPERATIONAL</div>
-            </div>
-
-            <div class="dashboard-grid">
-                <!-- Service 1 -->
-                <div class="widget-card">
-                    <div class="widget-header">
-                        <div class="icon-badge">🎛️</div>
-                        <h3>Master Controls</h3>
-                    </div>
-                    <p>Access core architecture overrides, sound anti-theft alarms, configure critical tracking routines, and send emergency fallback signals.</p>
-                    <a href="master-control.html" class="action-btn">Open Master Control</a>
+            <div class="content-wrapper">
+                <div class="header-title">
+                    <h1>Command Services</h1>
+                    <div class="sys-status"><span class="pulse-dot"></span> SECURITY SYSTEM OPERATIONAL</div>
                 </div>
 
-                <!-- Service 2 -->
-                <div class="widget-card">
-                    <div class="widget-header">
-                        <div class="icon-badge">🔗</div>
-                        <h3>Device Linking</h3>
+                <div class="dashboard-grid">
+                    <!-- Service 1 -->
+                    <div class="widget-card">
+                        <div class="widget-header">
+                            <div class="icon-badge">🎛️</div>
+                            <h3>Master Controls</h3>
+                        </div>
+                        <p>Access core architecture overrides, sound anti-theft alarms, configure critical tracking routines, and send emergency fallback signals.</p>
+                        <a href="master-control.html" class="action-btn">Open Master Control</a>
                     </div>
-                    <p>Register external hardware client instances, track authorized active sessions, and review telemetry link authentication states.</p>
-                    <a href="app-linking.html" class="action-btn">Manage Devices</a>
-                </div>
 
-                <!-- Service 3 -->
-                <div class="widget-card">
-                    <div class="widget-header">
-                        <div class="icon-badge">🌤️</div>
-                        <h3>Weather Core Intel</h3>
+                    <!-- Service 2 -->
+                    <div class="widget-card">
+                        <div class="widget-header">
+                            <div class="icon-badge">🔗</div>
+                            <h3>Device Linking</h3>
+                        </div>
+                        <p>Register external hardware client instances, track authorized active sessions, and review telemetry link authentication states.</p>
+                        <a href="app-linking.html" class="action-btn">Manage Devices</a>
                     </div>
-                    <p>Pull live local meteorological tracking indices and atmospheric metrics to safeguard assets against adverse ambient environments.</p>
-                    <a href="weather.html" class="action-btn">View Weather</a>
-                </div>
 
-                <!-- Service 4 (Radar Style Map Tracking) -->
-                <div class="widget-card card-danger">
-                    <div class="widget-header">
-                        <div class="icon-badge">📍</div>
-                        <h3>Site Location Tracking</h3>
+                    <!-- Service 3 -->
+                    <div class="widget-card">
+                        <div class="widget-header">
+                            <div class="icon-badge">🌤️</div>
+                            <h3>Weather Core Intel</h3>
+                        </div>
+                        <p>Pull live local meteorological tracking indices and atmospheric metrics to safeguard assets against adverse ambient environments.</p>
+                        <a href="weather.html" class="action-btn">View Weather</a>
                     </div>
-                    <p>Initialize real-time graphical coordinate mapping pipelines to pinpoint and trace active linked assets across geographic grids.</p>
-                    <a href="map.html" class="action-btn btn-danger">Initialize Map Tracker</a>
+
+                    <!-- Service 4 (Radar Style Map Tracking) -->
+                    <div class="widget-card card-danger">
+                        <div class="widget-header">
+                            <div class="icon-badge">📍</div>
+                            <h3>Site Location Tracking</h3>
+                        </div>
+                        <p>Initialize real-time graphical coordinate mapping pipelines to pinpoint and trace active linked assets across geographic grids.</p>
+                        <a href="map.html" class="action-btn btn-danger">Initialize Map Tracker</a>
+                    </div>
                 </div>
             </div>
         </main>
@@ -302,6 +313,15 @@
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('mobileOverlay').classList.toggle('active');
+            
+            // If opening sidebar, hide standard mobile nav if open
+            if(document.getElementById('mobileNav') && document.getElementById('mobileNav').classList.contains('active')) {
+                document.getElementById('mobileNav').classList.remove('active');
+            }
+        }
+        
+        function toggleMobileNav() {
+            document.getElementById('mobileNav').classList.toggle('active');
         }
 
         // 3. LIVE GEOMETRIC FACETED MESH BACKGROUND
