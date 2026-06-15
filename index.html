@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
+        /* 🚀 1. DYNAMIC THEME VARIABLES */
         :root[data-theme="dark"] {
             --bg-deep: #050A14; --bg-panel: rgba(10, 15, 30, 0.85); --cyan-glow: #00E5FF;
             --text-main: #F8FAFC; --text-muted: #94A3B8; --border-line: rgba(0, 229, 255, 0.15);
@@ -32,11 +33,12 @@
         main { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; z-index: 10; width: 100%;}
         .hero { text-align: center; padding: 120px 5% 80px 5%; width: 100%; max-width: 1400px; display: flex; flex-direction: column; align-items: center;}
 
+        /* BACKGROUND ENGINE */
         .ambient-bg { position: fixed; inset: 0; z-index: -4; background: var(--ambient-light); pointer-events: none; transition: 0.4s ease;}
         #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
         .grid-overlay { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.3; }
 
-        /* INTRO */
+        /* INTRO SPLASH */
         #splash { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; perspective: 1200px; transition: opacity 0.8s ease-out; }
         .splash-shield-3d { width: 150px; height: 150px; margin-bottom: 30px; transform-style: preserve-3d; animation: flip3D 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards, float 3s ease-in-out infinite 1.5s; filter: drop-shadow(0 0 25px var(--shadow-color)); }
         @keyframes flip3D { 0% { transform: rotateY(-180deg) scale(0); opacity: 0; } 100% { transform: rotateY(0deg) scale(1); opacity: 1; } }
@@ -57,6 +59,7 @@
         .nav-links { display: flex; gap: 20px; list-style: none; }
         .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700;}
         .nav-links a:hover, .nav-links a.active { color: var(--cyan-glow); text-shadow: 0 0 8px var(--shadow-color); }
+        
         .auth-btn { background: rgba(0, 229, 255, 0.05); color: var(--cyan-glow); border: 2px solid var(--cyan-glow); padding: 10px 24px; border-radius: 6px; font-weight: 800; cursor: pointer; transition: all 0.3s; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; text-transform: uppercase;}
         .auth-btn:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 20px var(--shadow-color); transform: translateY(-2px); }
         .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); }
@@ -92,6 +95,8 @@
 
         /* HERO ANIMATIONS (LAPTOP OPTIMIZED) */
         .sys-status { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 20px; background: rgba(16, 185, 129, 0.1); border: 1px solid #10B981; color: #10B981; font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 1px; margin-bottom: 30px; box-shadow: 0 0 15px rgba(16,185,129,0.2); opacity: 0; animation: fadeUp 0.8s ease forwards 0.2s; }
+        .pulse-dot { width: 8px; height: 8px; background: #10B981; border-radius: 50%; box-shadow: 0 0 10px #10B981; animation: pulseDot 1.5s infinite; }
+        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         
         .hero-title { font-family: 'Orbitron', sans-serif; font-size: clamp(2.5rem, 6vw, 5.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 20px; color: var(--text-main); text-transform: uppercase; letter-spacing: -1px; text-shadow: 0 0 30px var(--shadow-color); background: linear-gradient(to right, var(--text-main) 20%, var(--cyan-glow) 50%, var(--text-main) 80%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: shine 4s linear infinite, fadeUp 0.8s ease forwards 0.4s; opacity: 0; }
         @keyframes shine { to { background-position: 200% center; } }
@@ -142,7 +147,6 @@
 </head>
 <body>
 
-    <!-- SVG SHIELD -->
     <svg style="display:none;">
         <symbol id="shield-logo" viewBox="0 0 24 24" fill="none">
             <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/>
@@ -151,19 +155,16 @@
         </symbol>
     </svg>
 
-    <!-- SPLASH -->
     <div id="splash">
         <svg class="splash-shield-3d"><use href="#shield-logo"></use></svg>
         <div class="splash-text">RAKSHA-SURAKSHA</div>
         <div style="font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--cyan-glow); letter-spacing: 4px; margin-top: 20px; animation: blink 1s infinite; text-align: center;">ESTABLISHING SECURE UPLINK...</div>
     </div>
 
-    <!-- BACKGROUNDS -->
     <div class="ambient-bg"></div>
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
-    <!-- NAV -->
     <nav class="nav">
         <a href="index.html" class="brand">
             <svg class="brand-svg"><use href="#shield-logo"></use></svg>
@@ -173,8 +174,7 @@
             <ul class="nav-links">
                 <li><a href="index.html" class="active">HOME</a></li>
                 <li><a href="services.html">SERVICES</a></li>
-                <li><a href="manual.html">MANUAL</a></li>
-                <li><a href="downloads.html">DOWNLOADS</a></li>
+                <li><a href="about.html">ABOUT US</a></li>
                 <li><a href="faqs.html">FAQS</a></li>
             </ul>
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
@@ -188,14 +188,12 @@
         </div>
     </nav>
 
-    <!-- MOBILE MENU -->
     <div class="mobile-overlay" id="mobileNav">
         <button class="m-nav-close" onclick="toggleMobileNav()">×</button>
         <ul class="m-nav-links">
             <li><a href="index.html" class="active">HOME</a></li>
             <li><a href="services.html">SERVICES</a></li>
-            <li><a href="manual.html">MANUAL</a></li>
-            <li><a href="downloads.html">DOWNLOADS</a></li>
+            <li><a href="about.html">ABOUT US</a></li>
             <li><a href="faqs.html">FAQS</a></li>
         </ul>
         <div id="mobileAuthState" style="margin-top: 40px; border-top: 2px solid var(--border-line); padding-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px;">
@@ -210,7 +208,6 @@
         </div>
     </div>
 
-    <!-- MAIN HERO -->
     <main>
         <section class="hero">
             <div class="sys-status"><span class="pulse-dot"></span> CONNECTION SECURED</div>
@@ -230,7 +227,6 @@
         </section>
     </main>
 
-    <!-- FOOTER -->
     <footer>
         <div>© 2026 R.K Sentinel 3-Tier Tactical Command System</div>
         <div class="ft-links">
@@ -239,7 +235,6 @@
         </div>
     </footer>
 
-    <!-- MODAL (Same Auth JS) -->
     <div class="modal-wrap" id="modal">
         <div class="auth-box">
             <button class="m-close-modal" onclick="closeModal()">×</button>
@@ -269,7 +264,6 @@
         </div>
     </div>
 
-    <!-- JS LOGIC -->
     <script>
         function initTheme() { const savedTheme = localStorage.getItem('tactical_theme') || 'dark'; document.documentElement.setAttribute('data-theme', savedTheme); updateMobileThemeBtnVis(); }
         function toggleTheme() { const root = document.documentElement; const newTheme = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; root.setAttribute('data-theme', newTheme); localStorage.setItem('tactical_theme', newTheme); }
