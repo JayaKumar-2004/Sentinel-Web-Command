@@ -6,107 +6,63 @@
     <meta name="google-site-verification" content="h-iwzAF8UBxR-KMoV6O_aK9Npp2V4pObmgSO-uhKksw" />
     <title>Raksha-Suraksha | Tactical Command</title>
     
-    <!-- Firebase Core SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     
-    <!-- Premium Tech Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* 🚀 1. DYNAMIC THEME VARIABLES */
         :root[data-theme="dark"] {
-            --bg-deep: #050A14; /* Deeper, richer navy black */
-            --bg-panel: rgba(10, 15, 30, 0.85);
-            --cyan-glow: #00E5FF;
-            --text-main: #F8FAFC;
-            --text-muted: #94A3B8;
-            --border-line: rgba(0, 229, 255, 0.15);
-            --input-bg: rgba(0,0,0,0.8);
-            --shadow-color: rgba(0, 229, 255, 0.3);
+            --bg-deep: #050A14; --bg-panel: rgba(10, 15, 30, 0.85); --cyan-glow: #00E5FF;
+            --text-main: #F8FAFC; --text-muted: #94A3B8; --border-line: rgba(0, 229, 255, 0.15);
+            --input-bg: rgba(0,0,0,0.8); --shadow-color: rgba(0, 229, 255, 0.3);
             --ambient-light: radial-gradient(circle at 50% 30%, rgba(0, 229, 255, 0.08) 0%, transparent 60%);
         }
-
         :root[data-theme="light"] {
-            --bg-deep: #F4F7FA; 
-            --bg-panel: rgba(255, 255, 255, 0.95);
-            --cyan-glow: #1D4ED8; 
-            --text-main: #0F172A;
-            --text-muted: #475569;
-            --border-line: rgba(29, 78, 216, 0.15);
-            --input-bg: #FFFFFF;
-            --shadow-color: rgba(29, 78, 216, 0.2);
+            --bg-deep: #F4F7FA; --bg-panel: rgba(255, 255, 255, 0.95); --cyan-glow: #1D4ED8; 
+            --text-main: #0F172A; --text-muted: #475569; --border-line: rgba(29, 78, 216, 0.15);
+            --input-bg: #FFFFFF; --shadow-color: rgba(29, 78, 216, 0.2);
             --ambient-light: radial-gradient(circle at 50% 30%, rgba(29, 78, 216, 0.05) 0%, transparent 60%);
         }
 
-        /* Essential Reset */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; scroll-behavior: smooth;}
         body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; transition: background-color 0.4s ease; }
-        main { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 10;}
+        
+        /* 🚀 STRICT DESKTOP LOCKING */
+        main { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; z-index: 10; width: 100%;}
+        .hero { text-align: center; padding: 120px 5% 80px 5%; width: 100%; max-width: 1400px; display: flex; flex-direction: column; align-items: center;}
 
-        /* 🚀 2. BACKGROUND & AMBIENT GLOW */
         .ambient-bg { position: fixed; inset: 0; z-index: -4; background: var(--ambient-light); pointer-events: none; transition: 0.4s ease;}
         #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
-        .grid-overlay {
-            position: fixed; inset: 0; z-index: -2; pointer-events: none;
-            background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
-            background-size: 60px 60px; opacity: 0.3;
-        }
+        .grid-overlay { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.3; }
 
-        /* 🚀 3. 3D CINEMATIC INTRO */
-        #splash {
-            position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            perspective: 1200px; transition: opacity 0.8s ease-out;
-        }
-        .splash-shield-3d {
-            width: 150px; height: 150px; margin-bottom: 30px; transform-style: preserve-3d;
-            animation: flip3D 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards, float 3s ease-in-out infinite 1.5s;
-            filter: drop-shadow(0 0 25px var(--shadow-color));
-        }
+        /* INTRO */
+        #splash { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; perspective: 1200px; transition: opacity 0.8s ease-out; }
+        .splash-shield-3d { width: 150px; height: 150px; margin-bottom: 30px; transform-style: preserve-3d; animation: flip3D 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards, float 3s ease-in-out infinite 1.5s; filter: drop-shadow(0 0 25px var(--shadow-color)); }
         @keyframes flip3D { 0% { transform: rotateY(-180deg) scale(0); opacity: 0; } 100% { transform: rotateY(0deg) scale(1); opacity: 1; } }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-        
-        .splash-text {
-            font-family: 'Orbitron', sans-serif; font-size: clamp(1.5rem, 5vw, 3rem); font-weight: 900;
-            color: var(--cyan-glow); letter-spacing: 8px; text-shadow: 0 0 20px var(--shadow-color);
-            overflow: hidden; border-right: 3px solid var(--cyan-glow); white-space: nowrap; margin: 0 auto;
-            width: 0; animation: typing 2s steps(20, end) 0.5s forwards, blink 0.75s step-end infinite;
-        }
+        .splash-text { font-family: 'Orbitron', sans-serif; font-size: clamp(1.5rem, 5vw, 3rem); font-weight: 900; color: var(--cyan-glow); letter-spacing: 8px; text-shadow: 0 0 20px var(--shadow-color); overflow: hidden; border-right: 3px solid var(--cyan-glow); white-space: nowrap; margin: 0 auto; width: 0; animation: typing 2s steps(20, end) 0.5s forwards, blink 0.75s step-end infinite; }
         @keyframes typing { from { width: 0; } to { width: 100%; } }
         @keyframes blink { from, to { border-color: transparent; } 50% { border-color: var(--cyan-glow); } }
 
-        /* 🚀 4. RESPONSIVE DESKTOP NAVBAR */
+        /* NAVBAR */
         .desktop-nav { display: flex; align-items: center; gap: 20px; }
         .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; }
-
-        @media (max-width: 850px) { 
-            .desktop-nav { display: none !important; }
-            .mobile-nav-btn { display: block !important; }
-        }
-
-        .nav {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); 
-            border-bottom: 1px solid var(--border-line); position: relative; z-index: 500;
-            transition: background 0.4s ease, border-color 0.4s ease;
-        }
+        @media (max-width: 850px) { .desktop-nav { display: none !important; } .mobile-nav-btn { display: block !important; } }
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500; transition: background 0.4s ease, border-color 0.4s ease; }
         .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
         .brand-svg { width: 40px; height: 40px; filter: drop-shadow(0 0 8px var(--shadow-color));}
         .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--text-main); letter-spacing: 2px;}
         .brand-name span { color: #FF6B35; }
-        
         .nav-links { display: flex; gap: 20px; list-style: none; }
         .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700;}
         .nav-links a:hover, .nav-links a.active { color: var(--cyan-glow); text-shadow: 0 0 8px var(--shadow-color); }
-
         .auth-btn { background: rgba(0, 229, 255, 0.05); color: var(--cyan-glow); border: 2px solid var(--cyan-glow); padding: 10px 24px; border-radius: 6px; font-weight: 800; cursor: pointer; transition: all 0.3s; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; text-transform: uppercase;}
         .auth-btn:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 20px var(--shadow-color); transform: translateY(-2px); }
-
         .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); }
         .theme-toggle:hover { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
 
-        /* GOOGLE-STYLE PROFILE DROPDOWN */
+        /* PROFILE */
         .user-profile-container { position: relative; display: inline-block; z-index: 1000; }
         .user-chip { display: flex; align-items: center; gap: 10px; background: var(--bg-panel); border: 1px solid var(--cyan-glow); padding: 6px 16px 6px 6px; border-radius: 30px; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); transition: 0.3s; font-weight: 700;}
         .user-chip:hover { box-shadow: 0 0 15px var(--shadow-color); }
@@ -114,96 +70,55 @@
         .user-dropdown { position: absolute; top: 130%; right: 0; background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 8px; padding: 20px; width: 240px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px); display: none; flex-direction: column; gap: 10px; text-align: center; }
         .user-profile-container:hover .user-dropdown { display: flex; animation: slideDown 0.3s ease; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
         .dropdown-email { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); word-break: break-all; border-bottom: 1px solid var(--border-line); padding-bottom: 15px; margin-bottom: 5px; font-weight: 700;}
         .btn-switch-account { background: transparent; color: #F59E0B; border: 1px solid #F59E0B; padding: 10px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;}
         .btn-switch-account:hover { background: rgba(245, 158, 11, 0.1); }
         .btn-logout-drop { background: transparent; color: #EF4444; border: 1px solid #EF4444; padding: 10px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
         .btn-logout-drop:hover { background: rgba(239, 68, 68, 0.1); }
 
-        /* 🚀 5. MOBILE SLIDE-OUT MENU */
-        .mobile-overlay {
-            position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: var(--bg-panel); backdrop-filter: blur(20px);
-            z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            border-left: 2px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 30px;
-        }
+        /* MOBILE MENU */
+        .mobile-overlay { position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: var(--bg-panel); backdrop-filter: blur(20px); z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-left: 2px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 30px; }
         .mobile-overlay.active { right: 0; }
         .m-nav-close { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 2.5rem; color: var(--text-muted); cursor: pointer; }
         .m-nav-links { list-style: none; display: flex; flex-direction: column; gap: 25px; }
         .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; transition: 0.3s; display: block; font-weight: 700;}
         .m-nav-links a:hover, .m-nav-links a.active { color: var(--cyan-glow); }
 
-        /* 🚀 6. ROLLING BANNER */
+        /* BANNER */
         .rolling-banner { width: 100%; background: var(--cyan-glow); color: var(--bg-deep); padding: 8px 0; font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; display: flex; overflow: hidden; white-space: nowrap; box-shadow: 0 2px 10px var(--shadow-color); position: relative; z-index: 499; align-items: center;}
         .marquee-content { display: inline-block; animation: marquee 25s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
         .marquee-logo { width: 14px; height: 14px; vertical-align: middle; margin-right: 6px; margin-bottom: 2px; }
 
-        /* 🚀 7. HERO SECTION WITH ANIMATIONS */
-        .hero { text-align: center; padding: 100px 5% 60px 5%; max-width: 1100px; margin: 0 auto; width: 100%; }
+        /* HERO ANIMATIONS (LAPTOP OPTIMIZED) */
+        .sys-status { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 20px; background: rgba(16, 185, 129, 0.1); border: 1px solid #10B981; color: #10B981; font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 1px; margin-bottom: 30px; box-shadow: 0 0 15px rgba(16,185,129,0.2); opacity: 0; animation: fadeUp 0.8s ease forwards 0.2s; }
         
-        .sys-status { 
-            display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 20px; 
-            background: rgba(16, 185, 129, 0.1); border: 1px solid #10B981; color: #10B981; 
-            font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.75rem; 
-            letter-spacing: 1px; margin-bottom: 30px; box-shadow: 0 0 15px rgba(16,185,129,0.2); 
-            opacity: 0; animation: fadeUp 0.8s ease forwards 0.2s;
-        }
-        .pulse-dot { width: 8px; height: 8px; background: #10B981; border-radius: 50%; box-shadow: 0 0 10px #10B981; animation: pulseDot 1.5s infinite; }
-        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        
-        /* Cyber-Shine Title Animation */
-        .hero-title { 
-            font-family: 'Orbitron', sans-serif; font-size: clamp(2.5rem, 8vw, 5.5rem); font-weight: 900; 
-            line-height: 1.1; margin-bottom: 20px; color: var(--text-main); text-transform: uppercase; 
-            letter-spacing: -1px; text-shadow: 0 0 30px var(--shadow-color);
-            background: linear-gradient(to right, var(--text-main) 20%, var(--cyan-glow) 50%, var(--text-main) 80%);
-            background-size: 200% auto;
-            color: transparent;
-            -webkit-background-clip: text;
-            background-clip: text;
-            animation: shine 4s linear infinite, fadeUp 0.8s ease forwards 0.4s;
-            opacity: 0;
-        }
+        .hero-title { font-family: 'Orbitron', sans-serif; font-size: clamp(2.5rem, 6vw, 5.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 20px; color: var(--text-main); text-transform: uppercase; letter-spacing: -1px; text-shadow: 0 0 30px var(--shadow-color); background: linear-gradient(to right, var(--text-main) 20%, var(--cyan-glow) 50%, var(--text-main) 80%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: shine 4s linear infinite, fadeUp 0.8s ease forwards 0.4s; opacity: 0; }
         @keyframes shine { to { background-position: 200% center; } }
         
-        /* Animated Tracking Line */
-        .tracking-line {
-            width: 0px; height: 3px; background: var(--cyan-glow); margin: 0 auto 25px auto;
-            box-shadow: 0 0 15px var(--cyan-glow); border-radius: 2px;
-            animation: expandLine 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards 0.8s;
-        }
-        @keyframes expandLine { to { width: 150px; } }
+        .tracking-line { width: 0px; height: 3px; background: var(--cyan-glow); margin: 0 auto 25px auto; box-shadow: 0 0 15px var(--cyan-glow); border-radius: 2px; animation: expandLine 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards 0.8s; }
+        @keyframes expandLine { to { width: 250px; } }
 
-        /* Abstraction Text */
-        .hero-desc { 
-            font-size: clamp(1rem, 3vw, 1.15rem); color: var(--text-muted); font-weight: 400; 
-            line-height: 1.7; margin-bottom: 50px; max-width: 900px; margin-inline: auto; 
-            opacity: 0; animation: fadeUp 0.8s ease forwards 1s; text-align: justify; text-align-last: center;
-        }
-
+        .hero-desc { font-size: 1.2rem; color: var(--text-muted); font-weight: 400; line-height: 1.7; margin-bottom: 50px; max-width: 1000px; opacity: 0; animation: fadeUp 0.8s ease forwards 1s; text-align: center; }
         .hero-actions { display: flex; justify-content: center; width: 100%; opacity: 0; animation: fadeUp 0.8s ease forwards 1.2s;}
-        
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .metric-grid { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 70px; opacity: 0; animation: fadeUp 0.8s ease forwards 1.4s;}
+        .metric-grid { display: flex; justify-content: center; gap: 80px; flex-wrap: wrap; margin-top: 80px; width: 100%; max-width: 1200px; opacity: 0; animation: fadeUp 0.8s ease forwards 1.4s;}
         .metric { font-family: 'Orbitron', sans-serif; text-align: center; }
-        .m-val { font-size: clamp(2.5rem, 6vw, 3.5rem); font-weight: 900; color: var(--cyan-glow); text-shadow: 0 0 15px var(--shadow-color); }
-        .m-lab { font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; display: block; margin-top: 5px;}
+        .m-val { font-size: clamp(3rem, 5vw, 4rem); font-weight: 900; color: var(--cyan-glow); text-shadow: 0 0 15px var(--shadow-color); }
+        .m-lab { font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; display: block; margin-top: 5px;}
 
-        /* 🚀 8. LOCKED FOOTER */
-        footer { margin-top: auto; background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); position: relative; z-index: 10; }
+        /* MODAL & FOOTER */
+        footer { margin-top: auto; background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); position: relative; z-index: 10; width: 100%;}
         .ft-links { display: flex; gap: 20px; font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 1px;}
         .ft-links a { color: var(--text-muted); text-decoration: none; transition: 0.3s; }
         .ft-links a:hover { color: var(--cyan-glow); }
 
-        /* 🚀 9. UNIFIED AUTH MODAL */
         .modal-wrap { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 4000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; padding: 20px; }
         .modal-wrap.active { opacity: 1; display: flex; }
         .auth-box { background: var(--bg-panel); border: 2px solid var(--cyan-glow); border-radius: 12px; padding: 40px; width: 100%; max-width: 420px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; }
         .m-close-modal { position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: 0.3s; font-weight: bold;}
         .m-close-modal:hover { color: var(--text-main); }
-        
         .m-title { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--cyan-glow); margin-bottom: 25px; text-align: center; font-weight: 900; letter-spacing: 1px;}
         .inp-group { margin-bottom: 20px; }
         .inp-label { display: block; font-family: 'Space Mono', monospace; font-weight: 700; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
@@ -222,12 +137,12 @@
         .m-err, .m-succ { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 0.8rem; display: block; text-align: center; margin-top: 15px; min-height: 20px; }
         .m-err { color: #EF4444; } .m-succ { color: #10B981; }
 
-        @media (max-width: 800px) { footer { flex-direction: column; text-align: center; } .hero-desc {text-align: center;} }
+        @media (max-width: 800px) { footer { flex-direction: column; text-align: center; } .metric-grid {gap: 40px;}}
     </style>
 </head>
 <body>
 
-    <!-- 🚀 SVG SHIELD TEMPLATE -->
+    <!-- SVG SHIELD -->
     <svg style="display:none;">
         <symbol id="shield-logo" viewBox="0 0 24 24" fill="none">
             <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/>
@@ -236,53 +151,51 @@
         </symbol>
     </svg>
 
-    <!-- 🚀 3D SPLASH SCREEN -->
+    <!-- SPLASH -->
     <div id="splash">
         <svg class="splash-shield-3d"><use href="#shield-logo"></use></svg>
         <div class="splash-text">RAKSHA-SURAKSHA</div>
         <div style="font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--cyan-glow); letter-spacing: 4px; margin-top: 20px; animation: blink 1s infinite; text-align: center;">ESTABLISHING SECURE UPLINK...</div>
     </div>
 
-    <!-- 🚀 BACKGROUND LAYERS -->
+    <!-- BACKGROUNDS -->
     <div class="ambient-bg"></div>
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
-    <!-- 🚀 UNIVERSAL NAVIGATION -->
+    <!-- NAV -->
     <nav class="nav">
         <a href="index.html" class="brand">
             <svg class="brand-svg"><use href="#shield-logo"></use></svg>
             <div class="brand-name">RAKSHA<span>-</span>SURAKSHA</div>
         </a>
-
         <div class="desktop-nav" id="desktopNavContainer">
             <ul class="nav-links">
                 <li><a href="index.html" class="active">HOME</a></li>
                 <li><a href="services.html">SERVICES</a></li>
                 <li><a href="manual.html">MANUAL</a></li>
+                <li><a href="downloads.html">DOWNLOADS</a></li>
                 <li><a href="faqs.html">FAQS</a></li>
             </ul>
-            
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
-
             <div id="desktopAuthState">
                 <button class="auth-btn" onclick="openModal('login')">SECURE LOGIN</button>
             </div>
         </div>
-
         <div style="display: flex; align-items: center; gap: 15px;">
             <button class="theme-toggle" style="display: none;" onclick="toggleTheme()" id="themeBtnMob">🌓</button>
             <button class="mobile-nav-btn" onclick="toggleMobileNav()">☰</button>
         </div>
     </nav>
 
-    <!-- 🚀 MOBILE SLIDE-OUT MENU -->
+    <!-- MOBILE MENU -->
     <div class="mobile-overlay" id="mobileNav">
         <button class="m-nav-close" onclick="toggleMobileNav()">×</button>
         <ul class="m-nav-links">
             <li><a href="index.html" class="active">HOME</a></li>
             <li><a href="services.html">SERVICES</a></li>
             <li><a href="manual.html">MANUAL</a></li>
+            <li><a href="downloads.html">DOWNLOADS</a></li>
             <li><a href="faqs.html">FAQS</a></li>
         </ul>
         <div id="mobileAuthState" style="margin-top: 40px; border-top: 2px solid var(--border-line); padding-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px;">
@@ -290,7 +203,6 @@
         </div>
     </div>
 
-    <!-- 🚀 ROLLING BANNER -->
     <div class="rolling-banner">
         <div class="marquee-content">
             <svg class="marquee-logo"><use href="#shield-logo"></use></svg> RAKSHA-SURAKSHA TACTICAL COMMAND SYSTEM &nbsp;&nbsp;|&nbsp;&nbsp; 📍 CURRENT NODE: HOME &nbsp;&nbsp;|&nbsp;&nbsp; ⚠️ SYSTEM STATUS: ALL NODES OPERATIONAL &nbsp;&nbsp;|&nbsp;&nbsp; 
@@ -298,35 +210,27 @@
         </div>
     </div>
 
-    <!-- 🚀 MAIN HERO WITH ANIMATIONS -->
+    <!-- MAIN HERO -->
     <main>
         <section class="hero">
             <div class="sys-status"><span class="pulse-dot"></span> CONNECTION SECURED</div>
-            
-            <!-- Animated Title -->
             <h1 class="hero-title">Tactical Command & Asset Security</h1>
-            
-            <!-- Animated Tech Line -->
             <div class="tracking-line"></div>
-
-            <!-- Detailed Abstraction -->
             <p class="hero-desc">
                 Raksha-Suraksha is an advanced bidirectional command platform that bridges physical Android hardware with a secure cloud terminal. Engineered to counter modern theft, it utilizes background accessibility services and offline SMS routing to ensure persistent device control. Whether online or in a complete dead-zone, authorized agents can remotely track, lock, and recover their assets from anywhere on Earth.
             </p>
-            
             <div class="hero-actions">
                 <button class="auth-btn" style="padding: 18px 40px; font-size: 1.1rem; width: auto;" onclick="handleHeroCTA()">INITIALIZE WEB TERMINAL</button>
             </div>
-
             <div class="metric-grid">
-                <div class="metric"><span class="m-val">256<span style="font-size:1rem;">bit</span></span><span class="m-lab">Encryption</span></div>
-                <div class="metric"><span class="m-val">99.9<span style="font-size:1rem;">%</span></span><span class="m-lab">Uptime SLA</span></div>
-                <div class="metric"><span class="m-val">&lt;50<span style="font-size:1rem;">ms</span></span><span class="m-lab">Cmd Latency</span></div>
+                <div class="metric"><span class="m-val">256<span style="font-size:1.5rem;">bit</span></span><span class="m-lab">Encryption</span></div>
+                <div class="metric"><span class="m-val">99.9<span style="font-size:1.5rem;">%</span></span><span class="m-lab">Uptime SLA</span></div>
+                <div class="metric"><span class="m-val">&lt;50<span style="font-size:1.5rem;">ms</span></span><span class="m-lab">Cmd Latency</span></div>
             </div>
         </section>
     </main>
 
-    <!-- 🚀 LOCKED FOOTER -->
+    <!-- FOOTER -->
     <footer>
         <div>© 2026 R.K Sentinel 3-Tier Tactical Command System</div>
         <div class="ft-links">
@@ -335,282 +239,100 @@
         </div>
     </footer>
 
-    <!-- 🚀 ALL-IN-ONE AUTH MODAL -->
+    <!-- MODAL (Same Auth JS) -->
     <div class="modal-wrap" id="modal">
         <div class="auth-box">
             <button class="m-close-modal" onclick="closeModal()">×</button>
-            
-            <!-- LOGIN VIEW -->
             <div id="view-login" class="auth-view active">
                 <div class="m-title">AGENT LOGIN</div>
-                <div class="inp-group">
-                    <label class="inp-label">Agent ID (Email)</label>
-                    <input type="email" id="logEmail" class="tac-input" placeholder="agent@tactical.ops">
-                </div>
-                <div class="inp-group">
-                    <label class="inp-label">Passcode</label>
-                    <input type="password" id="logPass" class="tac-input" placeholder="••••••••">
-                </div>
+                <div class="inp-group"><label class="inp-label">Agent ID (Email)</label><input type="email" id="logEmail" class="tac-input" placeholder="agent@tactical.ops"></div>
+                <div class="inp-group"><label class="inp-label">Passcode</label><input type="password" id="logPass" class="tac-input" placeholder="••••••••"></div>
                 <button class="btn-submit" id="btn-login-exec" onclick="execLogin()">AUTHENTICATE</button>
                 <span class="m-err" id="logErr"></span>
-                <div class="m-links">
-                    <a onclick="switchAuthView('reset')">Forgot Password?</a>
-                    <a onclick="switchAuthView('signup')">Register Agent →</a>
-                </div>
+                <div class="m-links"><a onclick="switchAuthView('reset')">Forgot Password?</a><a onclick="switchAuthView('signup')">Register Agent →</a></div>
             </div>
-
-            <!-- SIGNUP VIEW -->
             <div id="view-signup" class="auth-view">
                 <div class="m-title">REGISTER AGENT</div>
-                <div class="inp-group">
-                    <label class="inp-label">Secure Email</label>
-                    <input type="email" id="regEmail" class="tac-input" placeholder="new.agent@tactical.ops">
-                </div>
-                <div class="inp-group">
-                    <label class="inp-label">Master Passcode (Min 8 Chars)</label>
-                    <input type="password" id="regPass" class="tac-input" placeholder="••••••••">
-                </div>
+                <div class="inp-group"><label class="inp-label">Secure Email</label><input type="email" id="regEmail" class="tac-input" placeholder="new.agent@tactical.ops"></div>
+                <div class="inp-group"><label class="inp-label">Master Passcode (Min 8 Chars)</label><input type="password" id="regPass" class="tac-input" placeholder="••••••••"></div>
                 <button class="btn-submit" id="btn-reg-exec" onclick="execSignup()">CREATE SECURE ACCOUNT</button>
                 <span class="m-err" id="regErr"></span>
-                <div class="m-links">
-                    <a onclick="switchAuthView('login')">← Back to Login</a>
-                </div>
+                <div class="m-links"><a onclick="switchAuthView('login')">← Back to Login</a></div>
             </div>
-
-            <!-- RESET VIEW -->
             <div id="view-reset" class="auth-view">
                 <div class="m-title">RESET PASSCODE</div>
-                <div class="inp-group">
-                    <label class="inp-label">Registered Email</label>
-                    <input type="email" id="resEmail" class="tac-input" placeholder="agent@tactical.ops">
-                </div>
+                <div class="inp-group"><label class="inp-label">Registered Email</label><input type="email" id="resEmail" class="tac-input" placeholder="agent@tactical.ops"></div>
                 <button class="btn-submit" id="btn-res-exec" onclick="execReset()">SEND OVERRIDE LINK</button>
-                <span class="m-err" id="resErr"></span>
-                <span class="m-succ" id="resSucc"></span>
-                <div class="m-links">
-                    <a onclick="switchAuthView('login')">← Back to Login</a>
-                </div>
+                <span class="m-err" id="resErr"></span><span class="m-succ" id="resSucc"></span>
+                <div class="m-links"><a onclick="switchAuthView('login')">← Back to Login</a></div>
             </div>
         </div>
     </div>
 
-    <!-- 🚀 JAVASCRIPT LOGIC -->
+    <!-- JS LOGIC -->
     <script>
-        // 1. THEME TOGGLE LOGIC
-        function initTheme() {
-            const savedTheme = localStorage.getItem('tactical_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateMobileThemeBtnVis();
-        }
+        function initTheme() { const savedTheme = localStorage.getItem('tactical_theme') || 'dark'; document.documentElement.setAttribute('data-theme', savedTheme); updateMobileThemeBtnVis(); }
+        function toggleTheme() { const root = document.documentElement; const newTheme = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; root.setAttribute('data-theme', newTheme); localStorage.setItem('tactical_theme', newTheme); }
+        function updateMobileThemeBtnVis() { document.getElementById('themeBtnMob').style.display = window.innerWidth <= 800 ? 'flex' : 'none'; }
+        initTheme(); window.addEventListener('resize', updateMobileThemeBtnVis);
 
-        function toggleTheme() {
-            const root = document.documentElement;
-            const currentTheme = root.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            root.setAttribute('data-theme', newTheme);
-            localStorage.setItem('tactical_theme', newTheme);
-        }
-
-        function updateMobileThemeBtnVis() {
-            if(window.innerWidth <= 800) {
-                document.getElementById('themeBtnMob').style.display = 'flex';
-            } else {
-                document.getElementById('themeBtnMob').style.display = 'none';
-            }
-        }
-        initTheme();
-        window.addEventListener('resize', updateMobileThemeBtnVis);
-
-
-        // 2. 3D INTRO LOGIC
         window.addEventListener('DOMContentLoaded', () => {
             const splash = document.getElementById('splash');
-            if (sessionStorage.getItem('introPlayed')) {
-                splash.style.display = 'none'; 
-            } else {
-                setTimeout(() => {
-                    splash.style.opacity = '0';
-                    setTimeout(() => { splash.style.display = 'none'; }, 800);
-                    sessionStorage.setItem('introPlayed', 'true');
-                }, 4000); 
-            }
+            if (sessionStorage.getItem('introPlayed')) { splash.style.display = 'none'; } 
+            else { setTimeout(() => { splash.style.opacity = '0'; setTimeout(() => { splash.style.display = 'none'; }, 800); sessionStorage.setItem('introPlayed', 'true'); }, 4000); }
         });
 
-        // 3. MOBILE MENU TOGGLE
-        function toggleMobileNav() {
-            document.getElementById('mobileNav').classList.toggle('active');
-        }
+        function toggleMobileNav() { document.getElementById('mobileNav').classList.toggle('active'); }
 
-        // 4. LIVE GEOMETRIC FACETED MESH CANVAS
-        const canvas = document.getElementById('interactiveCanvas');
-        const ctx = canvas.getContext('2d');
+        const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        
-        let particles = [];
-        let mouse = { x: null, y: null, radius: 200 };
-
+        let particles = []; let mouse = { x: null, y: null, radius: 200 };
         window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
         window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
-        window.addEventListener('touchmove', (e) => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; });
-        window.addEventListener('touchend', () => { mouse.x = undefined; mouse.y = undefined; });
-
-        for (let i = 0; i < 70; i++) {
-            particles.push({
-                x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6,
-                size: Math.random() * 2 + 1
-            });
-        }
-
+        for (let i = 0; i < 70; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6, size: Math.random() * 2 + 1 }); }
+        
         function animateCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
             const isLight = document.documentElement.getAttribute('data-theme') === 'light';
             const rgbLine = isLight ? '29, 78, 216' : '0, 229, 255';
             const fillPoly = isLight ? 'rgba(29, 78, 216, 0.04)' : 'rgba(0, 229, 255, 0.03)';
-
             for (let i = 0; i < particles.length; i++) {
-                let p = particles[i];
-                p.x += p.vx; p.y += p.vy;
-                
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                
+                let p = particles[i]; p.x += p.vx; p.y += p.vy;
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1; if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
                 for (let j = i + 1; j < particles.length; j++) {
-                    let p2 = particles[j];
-                    let dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
-                    
+                    let p2 = particles[j]; let dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
                     if (dist < 150) {
-                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.2 - dist/750})`; 
-                        ctx.lineWidth = 0.5; ctx.stroke();
-
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.strokeStyle = `rgba(${rgbLine}, ${0.2 - dist/750})`; ctx.lineWidth = 0.5; ctx.stroke();
                         for(let k = j + 1; k < particles.length; k++) {
-                            let p3 = particles[k];
-                            let dist2 = Math.sqrt((p2.x - p3.x)**2 + (p2.y - p3.y)**2);
-                            let dist3 = Math.sqrt((p.x - p3.x)**2 + (p.y - p3.y)**2);
-                            
-                            if (dist2 < 150 && dist3 < 150) {
-                                ctx.beginPath();
-                                ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y);
-                                ctx.closePath();
-                                ctx.fillStyle = fillPoly; 
-                                ctx.fill();
-                            }
+                            let p3 = particles[k]; let dist2 = Math.sqrt((p2.x - p3.x)**2 + (p2.y - p3.y)**2); let dist3 = Math.sqrt((p.x - p3.x)**2 + (p.y - p3.y)**2);
+                            if (dist2 < 150 && dist3 < 150) { ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.closePath(); ctx.fillStyle = fillPoly; ctx.fill(); }
                         }
                     }
                 }
+                if(mouse.x != null) { let dx = mouse.x - p.x; let dy = mouse.y - p.y; let distance = Math.sqrt(dx * dx + dy * dy); if (distance < mouse.radius) { ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.strokeStyle = `rgba(${rgbLine}, ${0.8 - distance/mouse.radius})`; ctx.lineWidth = 1; ctx.stroke(); } }
+            } requestAnimationFrame(animateCanvas);
+        } animateCanvas(); window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
 
-                if(mouse.x != null) {
-                    let dx = mouse.x - p.x; let dy = mouse.y - p.y;
-                    let distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < mouse.radius) {
-                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y);
-                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.8 - distance/mouse.radius})`;
-                        ctx.lineWidth = 1; ctx.stroke();
-                    }
-                }
-            }
-            requestAnimationFrame(animateCanvas);
-        }
-        animateCanvas();
-        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
-
-        // 5. FIREBASE AUTHENTICATION & GOOGLE-STYLE PROFILE
-        const fbCfg = { 
-            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" 
-        };
+        const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
         firebase.initializeApp(fbCfg);
-        
         let currentUser = null;
-
         firebase.auth().onAuthStateChanged(user => { 
-            currentUser = user;
-            const dContainer = document.getElementById('desktopAuthState');
-            const mContainer = document.getElementById('mobileAuthState');
-            
+            currentUser = user; const dContainer = document.getElementById('desktopAuthState'); const mContainer = document.getElementById('mobileAuthState');
             if (user) { 
-                const agentName = user.email.split('@')[0].toUpperCase();
-                const initial = agentName.charAt(0);
-                
-                const userProfileHTML = `
-                    <div class="user-profile-container">
-                        <div class="user-chip">
-                            <div class="user-avatar">${initial}</div>
-                            AGENT ${agentName}
-                        </div>
-                        <div class="user-dropdown">
-                            <div class="dropdown-email">${user.email}</div>
-                            <button class="btn-switch-account" onclick="firebase.auth().signOut(); setTimeout(()=>openModal('login'), 500);">⟲ SWITCH ACCOUNT</button>
-                            <button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ LOGOUT</button>
-                        </div>
-                    </div>
-                `;
-                
-                dContainer.innerHTML = userProfileHTML;
-                mContainer.innerHTML = userProfileHTML;
-                
-            } else {
-                dContainer.innerHTML = `<button class="auth-btn" onclick="openModal('login')">SECURE LOGIN</button>`;
-                mContainer.innerHTML = `<button class="auth-btn" style="width: 100%;" onclick="openModal('login'); toggleMobileNav();">SECURE LOGIN</button>`;
-            }
+                const agentName = user.email.split('@')[0].toUpperCase(); const initial = agentName.charAt(0);
+                const userProfileHTML = `<div class="user-profile-container"><div class="user-chip"><div class="user-avatar">${initial}</div>AGENT ${agentName}</div><div class="user-dropdown"><div class="dropdown-email">${user.email}</div><button class="btn-switch-account" onclick="firebase.auth().signOut(); setTimeout(()=>openModal('login'), 500);">⟲ SWITCH ACCOUNT</button><button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ LOGOUT</button></div></div>`;
+                dContainer.innerHTML = userProfileHTML; mContainer.innerHTML = userProfileHTML;
+            } else { dContainer.innerHTML = `<button class="auth-btn" onclick="openModal('login')">SECURE LOGIN</button>`; mContainer.innerHTML = `<button class="auth-btn" style="width: 100%;" onclick="openModal('login'); toggleMobileNav();">SECURE LOGIN</button>`; }
         });
 
-        // Redirect CTA strictly to dashboard if logged in
-        function handleHeroCTA() {
-            if (currentUser) { window.location.href = 'services.html'; } 
-            else { openModal('login'); }
-        }
-
-        // 6. MODAL UI CONTROLS
+        function handleHeroCTA() { if (currentUser) { window.location.href = 'services.html'; } else { openModal('login'); } }
         function openModal(view) { switchAuthView(view); document.getElementById('modal').classList.add('active'); }
         function closeModal() { document.getElementById('modal').classList.remove('active'); }
         document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
-
-        function switchAuthView(viewId) {
-            document.querySelectorAll('.auth-view').forEach(v => v.classList.remove('active'));
-            document.getElementById('view-' + viewId).classList.add('active');
-            document.querySelectorAll('.m-err, .m-succ').forEach(e => e.textContent = '');
-        }
-
-        // 7. FIREBASE EXECUTIONS (Redirect to Dashboard)
-        function execLogin() {
-            const email = document.getElementById('logEmail').value;
-            const pass = document.getElementById('logPass').value;
-            const btn = document.getElementById('btn-login-exec');
-            const err = document.getElementById('logErr');
-            
-            btn.textContent = 'VERIFYING...'; err.textContent = '';
-            firebase.auth().signInWithEmailAndPassword(email, pass)
-                .then(() => { window.location.href = 'services.html'; })
-                .catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'AUTHENTICATE'; });
-        }
-
-        function execSignup() {
-            const email = document.getElementById('regEmail').value;
-            const pass = document.getElementById('regPass').value;
-            const btn = document.getElementById('btn-reg-exec');
-            const err = document.getElementById('regErr');
-            
-            if(pass.length < 8) { err.textContent = '⚠ Passcode must be at least 8 characters.'; return; }
-
-            btn.textContent = 'ENCRYPTING...'; err.textContent = '';
-            firebase.auth().createUserWithEmailAndPassword(email, pass)
-                .then(() => { window.location.href = 'services.html'; })
-                .catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'CREATE SECURE ACCOUNT'; });
-        }
-
-        function execReset() {
-            const email = document.getElementById('resEmail').value;
-            const btn = document.getElementById('btn-res-exec');
-            const err = document.getElementById('resErr');
-            const succ = document.getElementById('resSucc');
-            
-            btn.textContent = 'TRANSMITTING...'; err.textContent = ''; succ.textContent = '';
-            firebase.auth().sendPasswordResetEmail(email)
-                .then(() => { succ.textContent = '✓ Override link transmitted to inbox.'; btn.textContent = 'SEND OVERRIDE LINK'; })
-                .catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'SEND OVERRIDE LINK'; });
-        }
+        function switchAuthView(viewId) { document.querySelectorAll('.auth-view').forEach(v => v.classList.remove('active')); document.getElementById('view-' + viewId).classList.add('active'); document.querySelectorAll('.m-err, .m-succ').forEach(e => e.textContent = ''); }
+        function execLogin() { const email = document.getElementById('logEmail').value; const pass = document.getElementById('logPass').value; const btn = document.getElementById('btn-login-exec'); const err = document.getElementById('logErr'); btn.textContent = 'VERIFYING...'; err.textContent = ''; firebase.auth().signInWithEmailAndPassword(email, pass).then(() => { window.location.href = 'services.html'; }).catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'AUTHENTICATE'; }); }
+        function execSignup() { const email = document.getElementById('regEmail').value; const pass = document.getElementById('regPass').value; const btn = document.getElementById('btn-reg-exec'); const err = document.getElementById('regErr'); if(pass.length < 8) { err.textContent = '⚠ Passcode must be at least 8 characters.'; return; } btn.textContent = 'ENCRYPTING...'; err.textContent = ''; firebase.auth().createUserWithEmailAndPassword(email, pass).then(() => { window.location.href = 'services.html'; }).catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'CREATE SECURE ACCOUNT'; }); }
+        function execReset() { const email = document.getElementById('resEmail').value; const btn = document.getElementById('btn-res-exec'); const err = document.getElementById('resErr'); const succ = document.getElementById('resSucc'); btn.textContent = 'TRANSMITTING...'; err.textContent = ''; succ.textContent = ''; firebase.auth().sendPasswordResetEmail(email).then(() => { succ.textContent = '✓ Override link transmitted to inbox.'; btn.textContent = 'SEND OVERRIDE LINK'; }).catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'SEND OVERRIDE LINK'; }); }
     </script>
 </body>
-    </html>
+</html>
