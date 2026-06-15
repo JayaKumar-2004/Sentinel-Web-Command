@@ -16,38 +16,41 @@
     <style>
         /* 🚀 1. DYNAMIC THEME VARIABLES */
         :root[data-theme="dark"] {
-            --bg-deep: #030712;
-            --bg-panel: rgba(15, 23, 42, 0.85);
+            --bg-deep: #050A14; /* Deeper, richer navy black */
+            --bg-panel: rgba(10, 15, 30, 0.85);
             --cyan-glow: #00E5FF;
             --text-main: #F8FAFC;
             --text-muted: #94A3B8;
-            --border-line: rgba(0, 229, 255, 0.2);
+            --border-line: rgba(0, 229, 255, 0.15);
             --input-bg: rgba(0,0,0,0.8);
             --shadow-color: rgba(0, 229, 255, 0.3);
+            --ambient-light: radial-gradient(circle at 50% 30%, rgba(0, 229, 255, 0.08) 0%, transparent 60%);
         }
 
         :root[data-theme="light"] {
-            --bg-deep: #F1F5F9; 
+            --bg-deep: #F4F7FA; 
             --bg-panel: rgba(255, 255, 255, 0.95);
             --cyan-glow: #1D4ED8; 
             --text-main: #0F172A;
             --text-muted: #475569;
-            --border-line: rgba(29, 78, 216, 0.2);
+            --border-line: rgba(29, 78, 216, 0.15);
             --input-bg: #FFFFFF;
             --shadow-color: rgba(29, 78, 216, 0.2);
+            --ambient-light: radial-gradient(circle at 50% 30%, rgba(29, 78, 216, 0.05) 0%, transparent 60%);
         }
 
         /* Essential Reset */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; scroll-behavior: smooth;}
         body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; transition: background-color 0.4s ease; }
         main { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 10;}
 
-        /* 🚀 2. DYNAMIC GEOMETRIC CANVAS BACKGROUND */
+        /* 🚀 2. BACKGROUND & AMBIENT GLOW */
+        .ambient-bg { position: fixed; inset: 0; z-index: -4; background: var(--ambient-light); pointer-events: none; transition: 0.4s ease;}
         #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
         .grid-overlay {
             position: fixed; inset: 0; z-index: -2; pointer-events: none;
             background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
-            background-size: 60px 60px; opacity: 0.2;
+            background-size: 60px 60px; opacity: 0.3;
         }
 
         /* 🚀 3. 3D CINEMATIC INTRO */
@@ -58,7 +61,7 @@
         }
         .splash-shield-3d {
             width: 150px; height: 150px; margin-bottom: 30px; transform-style: preserve-3d;
-            animation: flip3D 4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards, float 3s ease-in-out infinite 2s;
+            animation: flip3D 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards, float 3s ease-in-out infinite 1.5s;
             filter: drop-shadow(0 0 25px var(--shadow-color));
         }
         @keyframes flip3D { 0% { transform: rotateY(-180deg) scale(0); opacity: 0; } 100% { transform: rotateY(0deg) scale(1); opacity: 1; } }
@@ -68,7 +71,7 @@
             font-family: 'Orbitron', sans-serif; font-size: clamp(1.5rem, 5vw, 3rem); font-weight: 900;
             color: var(--cyan-glow); letter-spacing: 8px; text-shadow: 0 0 20px var(--shadow-color);
             overflow: hidden; border-right: 3px solid var(--cyan-glow); white-space: nowrap; margin: 0 auto;
-            width: 0; animation: typing 2.5s steps(20, end) 1s forwards, blink 0.75s step-end infinite;
+            width: 0; animation: typing 2s steps(20, end) 0.5s forwards, blink 0.75s step-end infinite;
         }
         @keyframes typing { from { width: 0; } to { width: 100%; } }
         @keyframes blink { from, to { border-color: transparent; } 50% { border-color: var(--cyan-glow); } }
@@ -100,29 +103,15 @@
         .auth-btn { background: rgba(0, 229, 255, 0.05); color: var(--cyan-glow); border: 2px solid var(--cyan-glow); padding: 10px 24px; border-radius: 6px; font-weight: 800; cursor: pointer; transition: all 0.3s; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; text-transform: uppercase;}
         .auth-btn:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 20px var(--shadow-color); transform: translateY(-2px); }
 
-        /* THEME TOGGLE BUTTON */
         .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); }
         .theme-toggle:hover { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
 
-        /* 🚀 GOOGLE-STYLE PROFILE DROPDOWN */
+        /* GOOGLE-STYLE PROFILE DROPDOWN */
         .user-profile-container { position: relative; display: inline-block; z-index: 1000; }
-        .user-chip { 
-            display: flex; align-items: center; gap: 10px; background: var(--bg-panel); 
-            border: 1px solid var(--cyan-glow); padding: 6px 16px 6px 6px; border-radius: 30px; 
-            cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); transition: 0.3s; font-weight: 700;
-        }
+        .user-chip { display: flex; align-items: center; gap: 10px; background: var(--bg-panel); border: 1px solid var(--cyan-glow); padding: 6px 16px 6px 6px; border-radius: 30px; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); transition: 0.3s; font-weight: 700;}
         .user-chip:hover { box-shadow: 0 0 15px var(--shadow-color); }
-        .user-avatar { 
-            width: 28px; height: 28px; background: var(--cyan-glow); color: var(--bg-deep); 
-            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
-            font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 1rem;
-        }
-        .user-dropdown { 
-            position: absolute; top: 130%; right: 0; background: var(--bg-panel); 
-            border: 1px solid var(--border-line); border-radius: 8px; padding: 20px; width: 240px; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px); 
-            display: none; flex-direction: column; gap: 10px; text-align: center;
-        }
+        .user-avatar { width: 28px; height: 28px; background: var(--cyan-glow); color: var(--bg-deep); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 1rem; }
+        .user-dropdown { position: absolute; top: 130%; right: 0; background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 8px; padding: 20px; width: 240px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px); display: none; flex-direction: column; gap: 10px; text-align: center; }
         .user-profile-container:hover .user-dropdown { display: flex; animation: slideDown 0.3s ease; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
@@ -134,11 +123,9 @@
 
         /* 🚀 5. MOBILE SLIDE-OUT MENU */
         .mobile-overlay {
-            position: fixed; top: 0; right: -100%; width: 300px; height: 100vh;
-            background: var(--bg-panel); backdrop-filter: blur(20px);
+            position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: var(--bg-panel); backdrop-filter: blur(20px);
             z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            border-left: 2px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.5);
-            display: flex; flex-direction: column; gap: 30px;
+            border-left: 2px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 30px;
         }
         .mobile-overlay.active { right: 0; }
         .m-nav-close { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 2.5rem; color: var(--text-muted); cursor: pointer; }
@@ -152,18 +139,54 @@
         @keyframes marquee { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
         .marquee-logo { width: 14px; height: 14px; vertical-align: middle; margin-right: 6px; margin-bottom: 2px; }
 
-        /* 🚀 7. HERO SECTION */
-        .hero { text-align: center; padding: 80px 5%; max-width: 1200px; margin: 0 auto; width: 100%; }
-        .sys-status { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 20px; background: rgba(16, 185, 129, 0.1); border: 1px solid #10B981; color: #10B981; font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 1px; margin-bottom: 30px; box-shadow: 0 0 15px rgba(16,185,129,0.2); }
+        /* 🚀 7. HERO SECTION WITH ANIMATIONS */
+        .hero { text-align: center; padding: 100px 5% 60px 5%; max-width: 1100px; margin: 0 auto; width: 100%; }
+        
+        .sys-status { 
+            display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 20px; 
+            background: rgba(16, 185, 129, 0.1); border: 1px solid #10B981; color: #10B981; 
+            font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.75rem; 
+            letter-spacing: 1px; margin-bottom: 30px; box-shadow: 0 0 15px rgba(16,185,129,0.2); 
+            opacity: 0; animation: fadeUp 0.8s ease forwards 0.2s;
+        }
         .pulse-dot { width: 8px; height: 8px; background: #10B981; border-radius: 50%; box-shadow: 0 0 10px #10B981; animation: pulseDot 1.5s infinite; }
         @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         
-        .hero-title { font-family: 'Orbitron', sans-serif; font-size: clamp(2.2rem, 8vw, 5.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 24px; color: var(--text-main); text-transform: uppercase; letter-spacing: -1px; text-shadow: 0 0 30px var(--shadow-color); }
-        .hero-desc { font-size: clamp(1rem, 3vw, 1.2rem); color: var(--text-muted); font-weight: 600; line-height: 1.6; margin-bottom: 50px; max-width: 800px; margin-inline: auto; }
+        /* Cyber-Shine Title Animation */
+        .hero-title { 
+            font-family: 'Orbitron', sans-serif; font-size: clamp(2.5rem, 8vw, 5.5rem); font-weight: 900; 
+            line-height: 1.1; margin-bottom: 20px; color: var(--text-main); text-transform: uppercase; 
+            letter-spacing: -1px; text-shadow: 0 0 30px var(--shadow-color);
+            background: linear-gradient(to right, var(--text-main) 20%, var(--cyan-glow) 50%, var(--text-main) 80%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 4s linear infinite, fadeUp 0.8s ease forwards 0.4s;
+            opacity: 0;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
+        
+        /* Animated Tracking Line */
+        .tracking-line {
+            width: 0px; height: 3px; background: var(--cyan-glow); margin: 0 auto 25px auto;
+            box-shadow: 0 0 15px var(--cyan-glow); border-radius: 2px;
+            animation: expandLine 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards 0.8s;
+        }
+        @keyframes expandLine { to { width: 150px; } }
 
-        .hero-actions { display: flex; justify-content: center; width: 100%; }
+        /* Abstraction Text */
+        .hero-desc { 
+            font-size: clamp(1rem, 3vw, 1.15rem); color: var(--text-muted); font-weight: 400; 
+            line-height: 1.7; margin-bottom: 50px; max-width: 900px; margin-inline: auto; 
+            opacity: 0; animation: fadeUp 0.8s ease forwards 1s; text-align: justify; text-align-last: center;
+        }
 
-        .metric-grid { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 70px; }
+        .hero-actions { display: flex; justify-content: center; width: 100%; opacity: 0; animation: fadeUp 0.8s ease forwards 1.2s;}
+        
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .metric-grid { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 70px; opacity: 0; animation: fadeUp 0.8s ease forwards 1.4s;}
         .metric { font-family: 'Orbitron', sans-serif; text-align: center; }
         .m-val { font-size: clamp(2.5rem, 6vw, 3.5rem); font-weight: 900; color: var(--cyan-glow); text-shadow: 0 0 15px var(--shadow-color); }
         .m-lab { font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; display: block; margin-top: 5px;}
@@ -199,7 +222,7 @@
         .m-err, .m-succ { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 0.8rem; display: block; text-align: center; margin-top: 15px; min-height: 20px; }
         .m-err { color: #EF4444; } .m-succ { color: #10B981; }
 
-        @media (max-width: 800px) { footer { flex-direction: column; text-align: center; } }
+        @media (max-width: 800px) { footer { flex-direction: column; text-align: center; } .hero-desc {text-align: center;} }
     </style>
 </head>
 <body>
@@ -213,14 +236,15 @@
         </symbol>
     </svg>
 
-    <!-- 🚀 3D SPLASH SCREEN (ONCE PER SESSION) -->
+    <!-- 🚀 3D SPLASH SCREEN -->
     <div id="splash">
         <svg class="splash-shield-3d"><use href="#shield-logo"></use></svg>
-        <div class="typewriter-text">RAKSHA-SURAKSHA</div>
+        <div class="splash-text">RAKSHA-SURAKSHA</div>
         <div style="font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--cyan-glow); letter-spacing: 4px; margin-top: 20px; animation: blink 1s infinite; text-align: center;">ESTABLISHING SECURE UPLINK...</div>
     </div>
 
-    <!-- 🚀 LIVE GEOMETRIC FACETED MESH CANVAS -->
+    <!-- 🚀 BACKGROUND LAYERS -->
+    <div class="ambient-bg"></div>
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
@@ -231,16 +255,14 @@
             <div class="brand-name">RAKSHA<span>-</span>SURAKSHA</div>
         </a>
 
-        <!-- DESKTOP SPECIFIC NAV -->
         <div class="desktop-nav" id="desktopNavContainer">
             <ul class="nav-links">
                 <li><a href="index.html" class="active">HOME</a></li>
                 <li><a href="services.html">SERVICES</a></li>
-                <li><a href="about.html">ABOUT US</a></li>
+                <li><a href="manual.html">MANUAL</a></li>
                 <li><a href="faqs.html">FAQS</a></li>
             </ul>
             
-            <!-- Theme Toggle -->
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
 
             <div id="desktopAuthState">
@@ -248,7 +270,6 @@
             </div>
         </div>
 
-        <!-- MOBILE SPECIFIC NAV BUTTONS -->
         <div style="display: flex; align-items: center; gap: 15px;">
             <button class="theme-toggle" style="display: none;" onclick="toggleTheme()" id="themeBtnMob">🌓</button>
             <button class="mobile-nav-btn" onclick="toggleMobileNav()">☰</button>
@@ -261,7 +282,7 @@
         <ul class="m-nav-links">
             <li><a href="index.html" class="active">HOME</a></li>
             <li><a href="services.html">SERVICES</a></li>
-            <li><a href="about.html">ABOUT US</a></li>
+            <li><a href="manual.html">MANUAL</a></li>
             <li><a href="faqs.html">FAQS</a></li>
         </ul>
         <div id="mobileAuthState" style="margin-top: 40px; border-top: 2px solid var(--border-line); padding-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px;">
@@ -277,13 +298,20 @@
         </div>
     </div>
 
-    <!-- 🚀 MAIN HERO -->
+    <!-- 🚀 MAIN HERO WITH ANIMATIONS -->
     <main>
         <section class="hero">
             <div class="sys-status"><span class="pulse-dot"></span> CONNECTION SECURED</div>
-            <h1 class="hero-title">Advanced Tactical Tracking & Security</h1>
+            
+            <!-- Animated Title -->
+            <h1 class="hero-title">Tactical Command & Asset Security</h1>
+            
+            <!-- Animated Tech Line -->
+            <div class="tracking-line"></div>
+
+            <!-- Detailed Abstraction -->
             <p class="hero-desc">
-                The ultimate command hub engineered to bridge physical mobile hardware with secure, real-time cloud analytics. Monitor, control, and dominate your assets from anywhere on Earth.
+                Raksha-Suraksha is an advanced bidirectional command platform that bridges physical Android hardware with a secure cloud terminal. Engineered to counter modern theft, it utilizes background accessibility services and offline SMS routing to ensure persistent device control. Whether online or in a complete dead-zone, authorized agents can remotely track, lock, and recover their assets from anywhere on Earth.
             </p>
             
             <div class="hero-actions">
@@ -404,7 +432,7 @@
                     splash.style.opacity = '0';
                     setTimeout(() => { splash.style.display = 'none'; }, 800);
                     sessionStorage.setItem('introPlayed', 'true');
-                }, 6000); 
+                }, 4000); 
             }
         });
 
@@ -530,7 +558,7 @@
 
         // Redirect CTA strictly to dashboard if logged in
         function handleHeroCTA() {
-            if (currentUser) { window.location.href = 'dashboard.html'; } 
+            if (currentUser) { window.location.href = 'services.html'; } 
             else { openModal('login'); }
         }
 
@@ -554,7 +582,7 @@
             
             btn.textContent = 'VERIFYING...'; err.textContent = '';
             firebase.auth().signInWithEmailAndPassword(email, pass)
-                .then(() => { window.location.href = 'dashboard.html'; })
+                .then(() => { window.location.href = 'services.html'; })
                 .catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'AUTHENTICATE'; });
         }
 
@@ -568,7 +596,7 @@
 
             btn.textContent = 'ENCRYPTING...'; err.textContent = '';
             firebase.auth().createUserWithEmailAndPassword(email, pass)
-                .then(() => { window.location.href = 'dashboard.html'; })
+                .then(() => { window.location.href = 'services.html'; })
                 .catch(e => { err.textContent = '⚠ ' + e.message; btn.textContent = 'CREATE SECURE ACCOUNT'; });
         }
 
@@ -585,4 +613,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
