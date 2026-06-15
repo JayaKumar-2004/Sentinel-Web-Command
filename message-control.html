@@ -80,6 +80,9 @@
         .inp-label { display: block; font-family: 'Space Mono', monospace; font-weight: 700; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
         .tac-input { width: 100%; padding: 14px; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--border-line); color: var(--text-main); font-size: 1rem; font-weight: 600; outline: none; transition: 0.3s; }
         .tac-input:focus { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
+        
+        .split-inp { display: flex; gap: 15px; }
+        .split-inp > div { flex: 1; }
 
         /* SWITCH SEPARATORS */
         .flex-row-switch { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -98,10 +101,10 @@
         .panel-warning { border-color: var(--warning); box-shadow: 0 10px 25px rgba(245, 158, 11, 0.05); }
         .panel-warning .panel-title { color: var(--warning); }
         
-        .sms-grid-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .sms-grid-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 20px; }
         .btn-sms-payload { 
             background: rgba(245, 158, 11, 0.05); color: var(--warning); border: 1px solid var(--warning);
-            padding: 14px; border-radius: 6px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem;
+            padding: 14px 10px; border-radius: 6px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem;
             font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
@@ -112,7 +115,7 @@
 
         footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-top: auto; width: 100%;}
         #authLoader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; color: var(--cyan-glow); font-size: 1.5rem; letter-spacing: 2px;}
-        @media (max-width: 850px) { .desktop-nav { display: none !important; } .mobile-nav-btn { display: block !important; } }
+        @media (max-width: 850px) { .desktop-nav { display: none !important; } .mobile-nav-btn { display: block !important; } .split-inp { flex-direction: column; gap: 0;} }
     </style>
 </head>
 <body>
@@ -182,21 +185,29 @@
                 </div>
             </div>
 
-            <!-- MODULE 2: OFFLINE SMS PAYLOAD GENERATOR (EXACT BLOCK MATCH) -->
+            <!-- MODULE 2: OFFLINE SMS PAYLOAD GENERATOR (WITH PIN AUTHENTICATION) -->
             <div class="tac-panel panel-warning" id="smsGenerator">
                 <div class="panel-title">📡 OFFLINE SMS PAYLOAD GENERATOR</div>
-                <div class="panel-desc">Generate encrypted SMS commands if the target device loses internet connectivity.</div>
+                <div class="panel-desc">Generate encrypted SMS commands if the target device loses internet connectivity. Formatting matches the RAKSHA:PIN:COMMAND architecture.</div>
                 
-                <div class="inp-group">
-                    <label class="inp-label">Target Hardware Hardware Phone Number</label>
-                    <input type="tel" id="smsTargetNum" class="tac-input" value="6388220889" placeholder="Enter device SIM card number">
+                <div class="split-inp">
+                    <div class="inp-group">
+                        <label class="inp-label">Target Phone Number</label>
+                        <input type="tel" id="smsTargetNum" class="tac-input" value="6388220889" placeholder="Enter device SIM number">
+                    </div>
+                    <div class="inp-group">
+                        <label class="inp-label">Master Passcode (PIN)</label>
+                        <input type="text" id="smsPasscode" class="tac-input" value="1234" placeholder="e.g. 1234">
+                    </div>
                 </div>
 
+                <!-- 🚀 UPDATED BUTTONS TO MATCH SCREENSHOT -->
                 <div class="sms-grid-buttons">
-                    <button class="btn-sms-payload" onclick="generateSms('PING')">📍 SMS: PING RADAR</button>
-                    <button class="btn-sms-payload" onclick="generateSms('SIREN')">🔊 SMS: TRIGGER SIREN</button>
-                    <button class="btn-sms-payload" onclick="generateSms('LOCK')">🔒 SMS: INSTANT LOCK</button>
-                    <button class="btn-sms-payload" onclick="generateSms('STROBE')">⚡ SMS: STROBE FLASH</button>
+                    <button class="btn-sms-payload" onclick="generateSms('ALARM_ON')">🔊 ALARM ON</button>
+                    <button class="btn-sms-payload" onclick="generateSms('ALARM_OFF')">🔇 ALARM OFF</button>
+                    <button class="btn-sms-payload" onclick="generateSms('GET_LOCATION')">📍 GET LOCATION</button>
+                    <button class="btn-sms-payload" onclick="generateSms('FLASH_BLINK')">⚡ FLASH BLINK</button>
+                    <button class="btn-sms-payload" onclick="generateSms('FLASH_OFF')">❌ FLASH OFF</button>
                 </div>
 
                 <div class="terminal-stream" id="smsConsole">> Awaiting payload generation parameters...</div>
@@ -220,9 +231,10 @@
     </svg>
 
     <script>
-        // 🚀 1. OFFLINE SMS ROUTER LOGIC
+        // 🚀 1. SECURE SMS ROUTER LOGIC (RAKSHA:PIN:COMMAND)
         function generateSms(commandType) {
             const targetNum = document.getElementById('smsTargetNum').value.trim();
+            const passcode = document.getElementById('smsPasscode').value.trim();
             const consoleBox = document.getElementById('smsConsole');
             
             if(!targetNum) {
@@ -231,15 +243,16 @@
                 return;
             }
 
-            let textBody = "";
-            switch(commandType) {
-                case 'PING': textBody = "RAKSHA_LOCATE_ME"; break;
-                case 'SIREN': textBody = "RAKSHA_ALARM_ON"; break;
-                case 'LOCK': textBody = "RAKSHA_LOCK_NOW"; break;
-                case 'STROBE': textBody = "RAKSHA_STROBE_ON"; break;
+            if(!passcode) {
+                consoleBox.textContent = "⚠ ERROR: Master Passcode is required to generate a valid command.";
+                consoleBox.style.color = "var(--danger)";
+                return;
             }
 
-            // High-end feature: Generate native protocol trigger links for smartphone browsers
+            // Construct the exact string expected by the Android Java Receiver
+            const textBody = `RAKSHA:${passcode}:${commandType}`;
+
+            // Generate native protocol trigger link for smartphone browsers
             const mobileSmsIntentLink = `sms:${targetNum}?body=${encodeURIComponent(textBody)}`;
             
             consoleBox.innerHTML = `[RAW PAYLOAD]: <span style="color:#FFF; font-weight:bold;">${textBody}</span>\n[ROUTING TARGET]: ${targetNum}\n\n<a href="${mobileSmsIntentLink}" style="color:var(--cyan-glow); font-weight:800; text-decoration:underline;">⚡ CLICK TO DISPATCH DIRECT VIA DEVICE SIM</a>`;
