@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raksha-Suraksha | Tactical App Location</title>
     
+    <!-- Firebase Core SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     
+    <!-- Leaflet.js for Interactive Maps -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+    <!-- Premium Tech Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
@@ -75,27 +78,13 @@
         /* 🚀 TACTICAL MAP CONTAINER */
         .map-panel { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; padding: 25px; backdrop-filter: blur(10px); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
         
-        /* 🚀 NEW TIMER HUD CONTROLS */
-        .map-hud { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);}
+        .map-hud { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
         .hud-status { display: flex; align-items: center; gap: 10px; font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--success); background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 8px 16px; border-radius: 4px;}
         .pulse-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulseDot 1.5s infinite; }
         @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        .control-group { display: flex; gap: 15px; align-items: center; flex-wrap: wrap;}
-        
-        .timer-select { 
-            background: var(--input-bg); border: 1px solid var(--border-line); color: var(--text-main); 
-            font-family: 'Space Mono', monospace; padding: 10px 15px; border-radius: 4px; font-size: 0.85rem; outline: none; cursor: pointer; font-weight: 700;
-        }
-        .timer-select:focus { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
-
-        .btn-ping { background: transparent; border: 2px solid var(--cyan-glow); color: var(--cyan-glow); font-family: 'Orbitron', sans-serif; padding: 10px 20px; border-radius: 4px; font-weight: 800; cursor: pointer; transition: 0.3s; letter-spacing: 1px; min-width: 160px;}
+        .btn-ping { background: transparent; border: 2px solid var(--cyan-glow); color: var(--cyan-glow); font-family: 'Orbitron', sans-serif; padding: 10px 20px; border-radius: 4px; font-weight: 800; cursor: pointer; transition: 0.3s; letter-spacing: 1px;}
         .btn-ping:hover { background: var(--cyan-glow); color: #000; box-shadow: 0 0 15px var(--shadow-color); }
-        
-        .btn-stop { background: rgba(239, 68, 68, 0.1); border: 2px solid var(--danger); color: var(--danger); }
-        .btn-stop:hover { background: var(--danger); color: #000; box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); }
-
-        .timer-display { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--warning); font-weight: 800; min-width: 80px; text-align: right;}
 
         #tacticalMap { width: 100%; height: 500px; border-radius: 8px; border: 1px solid var(--border-line); z-index: 1;}
 
@@ -136,6 +125,7 @@
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
+    <!-- 🚀 UNIVERSAL TOP NAVIGATION -->
     <nav class="nav">
         <a href="index.html" class="brand">
             <svg class="brand-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/><path d="M12 5.5L6 7.5V11.5C6 15.2 8.5 18.6 12 19.5C15.5 18.6 18 15.2 18 11.5V7.5L12 5.5Z" fill="#FF6B35"/><path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="#FFFFFF"/></svg>
@@ -158,6 +148,7 @@
         </div>
     </nav>
 
+    <!-- 🚀 MOBILE SLIDE-OUT MENU -->
     <div class="mobile-overlay" id="mobileNav">
         <button class="m-nav-close" onclick="document.getElementById('mobileNav').classList.toggle('active')">×</button>
         <ul class="m-nav-links">
@@ -170,6 +161,7 @@
         <div id="mobileAuthState" style="margin-top: 40px; border-top: 2px solid var(--border-line); padding-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px;"></div>
     </div>
 
+    <!-- 🚀 MAIN APP WRAPPER -->
     <main>
         <div class="content-wrapper">
             
@@ -179,23 +171,13 @@
                 <div style="width:70px;"></div>
             </div>
 
+            <!-- MODULE 1: LIVE TACTICAL MAP -->
             <div class="map-panel">
-                
                 <div class="map-hud">
                     <div class="hud-status" id="connStatus">
                         <span class="pulse-dot"></span> SATELLITE UPLINK STANDBY
                     </div>
-                    
-                    <div class="control-group">
-                        <select id="pingInterval" class="timer-select">
-                            <option value="5">PING: 5 SEC</option>
-                            <option value="15">PING: 15 SEC</option>
-                            <option value="30">PING: 30 SEC</option>
-                            <option value="60">PING: 1 MIN</option>
-                        </select>
-                        <button class="btn-ping" id="btnTrack" onclick="toggleTracking()">▶ START TRACKING</button>
-                        <div class="timer-display" id="countdownDisplay">00:00</div>
-                    </div>
+                    <button class="btn-ping" onclick="pingLiveLocation()">📡 PING DEVICE (ONLINE)</button>
                 </div>
                 
                 <div id="tacticalMap"></div>
@@ -220,9 +202,154 @@
                 </div>
             </div>
 
+            <!-- MODULE 2: OFFLINE OVERRIDE INPUT -->
             <div class="offline-panel">
                 <div class="offline-title">⚠️ OFFLINE COORDINATE INJECTION</div>
-                <div class="offline-desc">If the target device is disconnected from mobile data, retrieve its location via the Offline SMS Generator. Paste the returned SMS coordinates here to manually plot the target.</div>
+                <div class="offline-desc">If the target device is disconnected from mobile data, retrieve its location via the Offline SMS Generator in the Message Control module. Paste the returned SMS coordinates here to manually plot the target.</div>
                 
                 <div class="input-row">
-                    <input type="number
+                    <input type="number" id="manualLat" class="tac-input" placeholder="Latitude (e.g., 28.7041)">
+                    <input type="number" id="manualLng" class="tac-input" placeholder="Longitude (e.g., 77.1025)">
+                    <button class="btn-plot" onclick="plotManualLocation()">PLOT TARGET</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <div>© 2026 R.K Sentinel 3-Tier Tactical Command System</div>
+        <div>GPS Routing Matrix Active</div>
+    </footer>
+
+    <script>
+        // 🚀 1. DESIGN THEME CONTROL
+        function initTheme() { const theme = localStorage.getItem('tactical_theme') || 'dark'; document.documentElement.setAttribute('data-theme', theme); }
+        initTheme();
+
+        // 🚀 2. MESH INTERACTIVE BACKGROUND
+        const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particles = [];
+        for (let i = 0; i < 50; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4 }); }
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const rgbLine = isLight ? '29, 78, 216' : '0, 229, 255';
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i]; p.x += p.vx; p.y += p.vy;
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1; if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2); ctx.fillStyle = `rgba(${rgbLine}, 0.3)`; ctx.fill();
+            } requestAnimationFrame(animateCanvas);
+        } animateCanvas();
+
+        // 🚀 3. FIREBASE AUTH PIPELINE
+        const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
+        firebase.initializeApp(fbCfg);
+        firebase.auth().onAuthStateChanged(user => { 
+            if (!user) { window.location.href = 'index.html'; } 
+            else { 
+                document.getElementById('authLoader').style.display = 'none'; 
+                const agentName = user.email.split('@')[0].toUpperCase();
+                const profileUI = `<div class="user-profile-container"><div class="user-chip"><div class="user-avatar">${agentName.charAt(0)}</div><span class="agent-name-txt">AGENT ${agentName}</span></div><div class="user-dropdown"><div class="dropdown-email">${user.email}</div><button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ SECURE LOGOUT</button></div></div>`;
+                document.getElementById('desktopAuthState').innerHTML = profileUI;
+            }
+        });
+
+        // 🚀 4. LEAFLET.JS TACTICAL MAP INITIALIZATION
+        let map, marker, circle;
+        
+        // Initialize Map centered on India
+        map = L.map('tacticalMap').setView([20.5937, 78.9629], 5); 
+
+        // Dark Theme Tile Layer (CartoDB Dark Matter)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+        // Custom Tactical Icon
+        const tacticalIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+        });
+
+        // 🚀 5. TRACKING LOGIC
+        function updateMapData(lat, lng, accuracy, source) {
+            // Update HUD text
+            document.getElementById('valLat').innerText = parseFloat(lat).toFixed(5);
+            document.getElementById('valLng').innerText = parseFloat(lng).toFixed(5);
+            document.getElementById('valAcc').innerText = accuracy ? `± ${Math.round(accuracy)}m` : 'MANUAL';
+            
+            const now = new Date();
+            document.getElementById('valTime').innerText = now.toLocaleTimeString();
+
+            // Status Indicator update
+            const statusBox = document.getElementById('connStatus');
+            statusBox.innerHTML = `<span class="pulse-dot"></span> LIVE SATELLITE FIX ACQUIRED (${source})`;
+            statusBox.style.color = "var(--cyan-glow)";
+            statusBox.style.borderColor = "rgba(0, 229, 255, 0.3)";
+            statusBox.style.background = "rgba(0, 229, 255, 0.1)";
+
+            // Map Animation
+            map.flyTo([lat, lng], 16, { animate: true, duration: 2 });
+
+            // Clear old markers
+            if (marker) map.removeLayer(marker);
+            if (circle) map.removeLayer(circle);
+
+            // Add new marker
+            marker = L.marker([lat, lng], {icon: tacticalIcon}).addTo(map)
+                .bindPopup(`<b>TARGET ACQUIRED</b><br>Lat: ${lat}<br>Lng: ${lng}`).openPopup();
+
+            // Add accuracy circle if available
+            if(accuracy) {
+                circle = L.circle([lat, lng], {
+                    color: '#00E5FF', fillColor: '#00E5FF', fillOpacity: 0.15, radius: accuracy
+                }).addTo(map);
+            }
+        }
+
+        // Online Ping (Simulating fetching from database by using Browser Geo for demo)
+        function pingLiveLocation() {
+            document.getElementById('connStatus').innerHTML = "SEARCHING SATELLITE MATRIX...";
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        updateMapData(position.coords.latitude, position.coords.longitude, position.coords.accuracy, "ONLINE");
+                    },
+                    (error) => {
+                        alert("Error acquiring satellite lock. Verify permissions or use Offline Injection.");
+                        document.getElementById('connStatus').innerHTML = "<span style='color:var(--danger);'>UPLINK FAILED</span>";
+                    },
+                    { enableHighAccuracy: true }
+                );
+            } else {
+                alert("Geolocation not supported by this browser interface.");
+            }
+        }
+
+        // Offline Manual Plot
+        function plotManualLocation() {
+            const lat = document.getElementById('manualLat').value;
+            const lng = document.getElementById('manualLng').value;
+
+            if(!lat || !lng) {
+                alert("Please input both Latitude and Longitude values retrieved via SMS.");
+                return;
+            }
+
+            // Constrain coordinate logic
+            if(lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+                alert("Invalid coordinate bounds. Please verify SMS payload data.");
+                return;
+            }
+
+            updateMapData(lat, lng, null, "OFFLINE INJECT");
+        }
+    </script>
+</body>
+</html>
