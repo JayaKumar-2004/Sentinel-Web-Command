@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha-Suraksha | About The Project</title>
+    <title>Raksha-Suraksha | System Blueprint</title>
     
     <!-- Premium Tech Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -43,18 +43,10 @@
 
         /* 🚀 BACKGROUND EFFECTS */
         #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
-        .grid-overlay {
-            position: fixed; inset: 0; z-index: -2; pointer-events: none;
-            background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
-            background-size: 60px 60px; opacity: 0.2;
-        }
+        .grid-overlay { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.2; }
 
         /* 🚀 TOP NAVBAR */
-        .nav {
-            display: flex; justify-content: space-between; align-items: center; gap: 20px;
-            padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); 
-            border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500;
-        }
+        .nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500; }
         .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0;}
         .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--text-main); letter-spacing: 2px; text-transform: uppercase;}
         
@@ -66,52 +58,51 @@
         .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 35px; height: 35px; font-size: 1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); flex-shrink: 0;}
         .theme-toggle:hover { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
 
-        /* PROFILE CHIP */
         .user-chip { display: flex; align-items: center; gap: 10px; background: transparent; border: 1px solid var(--cyan-glow); padding: 5px 15px 5px 5px; border-radius: 30px; font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-main); font-weight: 700; cursor: pointer; transition: 0.3s;}
         .user-chip:hover { background: rgba(0, 229, 255, 0.1); box-shadow: 0 0 15px var(--shadow-color); }
         .user-avatar { width: 26px; height: 26px; background: var(--cyan-glow); color: var(--bg-deep); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; }
-        
         .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2rem; cursor: pointer; flex-shrink: 0;}
 
         /* 🚀 MAIN INTERFACE */
         main { flex-grow: 1; padding: 120px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; }
-        .content-wrapper { width: 100%; max-width: 1000px; display: flex; flex-direction: column; gap: 40px;}
+        .content-wrapper { width: 100%; max-width: 1000px; display: flex; flex-direction: column; gap: 50px;}
         
-        .header-title { text-align: center; margin-bottom: 20px;}
+        .header-title { text-align: center; margin-bottom: 10px;}
         .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); color: var(--text-main); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;}
         .header-title h1 span { color: var(--cyan-glow); }
         .header-title p { font-family: 'Space Mono', monospace; font-size: clamp(0.85rem, 2vw, 1rem); color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase;}
 
-        /* MISSION BANNER */
-        .mission-panel { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; padding: 40px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; overflow: hidden;}
-        .mission-panel::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, var(--cyan-glow), transparent); }
-        .mission-panel p { font-size: 1.1rem; color: var(--text-main); line-height: 1.8; font-weight: 600; max-width: 800px; margin: 0 auto;}
-
-        /* SECTION TITLES */
         .section-heading { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--text-main); font-weight: 800; border-bottom: 1px solid var(--border-line); padding-bottom: 15px; margin-bottom: 30px; display: flex; align-items: center; gap: 12px;}
         .section-heading::before { content: '■'; color: var(--cyan-glow); font-size: 1rem;}
 
-        /* TEAM GRID */
-        .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; }
-        .team-card { background: var(--card-inner); border: 1px solid var(--border-line); border-radius: 12px; padding: 30px 20px; text-align: center; transition: 0.3s; display: flex; flex-direction: column; align-items: center;}
-        .team-card:hover { transform: translateY(-5px); border-color: var(--cyan-glow); box-shadow: 0 10px 25px rgba(0, 229, 255, 0.15); background: var(--bg-panel);}
-        
-        .member-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--bg-deep); border: 2px solid var(--cyan-glow); display: flex; justify-content: center; align-items: center; font-size: 2rem; margin-bottom: 20px; box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);}
-        .team-card h3 { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: var(--text-main); margin-bottom: 8px; font-weight: 800;}
-        .team-card p { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--cyan-glow); font-weight: 700; text-transform: uppercase; margin-bottom: 15px;}
-        .team-card .role-desc { font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; font-weight: 400; text-transform: none;}
+        /* BLUEPRINT GRID */
+        .blueprint-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .bp-card { background: var(--card-inner); border: 1px solid var(--border-line); border-radius: 12px; padding: 30px; backdrop-filter: blur(5px); transition: 0.3s; position: relative; overflow: hidden;}
+        .bp-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--cyan-glow); }
+        .bp-card:nth-child(2)::before { background: var(--success); }
+        .bp-card:nth-child(3)::before { background: var(--warning); }
+        .bp-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 229, 255, 0.15); background: var(--bg-panel);}
+        .bp-icon { font-size: 2.5rem; margin-bottom: 15px; }
+        .bp-card h3 { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--text-main); margin-bottom: 10px;}
+        .bp-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;}
 
-        /* MENTOR CARDS - DISTINCT STYLE */
-        .mentor-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
-        .mentor-card { background: linear-gradient(145deg, var(--bg-panel), rgba(16, 185, 129, 0.05)); border: 1px solid var(--border-line); border-left: 4px solid var(--success); border-radius: 8px; padding: 25px; display: flex; align-items: center; gap: 20px; transition: 0.3s;}
-        .mentor-card:hover { transform: translateX(5px); box-shadow: 0 5px 20px rgba(16, 185, 129, 0.15); border-color: var(--success);}
-        .mentor-icon { font-size: 2.5rem; }
-        .mentor-info h3 { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--text-main); margin-bottom: 5px;}
-        .mentor-info p { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--success); font-weight: 700; text-transform: uppercase;}
+        /* FLOW PIPELINE */
+        .flow-container { display: flex; flex-direction: column; gap: 20px; position: relative;}
+        .flow-container::before { content: ''; position: absolute; left: 24px; top: 0; height: 100%; width: 2px; background: var(--border-line); z-index: 0; }
+        .flow-step { display: flex; align-items: flex-start; gap: 25px; position: relative; z-index: 1; background: var(--bg-panel); padding: 25px; border-radius: 12px; border: 1px solid var(--border-line); box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
+        .step-num { width: 50px; height: 50px; border-radius: 50%; background: var(--bg-deep); border: 2px solid var(--cyan-glow); color: var(--cyan-glow); display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.2rem; flex-shrink: 0;}
+        .step-content h3 { font-family: 'Space Mono', monospace; color: var(--text-main); font-size: 1.1rem; margin-bottom: 8px; text-transform: uppercase;}
+        .step-content p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5;}
+
+        /* SCOPE SECTION */
+        .scope-panel { background: linear-gradient(145deg, var(--bg-panel), rgba(0, 229, 255, 0.05)); border: 1px solid var(--border-line); border-radius: 12px; padding: 35px; }
+        .scope-list { list-style: none; display: flex; flex-direction: column; gap: 15px;}
+        .scope-list li { display: flex; align-items: flex-start; gap: 15px; font-size: 0.95rem; color: var(--text-main); line-height: 1.6;}
+        .scope-list li::before { content: '◈'; color: var(--cyan-glow); font-size: 1.2rem; margin-top: 2px;}
 
         footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); position: relative; z-index: 10; margin-top: auto;}
 
-        /* MOBILE MENU FIXES */
+        /* MOBILE MENU */
         .mobile-overlay-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; backdrop-filter: blur(5px); }
         .mobile-overlay { position: fixed; top: 0; right: -100%; width: 280px; height: 100vh; background: var(--bg-panel); backdrop-filter: blur(20px); z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-left: 1px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 30px; }
         .mobile-overlay.active { right: 0; }
@@ -120,23 +111,15 @@
         .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; letter-spacing: 2px; transition: 0.3s; display: block; font-weight: 700;}
         .m-nav-links a:hover, .m-nav-links a.active { color: var(--cyan-glow); }
 
-        @media (max-width: 850px) {
-            .desktop-nav { display: none !important; }
-            .mobile-nav-btn { display: block !important; }
-        }
-        @media (max-width: 600px) {
-            .mission-panel { padding: 30px 20px; }
-            .mentor-card { flex-direction: column; text-align: center; }
-        }
+        @media (max-width: 850px) { .desktop-nav { display: none !important; } .mobile-nav-btn { display: block !important; } }
+        @media (max-width: 600px) { .flow-container::before { left: 20px; } .step-num { width: 40px; height: 40px; font-size: 1rem; } .flow-step { gap: 15px; padding: 20px; } }
     </style>
 </head>
 <body>
 
-    <!-- LIVE GEOMETRIC CANVAS -->
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
-    <!-- TOP NAVBAR -->
     <nav class="nav">
         <a href="index.html" class="brand">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="filter: drop-shadow(0 0 5px var(--cyan-glow));">
@@ -150,7 +133,7 @@
             <ul class="nav-links">
                 <li><a href="index.html">HOME</a></li>
                 <li><a href="services.html">SERVICES</a></li>
-                <li><a href="about.html" class="active">ABOUT US</a></li>
+                <li><a href="about.html" class="active">SYSTEM ARCHITECTURE</a></li>
                 <li><a href="faqs.html">FAQS</a></li>
             </ul>
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
@@ -169,89 +152,85 @@
         </div>
     </nav>
 
-    <!-- MOBILE OVERLAY MENU -->
     <div class="mobile-overlay-bg" id="mobileOverlay" onclick="toggleMobileNav()"></div>
     <div class="mobile-overlay" id="mobileNav">
         <button class="m-nav-close" onclick="toggleMobileNav()">×</button>
         <ul class="m-nav-links">
             <li><a href="index.html">HOME</a></li>
             <li><a href="services.html">SERVICES</a></li>
-            <li><a href="about.html" class="active">ABOUT US</a></li>
+            <li><a href="about.html" class="active">SYSTEM ARCHITECTURE</a></li>
             <li><a href="faqs.html">FAQS</a></li>
         </ul>
     </div>
 
-    <!-- MAIN CONTENT -->
     <main>
         <div class="content-wrapper">
             
             <div class="header-title">
-                <h1>PROJECT <span>SENTINEL</span></h1>
-                <p>Harsha Institute of Management Studies • 6th Sem BCA</p>
+                <h1>SYSTEM <span>BLUEPRINT</span></h1>
+                <p>Advanced Tactical Tracking & Security Architecture</p>
             </div>
 
-            <!-- MISSION STATEMENT -->
-            <div class="mission-panel">
-                <p>"Engineered to bridge physical mobile hardware with secure, real-time cloud analytics. Raksha-Suraksha replaces traditional passive security with an aggressive, autonomous 3-Tier tactical tracking system designed for total off-grid survival and asset dominance."</p>
-            </div>
-
-            <!-- ENGINEERING TEAM -->
+            <!-- 3-TIER BLUEPRINT -->
             <div>
-                <h2 class="section-heading">ENGINEERING CORE</h2>
-                <div class="team-grid">
-                    
-                    <div class="team-card">
-                        <div class="member-avatar">👨‍💻</div>
-                        <h3>S Jaya Kumar (Jack)</h3>
-                        <p>Lead Architect</p>
-                        <div class="role-desc">Android Java Native Development, Full-Stack Integration, and System Logic.</div>
+                <h2 class="section-heading">THE 3-TIER ARCHITECTURE</h2>
+                <div class="blueprint-grid">
+                    <div class="bp-card">
+                        <div class="bp-icon">📱</div>
+                        <h3>Tier 1: Sentinel-X App</h3>
+                        <p>A native Android client running continuous background accessibility services. It operates silently, utilizing device hardware (accelerometer, GPS, camera) to detect threats and intercept unverified physical access.</p>
                     </div>
-
-                    <div class="team-card">
-                        <div class="member-avatar">👨‍💻</div>
-                        <h3>MD Aslam Ansari</h3>
-                        <p>Infrastructure & UI</p>
-                        <div class="role-desc">Database structuring, Web Dashboard implementation, and UI/UX synchronization.</div>
+                    <div class="bp-card" style="border-color: rgba(16, 185, 129, 0.3);">
+                        <div class="bp-icon">⚡</div>
+                        <h3 style="color: var(--success);">Tier 2: Firebase RTDB</h3>
+                        <p>The secure central nervous system. It maintains a persistent JSON socket connection, syncing real-time state changes and routing command queues between the web dashboard and the physical device.</p>
                     </div>
-
-                    <div class="team-card">
-                        <div class="member-avatar">👨‍💻</div>
-                        <h3>Suryakant Chaudary</h3>
-                        <p>Security Protocols</p>
-                        <div class="role-desc">Testing penetration boundaries, SMS payload encryption, and fail-safe routing.</div>
+                    <div class="bp-card" style="border-color: rgba(245, 158, 11, 0.3);">
+                        <div class="bp-icon">💻</div>
+                        <h3 style="color: var(--warning);">Tier 3: Web Command Hub</h3>
+                        <p>A highly responsive Angular/JS frontend dashboard authenticated via Firebase. It acts as the ultimate remote terminal, allowing the authorized agent to issue hardware overrides and monitor live telemetry.</p>
                     </div>
-
-                    <div class="team-card">
-                        <div class="member-avatar">👨‍💻</div>
-                        <h3>Abhishek</h3>
-                        <p>Quality Assurance</p>
-                        <div class="role-desc">Sensor threshold calibration, API reliability testing, and presentation structuring.</div>
-                    </div>
-
                 </div>
             </div>
 
-            <!-- PROJECT GUIDES -->
+            <!-- OPERATIONAL FLOW -->
             <div>
-                <h2 class="section-heading" style="margin-top: 20px;">PROJECT MENTORSHIP</h2>
-                <div class="mentor-grid">
-                    
-                    <div class="mentor-card">
-                        <div class="mentor-icon">🎓</div>
-                        <div class="mentor-info">
-                            <h3>Jerin Sir</h3>
-                            <p>Project Guide</p>
+                <h2 class="section-heading">OPERATIONAL DATA FLOW</h2>
+                <div class="flow-container">
+                    <div class="flow-step">
+                        <div class="step-num">01</div>
+                        <div class="step-content">
+                            <h3>Trigger & Detection</h3>
+                            <p>The system is activated via a manual remote command from the Web Dashboard, or autonomously via the mobile app's hardware sensors (e.g., sudden gravity shift or unauthorized SIM removal).</p>
                         </div>
                     </div>
-
-                    <div class="mentor-card">
-                        <div class="mentor-icon">🏛️</div>
-                        <div class="mentor-info">
-                            <h3>Naga Suma Ma'am</h3>
-                            <p>Head of Department (HOD)</p>
+                    <div class="flow-step">
+                        <div class="step-num" style="color: var(--success); border-color: var(--success);">02</div>
+                        <div class="step-content">
+                            <h3>Routing & Processing</h3>
+                            <p>The backend evaluates network status. If online, the payload routes through the Firebase Live Tracker. If the target is offline, the system seamlessly falls back to the native SMS Receiver network, bypassing mobile data constraints.</p>
                         </div>
                     </div>
+                    <div class="flow-step">
+                        <div class="step-num" style="color: var(--danger); border-color: var(--danger);">03</div>
+                        <div class="step-content">
+                            <h3>Execution & Lockdown</h3>
+                            <p>The designated action is forcefully executed on the target device. This includes overriding DND modes to sound maximum-volume sirens, locking accessibility controls, and dispatching live GPS coordinates to emergency contacts.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- STRATEGIC SCOPE -->
+            <div>
+                <h2 class="section-heading">STRATEGIC SCOPE</h2>
+                <div class="scope-panel">
+                    <ul class="scope-list">
+                        <li><strong>Complete Hardware Authority:</strong> Raksha-Suraksha removes the physical limitations of mobile tracing by giving owners remote execution power over device volume, screen timeout, and screen locking mechanisms.</li>
+                        <li><strong>Off-Grid Survival:</strong> Unlike standard tracing apps that fail without internet, our GSM payload network ensures tactical tracking and device locking remain operational even in complete dead zones.</li>
+                        <li><strong>Autonomous First-Response:</strong> Designed not just for anti-theft, but personal safety. The gravity-sensor module acts as a digital first responder in vehicle crashes, automatically calculating impact vectors and dispatching SOS coordinates.</li>
+                        <li><strong>Future Trajectory:</strong> The architecture is built to eventually scale into direct API integration with local law enforcement dispatchers, wearable BLE trackers, and a fully zero-internet localized voice assistant.</li>
+                    </ul>
                 </div>
             </div>
 
@@ -264,7 +243,7 @@
     </footer>
 
     <script>
-        // Theme Configuration
+        // Theme Logic
         function initTheme() {
             const savedTheme = localStorage.getItem('tactical_theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
@@ -283,19 +262,17 @@
         }
         initTheme(); window.addEventListener('resize', updateMobileThemeBtnVis);
 
-        // Mobile Menu
+        // Mobile Menu Logic
         function toggleMobileNav() { 
             document.getElementById('mobileNav').classList.toggle('active'); 
             document.getElementById('mobileOverlay').classList.toggle('active'); 
         }
 
-        // Dynamic Geometric Background Script
+        // Canvas Animation
         const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let particles = []; let mouse = { x: null, y: null, radius: 200 };
-        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
-        window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
-        for (let i = 0; i < 65; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5 }); }
+        let particles = [];
+        for (let i = 0; i < 60; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5 }); }
         
         function animateCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -319,4 +296,3 @@
     </script>
 </body>
 </html>
-
