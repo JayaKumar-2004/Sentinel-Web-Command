@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha-Suraksha | Active Services</title>
+    <title>Raksha-Suraksha | Active Services & Downloads</title>
     
-    <!-- Firebase Core SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     
-    <!-- Premium Tech Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
@@ -25,6 +23,8 @@
             --danger: #EF4444;
             --danger-bg: rgba(239, 68, 68, 0.1);
             --success: #10B981;
+            --warning: #F59E0B;
+            --input-bg: rgba(0,0,0,0.8);
         }
 
         :root[data-theme="light"] {
@@ -38,6 +38,8 @@
             --danger: #DC2626;
             --danger-bg: rgba(220, 38, 38, 0.1);
             --success: #059669;
+            --warning: #D97706;
+            --input-bg: #FFFFFF;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
@@ -112,7 +114,7 @@
         main { flex-grow: 1; padding: 120px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; }
         .content-wrapper { width: 100%; max-width: 1300px; display: flex; flex-direction: column; gap: 40px;}
         
-        .header-title { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 20px;}
+        .header-title { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 10px;}
         .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); color: var(--text-main); font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 15px;}
         .sys-status { display: inline-flex; align-items: center; gap: 8px; color: var(--success); font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.85rem; letter-spacing: 1px; padding: 8px 20px; border: 1px solid var(--success); border-radius: 30px; background: rgba(16, 185, 129, 0.1);}
         .pulse-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulseDot 1.5s infinite; }
@@ -149,6 +151,50 @@
         .btn-outline-danger { border-color: var(--danger); color: var(--danger); }
         .btn-outline-danger:hover { background: rgba(239, 68, 68, 0.1); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); color: var(--danger); }
 
+        /* 🚀 6. DOWNLOADS SECTION STYLING */
+        .downloads-section { 
+            padding-top: 60px; width: 100%; display: flex; flex-direction: column; align-items: center; 
+            border-top: 1px dashed var(--border-line); margin-top: 20px; 
+        }
+        .downloads-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; width: 100%; margin-top: 30px; }
+        
+        .download-card {
+            background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px;
+            padding: 40px 30px; text-align: center; transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        
+        /* Highlight specific download cards */
+        .card-app::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--cyan-glow); }
+        .card-manual::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--warning); }
+        .card-maps::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--success); }
+
+        .card-app:hover { transform: translateY(-5px); box-shadow: 0 15px 40px var(--shadow-color); border-color: var(--cyan-glow); }
+        .card-manual:hover { transform: translateY(-5px); border-color: var(--warning); box-shadow: 0 15px 40px rgba(245, 158, 11, 0.2); }
+        .card-maps:hover { transform: translateY(-5px); border-color: var(--success); box-shadow: 0 15px 40px rgba(16, 185, 129, 0.2); }
+        
+        .d-icon { font-size: 3rem; margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--shadow-color)); }
+        .download-card h3 { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; color: var(--text-main); margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase; }
+        
+        .d-spec { font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700; padding: 5px 10px; border-radius: 4px; display: inline-block; margin-bottom: 15px; }
+        .card-app .d-spec { color: var(--cyan-glow); background: rgba(0, 229, 255, 0.1); }
+        .card-manual .d-spec { color: var(--warning); background: rgba(245, 158, 11, 0.1); }
+        .card-maps .d-spec { color: var(--success); background: rgba(16, 185, 129, 0.1); }
+        
+        .d-desc { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 30px; flex-grow: 1;}
+        
+        .btn-download { display: inline-block; width: 100%; padding: 15px; font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; text-decoration: none; border-radius: 6px; transition: 0.3s; }
+        
+        .btn-apk { background: transparent; color: var(--cyan-glow); border: 2px solid var(--cyan-glow); }
+        .btn-apk:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 20px var(--shadow-color); }
+        
+        .btn-pdf { background: transparent; color: var(--warning); border: 2px solid var(--warning); }
+        .btn-pdf:hover { background: var(--warning); color: var(--bg-deep); box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
+
+        .btn-map { background: transparent; color: var(--success); border: 2px solid var(--success); }
+        .btn-map:hover { background: var(--success); color: var(--bg-deep); box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+
         footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); position: relative; z-index: 10; margin-top: auto;}
 
         @media (max-width: 850px) {
@@ -172,11 +218,9 @@
 
     <div id="authLoader">VERIFYING CREDENTIALS...</div>
 
-    <!-- 🚀 LIVE GEOMETRIC CANVAS -->
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
-    <!-- 🚀 SMART TOP NAVBAR (UPDATED LINKS) -->
     <nav class="nav">
         <a href="index.html" class="brand">
             <svg class="brand-svg"><use href="#shield-logo"></use></svg>
@@ -188,7 +232,7 @@
                 <li><a href="index.html">HOME</a></li>
                 <li><a href="services.html" class="active">SERVICES</a></li>
                 <li><a href="manual.html">MANUAL</a></li>
-                <li><a href="downloads.html">DOWNLOADS</a></li>
+                <li><a href="#downloads">DOWNLOADS</a></li>
             </ul>
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
             <div id="desktopAuthState"></div>
@@ -200,21 +244,18 @@
         </div>
     </nav>
 
-    <!-- 🚀 MOBILE OVERLAY MENU (UPDATED LINKS) -->
     <div class="mobile-overlay" id="mobileNav">
         <button class="m-nav-close" onclick="toggleMobileNav()">×</button>
         <ul class="m-nav-links">
             <li><a href="index.html">HOME</a></li>
             <li><a href="services.html" class="active">SERVICES</a></li>
             <li><a href="manual.html">MANUAL</a></li>
-            <li><a href="index.html#downloads">DOWNLOADS</a></li>
+            <li><a href="#downloads" onclick="toggleMobileNav()">DOWNLOADS</a></li>
         </ul>
         <div id="mobileAuthState" style="margin-top: 40px; border-top: 2px solid var(--border-line); padding-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-            <!-- Injected by Auth State -->
-        </div>
+            </div>
     </div>
 
-    <!-- 🚀 MAIN CONTENT -->
     <main>
         <div class="content-wrapper">
             
@@ -223,10 +264,8 @@
                 <div class="sys-status"><span class="pulse-dot"></span> SECURE UPLINK ESTABLISHED</div>
             </div>
 
-            <!-- 🚀 TALL CARDS GRID (7 MODULES WITH REAL LINKS) -->
             <div class="services-grid">
                 
-                <!-- 1. App Controls -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">🎛️</div>
@@ -236,7 +275,6 @@
                     <a href="app-controls.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
-                <!-- 2. App Location -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">📍</div>
@@ -246,7 +284,6 @@
                     <a href="map.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
-                <!-- 3. Message Control -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">💬</div>
@@ -256,7 +293,6 @@
                     <a href="message-control.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
-                <!-- 4. Device Linking -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">🔗</div>
@@ -266,7 +302,6 @@
                     <a href="app-linking.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
-                <!-- 5. Weather Core Intel -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">🌤️</div>
@@ -276,7 +311,6 @@
                     <a href="weather.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
-                <!-- 6. Site Location Tracking -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">📡</div>
@@ -286,7 +320,6 @@
                     <a href="site-tracking.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
-                <!-- 7. Tier-3 Evidence Vault -->
                 <div class="service-card card-danger">
                     <div class="c-head">
                         <div class="c-icon">🛡️</div>
@@ -298,6 +331,42 @@
 
             </div>
 
+            <section id="downloads" class="downloads-section">
+                
+                <div class="header-title" style="margin-bottom: 10px; margin-top: 20px;">
+                    <h2 style="font-family: 'Orbitron', sans-serif; font-size: clamp(1.8rem, 4vw, 2.5rem); color: var(--text-main); font-weight: 900; letter-spacing: 2px; text-transform: uppercase;">SECURE <span style="color: var(--cyan-glow);">DOWNLOADS</span></h2>
+                    <p style="font-family: 'Space Mono', monospace; font-size: 0.9rem; color: var(--text-muted); margin-top: 10px;">Access official deployment packages and documentation</p>
+                </div>
+
+                <div class="downloads-grid">
+                    
+                    <div class="download-card card-app">
+                        <div class="d-icon">📱</div>
+                        <h3>Sentinel-X App</h3>
+                        <div class="d-spec">APK | ~45 MB | Android 8.0+</div>
+                        <p class="d-desc">The native Android tactical client. Requires Device Administrator and Accessibility permissions for full hardware lockdown.</p>
+                        <a href="raksha-suraksha-v1.apk" download class="btn-download btn-apk">↓ DOWNLOAD APK</a>
+                    </div>
+
+                    <div class="download-card card-manual">
+                        <div class="d-icon">📄</div>
+                        <h3>Operations Manual</h3>
+                        <div class="d-spec">PDF Document | Setup Guide</div>
+                        <p class="d-desc">Complete technical documentation detailing app installation, Firebase linking procedures, and the offline SMS command syntax list.</p>
+                        <a href="mad gradle.pdf" download class="btn-download btn-pdf">↓ DOWNLOAD PDF</a>
+                    </div>
+
+                    <div class="download-card card-maps">
+                        <div class="d-icon">🗺️</div>
+                        <h3>Tactical Map Pack</h3>
+                        <div class="d-spec">ZIP | ~650 MB | OSM Tiles</div>
+                        <p class="d-desc">High-resolution offline map tiles for zero-connectivity zones. Extract this package into the app's internal storage directory for direct routing.</p>
+                        <a href="tactical-maps-pack.zip" download class="btn-download btn-map">↓ DOWNLOAD MAPS</a>
+                    </div>
+
+                </div>
+            </section>
+
         </div>
     </main>
 
@@ -307,7 +376,7 @@
     </footer>
 
     <script>
-        // 🚀 Theme Logic
+        // Theme Logic
         function initTheme() {
             const savedTheme = localStorage.getItem('tactical_theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
@@ -326,10 +395,10 @@
         }
         initTheme(); window.addEventListener('resize', updateMobileThemeBtnVis);
 
-        // 🚀 Mobile Menu
+        // Mobile Menu
         function toggleMobileNav() { document.getElementById('mobileNav').classList.toggle('active'); }
 
-        // 🚀 Geometric Canvas Animation
+        // Geometric Canvas Animation
         const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         let particles = []; let mouse = { x: null, y: null, radius: 200 };
@@ -370,7 +439,7 @@
             } requestAnimationFrame(animateCanvas);
         } animateCanvas(); window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
 
-        // 🚀 Firebase Auth (Protect Services Page)
+        // Firebase Auth (Protect Services Page)
         const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
         firebase.initializeApp(fbCfg);
         
