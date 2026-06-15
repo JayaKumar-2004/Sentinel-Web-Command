@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raksha-Suraksha | Active Services</title>
     
+    <!-- Firebase Core SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     
+    <!-- Premium Tech Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
@@ -170,9 +172,11 @@
 
     <div id="authLoader">VERIFYING CREDENTIALS...</div>
 
+    <!-- 🚀 LIVE GEOMETRIC CANVAS -->
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
+    <!-- 🚀 SMART TOP NAVBAR (UPDATED LINKS) -->
     <nav class="nav">
         <a href="index.html" class="brand">
             <svg class="brand-svg"><use href="#shield-logo"></use></svg>
@@ -183,9 +187,8 @@
             <ul class="nav-links">
                 <li><a href="index.html">HOME</a></li>
                 <li><a href="services.html" class="active">SERVICES</a></li>
-                <li><a href="about.html">ABOUT</a></li>
                 <li><a href="manual.html">MANUAL</a></li>
-                <li><a href="faqs.html">FAQS</a></li>
+                <li><a href="index.html#downloads">DOWNLOADS</a></li>
             </ul>
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
             <div id="desktopAuthState"></div>
@@ -197,19 +200,21 @@
         </div>
     </nav>
 
+    <!-- 🚀 MOBILE OVERLAY MENU (UPDATED LINKS) -->
     <div class="mobile-overlay" id="mobileNav">
         <button class="m-nav-close" onclick="toggleMobileNav()">×</button>
         <ul class="m-nav-links">
             <li><a href="index.html">HOME</a></li>
             <li><a href="services.html" class="active">SERVICES</a></li>
-            <li><a href="about.html">ABOUT</a></li>
             <li><a href="manual.html">MANUAL</a></li>
-            <li><a href="faqs.html">FAQS</a></li>
+            <li><a href="index.html#downloads">DOWNLOADS</a></li>
         </ul>
         <div id="mobileAuthState" style="margin-top: 40px; border-top: 2px solid var(--border-line); padding-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-            </div>
+            <!-- Injected by Auth State -->
+        </div>
     </div>
 
+    <!-- 🚀 MAIN CONTENT -->
     <main>
         <div class="content-wrapper">
             
@@ -218,8 +223,10 @@
                 <div class="sys-status"><span class="pulse-dot"></span> SECURE UPLINK ESTABLISHED</div>
             </div>
 
+            <!-- 🚀 TALL CARDS GRID (7 MODULES WITH REAL LINKS) -->
             <div class="services-grid">
                 
+                <!-- 1. App Controls -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">🎛️</div>
@@ -229,6 +236,7 @@
                     <a href="app-controls.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
+                <!-- 2. App Location -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">📍</div>
@@ -238,6 +246,7 @@
                     <a href="map.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
+                <!-- 3. Message Control -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">💬</div>
@@ -247,6 +256,7 @@
                     <a href="message-control.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
+                <!-- 4. Device Linking -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">🔗</div>
@@ -256,6 +266,7 @@
                     <a href="app-linking.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
+                <!-- 5. Weather Core Intel -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">🌤️</div>
@@ -265,6 +276,7 @@
                     <a href="weather.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
+                <!-- 6. Site Location Tracking -->
                 <div class="service-card">
                     <div class="c-head">
                         <div class="c-icon">📡</div>
@@ -274,6 +286,7 @@
                     <a href="site-tracking.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
+                <!-- 7. Tier-3 Evidence Vault -->
                 <div class="service-card card-danger">
                     <div class="c-head">
                         <div class="c-icon">🛡️</div>
@@ -390,4 +403,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
