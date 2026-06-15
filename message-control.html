@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raksha-Suraksha | Message Control</title>
+    
+    <!-- Firebase Core SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <!-- Premium Tech Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 🚀 1. DYNAMIC THEME VARIABLES */
+        :root[data-theme="dark"] {
+            --bg-deep: #030712;
+            --bg-panel: rgba(15, 23, 42, 0.85);
+            --cyan-glow: #00E5FF;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-line: rgba(0, 229, 255, 0.2);
+            --shadow-color: rgba(0, 229, 255, 0.3);
+            --danger: #EF4444;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --input-bg: rgba(0,0,0,0.8);
+        }
+
+        :root[data-theme="light"] {
+            --bg-deep: #F1F5F9; 
+            --bg-panel: rgba(255, 255, 255, 0.95);
+            --cyan-glow: #1D4ED8; 
+            --text-main: #0F172A;
+            --text-muted: #475569;
+            --border-line: rgba(29, 78, 216, 0.2);
+            --shadow-color: rgba(29, 78, 216, 0.2);
+            --danger: #DC2626;
+            --success: #059669;
+            --warning: #D97706;
+            --input-bg: #FFFFFF;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; transition: background-color 0.4s ease; }
+        main { flex-grow: 1; padding: 120px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 10; }
+        .content-wrapper { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 35px;}
+
+        /* 🚀 2. CANVAS BACKGROUND */
+        #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
+        .grid-overlay { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.2; }
+
+        /* 🚀 3. NAVBAR */
+        .nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500; }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand-svg { width: 40px; height: 40px; filter: drop-shadow(0 0 8px var(--shadow-color));}
+        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--text-main); letter-spacing: 2px;}
+        .brand-name span { color: #FF6B35; }
+        
+        .desktop-nav { display: flex; align-items: center; gap: 20px; }
+        .nav-links { display: flex; gap: 25px; list-style: none; }
+        .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700;}
+        .nav-links a:hover, .nav-links a.active { color: var(--cyan-glow); text-shadow: 0 0 8px var(--shadow-color); }
+        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; }
+
+        /* HEADER */
+        .header-area { display: flex; align-items: center; justify-content: space-between; width: 100%; border-bottom: 1px solid var(--border-line); padding-bottom: 15px; }
+        .btn-back { background: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); border: 1px solid var(--border-line); padding: 6px 14px; border-radius: 4px; font-family: 'Space Mono', monospace; font-size: 0.75rem; text-decoration: none; font-weight: bold; transition: 0.3s; text-transform: uppercase;}
+        .btn-back:hover { background: var(--cyan-glow); color: #000; box-shadow: 0 0 10px var(--shadow-color); }
+        .header-area h1 { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900; letter-spacing: 1px; }
+
+        /* PANEL INTERFACES */
+        .tac-panel { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 8px; padding: 30px; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .panel-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; letter-spacing: 1px; }
+        .panel-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
+
+        /* INPUT BLOCK ARCHITECTURE */
+        .inp-group { margin-bottom: 20px; }
+        .inp-label { display: block; font-family: 'Space Mono', monospace; font-weight: 700; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
+        .tac-input { width: 100%; padding: 14px; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--border-line); color: var(--text-main); font-size: 1rem; font-weight: 600; outline: none; transition: 0.3s; }
+        .tac-input:focus { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
+
+        /* SWITCH SEPARATORS */
+        .flex-row-switch { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .switch-lbl h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+        .switch-lbl p { font-size: 0.8rem; color: var(--text-muted); }
+        
+        /* TOGGLE ENGINE */
+        .switch-container { position: relative; display: inline-block; width: 46px; height: 24px; }
+        .switch-container input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; transition: .3s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 100%; max-width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--cyan-glow); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* 🚀 4. OFFLINE SMS COMPONENT (ORANGE STYLE MATCH) */
+        .panel-warning { border-color: var(--warning); box-shadow: 0 10px 25px rgba(245, 158, 11, 0.05); }
+        .panel-warning .panel-title { color: var(--warning); }
+        
+        .sms-grid-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .btn-sms-payload { 
+            background: rgba(245, 158, 11, 0.05); color: var(--warning); border: 1px solid var(--warning);
+            padding: 14px; border-radius: 6px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem;
+            font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-sms-payload:hover { background: var(--warning); color: #000; box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
+
+        /* CONSOLE STATUS STREAM */
+        .terminal-stream { background: #000; border: 1px solid var(--border-line); border-radius: 6px; padding: 15px; font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--success); min-height: 60px; white-space: pre-wrap; margin-top: 20px;}
+
+        footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-top: auto; width: 100%;}
+        #authLoader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; color: var(--cyan-glow); font-size: 1.5rem; letter-spacing: 2px;}
+        @media (max-width: 850px) { .desktop-nav { display: none !important; } .mobile-nav-btn { display: block !important; } }
+    </style>
+</head>
+<body>
+
+    <div id="authLoader">VERIFYING CREDENTIALS...</div>
+    <canvas id="interactiveCanvas"></canvas>
+    <div class="grid-overlay"></div>
+
+    <!-- UNIVERSAL TOP NAVIGATION -->
+    <nav class="nav">
+        <a href="index.html" class="brand">
+            <svg class="brand-svg" style="width:40px; height:40px;"><use href="#shield-logo"></use></svg>
+            <div class="brand-name">RAKSHA<span>-</span>SURAKSHA</div>
+        </a>
+        <div class="desktop-nav">
+            <ul class="nav-links">
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="services.html" class="active">SERVICES</a></li>
+                <li><a href="manual.html">MANUAL</a></li>
+                <li><a href="faqs.html">FAQS</a></li>
+            </ul>
+            <button class="theme-toggle" onclick="toggleTheme()" style="margin-left: 20px;">🌓</button>
+        </div>
+        <button class="mobile-nav-btn" onclick="toggleMobileNav()">☰</button>
+    </nav>
+
+    <!-- MAIN APP WRAPPER -->
+    <main>
+        <div class="content-wrapper">
+            
+            <div class="header-area">
+                <a href="services.html" class="btn-back">← Back</a>
+                <h1>MESSAGE CONTROL</h1>
+                <div style="width:70px;"></div> <!-- Spacer alignment -->
+            </div>
+
+            <!-- MODULE 1: AUTO-RESPONDER FRAMEWORK -->
+            <div class="tac-panel">
+                <div class="panel-title">💬 SMS AUTO-RESPONDER CORE</div>
+                <div class="panel-desc">Configure automated hardware text responses when tracking states or emergencies trigger.</div>
+                
+                <div class="flex-row-switch">
+                    <div class="switch-lbl">
+                        <h4>Intercept Incoming Calls</h4>
+                        <p>Automatically drop calls from non-trusted contacts when locked.</p>
+                    </div>
+                    <label class="switch-container">
+                        <input type="checkbox" id="callIntercept">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="flex-row-switch">
+                    <div class="switch-lbl">
+                        <h4>Auto-Reply Coordinates</h4>
+                        <p>Reply with a text maps location link to missed calls from secure contacts.</p>
+                    </div>
+                    <label class="switch-container">
+                        <input type="checkbox" id="autoReplyLoc" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="inp-group" style="margin-top: 25px;">
+                    <label class="inp-label">Custom Distress Outgoing Text Message</label>
+                    <input type="text" id="smsPayloadText" class="tac-input" value="EMERGENCY: Device tracking active. My exact position link:">
+                </div>
+            </div>
+
+            <!-- MODULE 2: OFFLINE SMS PAYLOAD GENERATOR (EXACT BLOCK MATCH) -->
+            <div class="tac-panel panel-warning" id="smsGenerator">
+                <div class="panel-title">📡 OFFLINE SMS PAYLOAD GENERATOR</div>
+                <div class="panel-desc">Generate encrypted SMS commands if the target device loses internet connectivity.</div>
+                
+                <div class="inp-group">
+                    <label class="inp-label">Target Hardware Hardware Phone Number</label>
+                    <input type="tel" id="smsTargetNum" class="tac-input" value="6388220889" placeholder="Enter device SIM card number">
+                </div>
+
+                <div class="sms-grid-buttons">
+                    <button class="btn-sms-payload" onclick="generateSms('PING')">📍 SMS: PING RADAR</button>
+                    <button class="btn-sms-payload" onclick="generateSms('SIREN')">🔊 SMS: TRIGGER SIREN</button>
+                    <button class="btn-sms-payload" onclick="generateSms('LOCK')">🔒 SMS: INSTANT LOCK</button>
+                    <button class="btn-sms-payload" onclick="generateSms('STROBE')">⚡ SMS: STROBE FLASH</button>
+                </div>
+
+                <div class="terminal-stream" id="smsConsole">> Awaiting payload generation parameters...</div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <div>© 2026 R.K Sentinel 3-Tier Tactical Command System</div>
+        <div>All Security Modules Verified</div>
+    </footer>
+
+    <!-- SHIELD SVG MAP -->
+    <svg style="display:none;">
+        <symbol id="shield-logo" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/>
+            <path d="M12 5.5L6 7.5V11.5C6 15.2 8.5 18.6 12 19.5C15.5 18.6 18 15.2 18 11.5V7.5L12 5.5Z" fill="#FF6B35"/>
+            <path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="#FFFFFF"/>
+        </symbol>
+    </svg>
+
+    <script>
+        // 🚀 1. OFFLINE SMS ROUTER LOGIC
+        function generateSms(commandType) {
+            const targetNum = document.getElementById('smsTargetNum').value.trim();
+            const consoleBox = document.getElementById('smsConsole');
+            
+            if(!targetNum) {
+                consoleBox.textContent = "⚠ ERROR: Secure terminal target phone number is mandatory.";
+                consoleBox.style.color = "var(--danger)";
+                return;
+            }
+
+            let textBody = "";
+            switch(commandType) {
+                case 'PING': textBody = "RAKSHA_LOCATE_ME"; break;
+                case 'SIREN': textBody = "RAKSHA_ALARM_ON"; break;
+                case 'LOCK': textBody = "RAKSHA_LOCK_NOW"; break;
+                case 'STROBE': textBody = "RAKSHA_STROBE_ON"; break;
+            }
+
+            // High-end feature: Generate native protocol trigger links for smartphone browsers
+            const mobileSmsIntentLink = `sms:${targetNum}?body=${encodeURIComponent(textBody)}`;
+            
+            consoleBox.innerHTML = `[RAW PAYLOAD]: <span style="color:#FFF; font-weight:bold;">${textBody}</span>\n[ROUTING TARGET]: ${targetNum}\n\n<a href="${mobileSmsIntentLink}" style="color:var(--cyan-glow); font-weight:800; text-decoration:underline;">⚡ CLICK TO DISPATCH DIRECT VIA DEVICE SIM</a>`;
+            consoleBox.style.color = "var(--success)";
+        }
+
+        // 🚀 2. DESIGN THEME CONTROL ARCHITECTURE
+        function initTheme() {
+            const theme = localStorage.getItem('tactical_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+        function toggleTheme() {
+            const root = document.documentElement;
+            const nextTheme = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            root.setAttribute('data-theme', nextTheme);
+            localStorage.setItem('tactical_theme', nextTheme);
+        }
+        initTheme();
+
+        // 🚀 3. MESH INTERACTIVE BACKGROUND
+        const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particles = []; let mouse = { x: null, y: null, radius: 150 };
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
+        for (let i = 0; i < 50; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4 }); }
+        
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const rgbLine = isLight ? '29, 78, 216' : '0, 229, 255';
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i]; p.x += p.vx; p.y += p.vy;
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1; if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2); ctx.fillStyle = `rgba(${rgbLine}, 0.3)`; ctx.fill();
+            } requestAnimationFrame(animateCanvas);
+        } animateCanvas();
+
+        // 🚀 4. FIREBASE AUTH PIPELINE
+        const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
+        firebase.initializeApp(fbCfg);
+        firebase.auth().onAuthStateChanged(user => { 
+            if (!user) { window.location.href = 'index.html'; } 
+            else { document.getElementById('authLoader').style.display = 'none'; }
+        });
+    </script>
+</body>
+</html>
