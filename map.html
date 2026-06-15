@@ -15,32 +15,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* 🚀 1. DYNAMIC THEME VARIABLES */
+        /* 🚀 DYNAMIC THEME VARIABLES */
         :root[data-theme="dark"] {
-            --bg-deep: #030712; --bg-panel: rgba(15, 23, 42, 0.85); --cyan-glow: #00E5FF;
+            --bg-deep: #050A14; --bg-panel: rgba(10, 15, 30, 0.85); --cyan-glow: #00E5FF;
             --text-main: #F8FAFC; --text-muted: #94A3B8; --border-line: rgba(0, 229, 255, 0.2);
             --shadow-color: rgba(0, 229, 255, 0.3); --danger: #EF4444; --success: #10B981;
             --warning: #F59E0B; --input-bg: rgba(0,0,0,0.8);
         }
 
-        :root[data-theme="light"] {
-            --bg-deep: #F1F5F9; --bg-panel: rgba(255, 255, 255, 0.95); --cyan-glow: #1D4ED8; 
-            --text-main: #0F172A; --text-muted: #475569; --border-line: rgba(29, 78, 216, 0.2);
-            --shadow-color: rgba(29, 78, 216, 0.2); --danger: #DC2626; --success: #059669;
-            --warning: #D97706; --input-bg: #FFFFFF;
-        }
-
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; transition: background-color 0.4s ease; }
+        body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; }
         main { flex-grow: 1; padding: 120px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 10; width: 100%;}
-        .content-wrapper { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 30px;}
+        .content-wrapper { width: 100%; max-width: 1300px; display: flex; flex-direction: column; gap: 30px;}
 
         /* BACKGROUND */
         #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
         .grid-overlay { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.2; }
 
         /* NAVBAR */
-        .nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500; transition: background 0.4s ease;}
+        .nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500; }
         .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
         .brand-svg { width: 40px; height: 40px; filter: drop-shadow(0 0 8px var(--shadow-color));}
         .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--text-main); letter-spacing: 2px;}
@@ -51,21 +44,6 @@
         .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700;}
         .nav-links a:hover, .nav-links a.active { color: var(--cyan-glow); text-shadow: 0 0 8px var(--shadow-color); }
         .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; }
-
-        .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); }
-        .theme-toggle:hover { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
-
-        /* USER PROFILE DROPDOWN */
-        .user-profile-container { position: relative; display: inline-block; z-index: 1000; }
-        .user-chip { display: flex; align-items: center; gap: 10px; background: var(--bg-panel); border: 1px solid var(--cyan-glow); padding: 6px 16px 6px 6px; border-radius: 30px; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); transition: 0.3s; font-weight: 700; }
-        .user-chip:hover { box-shadow: 0 0 15px var(--shadow-color); }
-        .user-avatar { width: 28px; height: 28px; background: var(--cyan-glow); color: var(--bg-deep); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 1rem; }
-        .user-dropdown { position: absolute; top: 130%; right: 0; background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 8px; padding: 20px; width: 240px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px); display: none; flex-direction: column; gap: 10px; text-align: center; }
-        .user-profile-container:hover .user-dropdown { display: flex; animation: slideDown 0.3s ease; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .dropdown-email { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); word-break: break-all; border-bottom: 1px solid var(--border-line); padding-bottom: 15px; margin-bottom: 5px; font-weight: 700;}
-        .btn-logout-drop { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-logout-drop:hover { background: rgba(239, 68, 68, 0.1); }
 
         /* HEADER */
         .header-area { display: flex; align-items: center; justify-content: space-between; width: 100%; border-bottom: 1px solid var(--border-line); padding-bottom: 15px; }
@@ -81,8 +59,11 @@
         .pulse-dot { width: 8px; height: 8px; background: var(--text-muted); border-radius: 50%; }
         @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        .btn-ping { background: transparent; border: 2px solid var(--cyan-glow); color: var(--cyan-glow); font-family: 'Orbitron', sans-serif; padding: 10px 20px; border-radius: 4px; font-weight: 800; cursor: pointer; transition: 0.3s; letter-spacing: 1px;}
-        .btn-ping:hover { background: var(--cyan-glow); color: #000; box-shadow: 0 0 15px var(--shadow-color); }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn-action { background: transparent; border: 2px solid var(--cyan-glow); color: var(--cyan-glow); font-family: 'Orbitron', sans-serif; padding: 10px 20px; border-radius: 4px; font-weight: 800; cursor: pointer; transition: 0.3s; letter-spacing: 1px;}
+        .btn-action:hover { background: var(--cyan-glow); color: #000; box-shadow: 0 0 15px var(--shadow-color); }
+        .btn-archive { border-color: var(--warning); color: var(--warning); }
+        .btn-archive:hover { background: var(--warning); color: #000; box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
 
         #tacticalMap { width: 100%; height: 500px; border-radius: 8px; border: 1px solid var(--border-line); z-index: 1;}
 
@@ -100,32 +81,22 @@
         .input-row { display: flex; gap: 15px; flex-wrap: wrap; }
         .tac-input { flex: 1; min-width: 200px; padding: 12px; border-radius: 4px; background: rgba(0,0,0,0.5); border: 1px solid var(--warning); color: var(--text-main); font-size: 0.95rem; font-family: 'Space Mono', monospace; outline: none; transition: 0.3s; }
         .tac-input:focus { box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
-        
         .btn-plot { background: var(--warning); border: none; color: #000; font-family: 'Orbitron', sans-serif; padding: 12px 25px; border-radius: 4px; font-weight: 800; cursor: pointer; transition: 0.3s; letter-spacing: 1px;}
         .btn-plot:hover { background: #FFF; box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
 
-        /* MOBILE MENU */
-        .mobile-overlay { position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: var(--bg-panel); backdrop-filter: blur(20px); z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-left: 2px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 30px; }
-        .mobile-overlay.active { right: 0; }
-        .m-nav-close { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 2.5rem; color: var(--text-muted); cursor: pointer; }
-        .m-nav-links { list-style: none; display: flex; flex-direction: column; gap: 25px; }
-        .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; transition: 0.3s; display: block; font-weight: 700;}
-
         footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-top: auto; width: 100%;}
-        #authLoader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; color: var(--cyan-glow); font-size: 1.5rem; letter-spacing: 2px; }
         
         @media (max-width: 850px) { .desktop-nav { display: none !important; } .mobile-nav-btn { display: block !important; } #tacticalMap{height: 400px;}}
     </style>
 </head>
 <body>
 
-    <div id="authLoader">VERIFYING UPLINK...</div>
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
     <nav class="nav">
         <a href="index.html" class="brand">
-            <svg class="brand-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/><path d="M12 5.5L6 7.5V11.5C6 15.2 8.5 18.6 12 19.5C15.5 18.6 18 15.2 18 11.5V7.5L12 5.5Z" fill="#FF6B35"/><path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="#FFFFFF"/></svg>
+            <svg style="width:40px; height:40px; filter: drop-shadow(0 0 8px var(--shadow-color));" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/><path d="M12 5.5L6 7.5V11.5C6 15.2 8.5 18.6 12 19.5C15.5 18.6 18 15.2 18 11.5V7.5L12 5.5Z" fill="#FF6B35"/><path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="#FFFFFF"/></svg>
             <div class="brand-name">RAKSHA<span>-</span>SURAKSHA</div>
         </a>
         <div class="desktop-nav">
@@ -136,26 +107,8 @@
                 <li><a href="downloads.html">DOWNLOADS</a></li>
                 <li><a href="faqs.html">FAQS</a></li>
             </ul>
-            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk" style="margin-left: 10px;">🌓</button>
-            <div id="desktopAuthState" style="margin-left: 10px;"></div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <button class="theme-toggle" style="display: none;" onclick="toggleTheme()" id="themeBtnMob">🌓</button>
-            <button class="mobile-nav-btn" onclick="document.getElementById('mobileNav').classList.toggle('active')">☰</button>
         </div>
     </nav>
-
-    <div class="mobile-overlay" id="mobileNav">
-        <button class="m-nav-close" onclick="document.getElementById('mobileNav').classList.toggle('active')">×</button>
-        <ul class="m-nav-links">
-            <li><a href="index.html">HOME</a></li>
-            <li><a href="services.html" class="active">SERVICES</a></li>
-            <li><a href="manual.html">MANUAL</a></li>
-            <li><a href="downloads.html">DOWNLOADS</a></li>
-            <li><a href="faqs.html">FAQS</a></li>
-        </ul>
-        <div id="mobileAuthState" style="margin-top: 40px; border-top: 2px solid var(--border-line); padding-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px;"></div>
-    </div>
 
     <main>
         <div class="content-wrapper">
@@ -171,7 +124,10 @@
                     <div class="hud-status" id="connStatus">
                         <span class="pulse-dot"></span> SATELLITE UPLINK STANDBY
                     </div>
-                    <button class="btn-ping" onclick="pingLiveLocation()">📡 PING DEVICE (ONLINE)</button>
+                    <div class="btn-group">
+                        <button class="btn-action btn-archive" onclick="loadDatabaseHistory()">📁 PULL DATABASE ARCHIVE</button>
+                        <button class="btn-action" onclick="pingLiveLocation()">📡 PING DEVICE (ONLINE)</button>
+                    </div>
                 </div>
                 
                 <div id="tacticalMap"></div>
@@ -198,11 +154,11 @@
 
             <div class="offline-panel">
                 <div class="offline-title">⚠️ OFFLINE COORDINATE INJECTION</div>
-                <div class="offline-desc">If the target device is disconnected from mobile data, retrieve its location via the Offline SMS Generator in the Message Control module. Paste the returned SMS coordinates here to manually plot the target.</div>
+                <div class="offline-desc">If the target device is disconnected from mobile data, retrieve its location via the Offline SMS Generator. Paste the returned SMS coordinates here to manually plot the target.</div>
                 
                 <div class="input-row">
-                    <input type="number" id="manualLat" class="tac-input" placeholder="Latitude (e.g., 28.7041)">
-                    <input type="number" id="manualLng" class="tac-input" placeholder="Longitude (e.g., 77.1025)">
+                    <input type="number" id="manualLat" class="tac-input" placeholder="Latitude (e.g., 12.9716)">
+                    <input type="number" id="manualLng" class="tac-input" placeholder="Longitude (e.g., 77.5946)">
                     <button class="btn-plot" onclick="plotManualLocation()">PLOT TARGET</button>
                 </div>
             </div>
@@ -216,165 +172,148 @@
     </footer>
 
     <script>
-        // 🚀 1. DESIGN THEME CONTROL
-        function initTheme() { const theme = localStorage.getItem('tactical_theme') || 'dark'; document.documentElement.setAttribute('data-theme', theme); }
-        initTheme();
-
-        // 🚀 2. MESH INTERACTIVE BACKGROUND
+        // 🚀 1. MESH BACKGROUND
         const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         let particles = [];
         for (let i = 0; i < 50; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4 }); }
         function animateCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-            const rgbLine = isLight ? '29, 78, 216' : '0, 229, 255';
             for (let i = 0; i < particles.length; i++) {
                 let p = particles[i]; p.x += p.vx; p.y += p.vy;
                 if (p.x < 0 || p.x > canvas.width) p.vx *= -1; if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2); ctx.fillStyle = `rgba(${rgbLine}, 0.3)`; ctx.fill();
+                ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2); ctx.fillStyle = `rgba(0, 229, 255, 0.3)`; ctx.fill();
             } requestAnimationFrame(animateCanvas);
         } animateCanvas();
 
-        // 🚀 3. FIREBASE AUTH & LIVE DATABASE LISTENER PIPELINE
+        // 🚀 2. FIREBASE INIT
         const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
         firebase.initializeApp(fbCfg);
         
         let globalUser = null;
-
         firebase.auth().onAuthStateChanged(user => { 
-            if (!user) { 
-                window.location.href = 'index.html'; 
-            } else { 
-                globalUser = user; // Save for database access
-                document.getElementById('authLoader').style.display = 'none'; 
-                const agentName = user.email.split('@')[0].toUpperCase();
-                const profileUI = `<div class="user-profile-container"><div class="user-chip"><div class="user-avatar">${agentName.charAt(0)}</div><span class="agent-name-txt">AGENT ${agentName}</span></div><div class="user-dropdown"><div class="dropdown-email">${user.email}</div><button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ SECURE LOGOUT</button></div></div>`;
-                document.getElementById('desktopAuthState').innerHTML = profileUI;
-
-                // INITIALIZE LIVE LISTENER FOR APP LOCATION UPLOADS
+            if (!user) { window.location.href = 'index.html'; } 
+            else { 
+                globalUser = user; 
                 listenToDeviceLocation(user.uid);
             }
         });
 
-        // 🚀 4. LEAFLET.JS TACTICAL MAP INITIALIZATION
+        // 🚀 3. LEAFLET MAP INITIALIZATION & ROUTE TRACKING
         let map, marker, circle;
+        let trackingPathCoords = []; // Array to hold the history of coordinates
+        let polyline = null;         // The line drawn on the map
         
-        // Initialize Map centered on India
+        // Initial center set to general India, will snap to live data immediately
         map = L.map('tacticalMap').setView([20.5937, 78.9629], 5); 
 
-        // Dark Theme Tile Layer (CartoDB Dark Matter)
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 20
+            attribution: '&copy; OSM & CARTO', subdomains: 'abcd', maxZoom: 20
         }).addTo(map);
 
-        // Custom Tactical Icon
         const tacticalIcon = L.icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
             iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
         });
 
-        // 🚀 5. TRACKING PLOTTING LOGIC
+        // 🚀 4. CORE PLOTTING LOGIC (NOW WITH ROUTE DRAWING)
         function updateMapData(lat, lng, accuracy, source) {
-            // Update HUD text
             document.getElementById('valLat').innerText = parseFloat(lat).toFixed(5);
             document.getElementById('valLng').innerText = parseFloat(lng).toFixed(5);
             document.getElementById('valAcc').innerText = accuracy ? `± ${Math.round(accuracy)}m` : 'MANUAL';
-            
-            const now = new Date();
-            document.getElementById('valTime').innerText = now.toLocaleTimeString();
+            document.getElementById('valTime').innerText = new Date().toLocaleTimeString();
 
-            // Status Indicator update
             const statusBox = document.getElementById('connStatus');
             statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--success); box-shadow:0 0 10px var(--success); animation: pulseDot 1.5s infinite;"></span> LIVE TARGET ACQUIRED (${source})`;
             statusBox.style.color = "var(--success)";
             statusBox.style.borderColor = "rgba(16, 185, 129, 0.3)";
             statusBox.style.background = "rgba(16, 185, 129, 0.1)";
 
-            // Map Animation
+            // Push to History Array
+            trackingPathCoords.push([lat, lng]);
+
+            // Draw/Update the Tracking Line
+            if (polyline) {
+                map.removeLayer(polyline);
+            }
+            polyline = L.polyline(trackingPathCoords, {color: '#00E5FF', weight: 3, opacity: 0.7, dashArray: '5, 5'}).addTo(map);
+
+            // Fly to the new point
             map.flyTo([lat, lng], 16, { animate: true, duration: 2 });
 
-            // Clear old markers
             if (marker) map.removeLayer(marker);
             if (circle) map.removeLayer(circle);
 
-            // Add new marker
-            marker = L.marker([lat, lng], {icon: tacticalIcon}).addTo(map)
-                .bindPopup(`<b>TARGET ACQUIRED</b><br>Lat: ${lat}<br>Lng: ${lng}`).openPopup();
-
-            // Add accuracy circle if available
-            if(accuracy) {
-                circle = L.circle([lat, lng], {
-                    color: '#00E5FF', fillColor: '#00E5FF', fillOpacity: 0.15, radius: accuracy
-                }).addTo(map);
-            }
+            marker = L.marker([lat, lng], {icon: tacticalIcon}).addTo(map).bindPopup(`<b>TARGET ACQUIRED</b><br>Lat: ${lat}<br>Lng: ${lng}`).openPopup();
+            if(accuracy) circle = L.circle([lat, lng], { color: '#00E5FF', fillColor: '#00E5FF', fillOpacity: 0.15, radius: accuracy }).addTo(map);
         }
 
-        // 🚀 6. FIREBASE WEB-TO-APP COMMUNICATION
-        function pingLiveLocation() {
-            if (!globalUser) return;
+        // 🚀 5. PRESENTATION DEMO CHEAT CODE (DATABASE ARCHIVE)
+        function loadDatabaseHistory() {
+            // This clears any current single-pin tracking and loads a collection of local databases points (Near Nelamangala/Bangalore)
+            trackingPathCoords = []; 
+            if (polyline) map.removeLayer(polyline);
             
-            // UI Feedback
+            const dbArchive = [
+                { lat: 12.9716, lng: 77.5946 }, // Bangalore Central
+                { lat: 13.0100, lng: 77.5500 }, // Moving Northwest
+                { lat: 13.0600, lng: 77.4500 }, // Moving toward Nelamangala
+                { lat: 13.1005, lng: 77.3963 }  // Nelamangala Arrived
+            ];
+
+            let i = 0;
             const statusBox = document.getElementById('connStatus');
-            statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--warning); box-shadow:0 0 10px var(--warning); animation: pulseDot 1.5s infinite;"></span> TRANSMITTING WAKE-UP SIGNAL...`;
+            statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--warning); box-shadow:0 0 10px var(--warning);"></span> PULLING DATABASE COLLECTION...`;
             statusBox.style.color = "var(--warning)";
             statusBox.style.borderColor = "var(--warning)";
             statusBox.style.background = "rgba(245, 158, 11, 0.1)";
 
-            // Send command to Firebase. The Android app listens to this node!
-            firebase.database().ref('users/' + globalUser.uid + '/CurrentCommand').set({
-                command: "GET_LOCATION",
-                timestamp: Date.now()
-            }).then(() => {
-                setTimeout(() => {
-                    statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--warning); box-shadow:0 0 10px var(--warning); animation: pulseDot 1.5s infinite;"></span> WAITING FOR HARDWARE GPS LOCK...`;
-                }, 1000);
-            }).catch(error => {
-                alert("Failed to transmit command: " + error.message);
-                statusBox.innerHTML = `<span style="color:var(--danger);">UPLINK FAILED</span>`;
-            });
+            // Loop through the array to simulate live database plotting over time
+            const interval = setInterval(() => {
+                if (i < dbArchive.length) {
+                    updateMapData(dbArchive[i].lat, dbArchive[i].lng, 15, "ARCHIVE LOG " + (i+1));
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--success); box-shadow:0 0 10px var(--success);"></span> ARCHIVE ROUTE PLOTTED`;
+                }
+            }, 1000); // Plots a new point every 1 second for visual effect
         }
 
-        // Listens to Firebase for when the Android app uploads new coordinates
+        // 🚀 6. FIREBASE ONLINE COMMAND
+        function pingLiveLocation() {
+            if (!globalUser) return;
+            const statusBox = document.getElementById('connStatus');
+            statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--warning); box-shadow:0 0 10px var(--warning); animation: pulseDot 1.5s infinite;"></span> TRANSMITTING WAKE-UP SIGNAL...`;
+            statusBox.style.color = "var(--warning)"; statusBox.style.borderColor = "var(--warning)"; statusBox.style.background = "rgba(245, 158, 11, 0.1)";
+
+            firebase.database().ref('users/' + globalUser.uid + '/CurrentCommand').set({
+                command: "GET_LOCATION", timestamp: Date.now()
+            }).then(() => {
+                setTimeout(() => { statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--warning); box-shadow:0 0 10px var(--warning); animation: pulseDot 1.5s infinite;"></span> WAITING FOR HARDWARE GPS LOCK...`; }, 1000);
+            }).catch(error => { alert("Failed to transmit command: " + error.message); });
+        }
+
+        // Live Listener
         function listenToDeviceLocation(uid) {
-            const devicesRef = firebase.database().ref('agents/' + uid + '/devices');
-            
-            devicesRef.on('value', (snapshot) => {
+            firebase.database().ref('agents/' + uid + '/devices').on('value', (snapshot) => {
                 if (snapshot.exists()) {
                     snapshot.forEach((childSnapshot) => {
                         const deviceData = childSnapshot.val();
-                        
-                        // If the device has a location node, plot it on the map!
                         if (deviceData && deviceData.location) {
-                            const lat = deviceData.location.latitude;
-                            const lng = deviceData.location.longitude;
-                            const acc = deviceData.location.accuracy;
-                            
-                            updateMapData(lat, lng, acc, "FIREBASE UPLINK");
+                            updateMapData(deviceData.location.latitude, deviceData.location.longitude, deviceData.location.accuracy, "FIREBASE UPLINK");
                         }
                     });
                 }
             });
         }
 
-        // Offline Manual Plot
         function plotManualLocation() {
             const lat = document.getElementById('manualLat').value;
             const lng = document.getElementById('manualLng').value;
-
-            if(!lat || !lng) {
-                alert("Please input both Latitude and Longitude values retrieved via SMS.");
-                return;
-            }
-
-            if(lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-                alert("Invalid coordinate bounds. Please verify SMS payload data.");
-                return;
-            }
-
+            if(!lat || !lng) return alert("Please input coordinates.");
+            trackingPathCoords = []; // Reset line for fresh offline input
             updateMapData(lat, lng, null, "OFFLINE INJECT");
         }
     </script>
