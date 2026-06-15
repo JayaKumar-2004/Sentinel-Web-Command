@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raksha-Suraksha | User Manual</title>
+    
+    <!-- Firebase Core SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <!-- Premium Tech Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 🚀 1. CORE VARIABLES */
+        :root {
+            --bg-deep: #030712;
+            --bg-panel: rgba(15, 23, 42, 0.7);
+            --cyan-glow: #00E5FF;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-line: rgba(0, 229, 255, 0.2);
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; scroll-behavior: smooth;}
+        body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; }
+        
+        /* 🚀 2. BACKGROUND */
+        #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
+        .grid-overlay { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-image: linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px); background-size: 50px 50px; background-color: rgba(3, 7, 18, 0.7); backdrop-filter: blur(3px); }
+
+        /* 🚀 3. NAVIGATION */
+        .desktop-nav { display: flex; align-items: center; }
+        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; }
+        @media (max-width: 800px) { .desktop-nav { display: none !important; } .mobile-nav-btn { display: block !important; } }
+
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500; }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand-svg { width: 40px; height: 40px; filter: drop-shadow(0 0 8px rgba(0,229,255,0.5));}
+        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--text-main); letter-spacing: 2px;}
+        .brand-name span { color: var(--cyan-glow); }
+        .nav-links { display: flex; gap: 25px; list-style: none; margin-right: 25px; }
+        .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700;}
+        .nav-links a:hover, .nav-links a.active { color: var(--cyan-glow); text-shadow: 0 0 8px rgba(0,229,255,0.5); }
+
+        .auth-btn { background: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); border: 1px solid var(--cyan-glow); padding: 10px 24px; border-radius: 4px; font-weight: 700; cursor: pointer; transition: all 0.3s; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; text-transform: uppercase;}
+        .auth-btn:hover { background: var(--cyan-glow); color: #000; box-shadow: 0 0 20px rgba(0,229,255,0.6); transform: scale(1.05); }
+
+        /* 🚀 4. MAIN LAYOUT (SIDEBAR + CONTENT) */
+        main { display: flex; max-width: 1400px; margin: 100px auto 60px auto; width: 100%; padding: 0 5%; gap: 40px; position: relative; z-index: 10;}
+        
+        /* SIDEBAR (TOC) */
+        .manual-sidebar { width: 280px; flex-shrink: 0; height: fit-content; position: sticky; top: 120px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-line); border-radius: 12px; padding: 25px; backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 15px;}
+        .sidebar-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: var(--cyan-glow); margin-bottom: 10px; font-weight: 800; border-bottom: 1px solid var(--border-line); padding-bottom: 15px;}
+        .toc-link { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-muted); text-decoration: none; padding: 8px 12px; border-radius: 6px; transition: 0.3s; border-left: 2px solid transparent;}
+        .toc-link:hover, .toc-link.active { background: rgba(0,229,255,0.05); color: var(--text-main); border-left-color: var(--cyan-glow); }
+
+        /* CONTENT AREA */
+        .manual-content { flex-grow: 1; display: flex; flex-direction: column; gap: 50px; }
+        
+        .page-header h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(2rem, 4vw, 3.5rem); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;}
+        .page-header p { font-family: 'Space Mono', monospace; color: var(--text-muted); font-size: 1rem; }
+
+        .manual-section { background: rgba(10, 15, 28, 0.8); border: 1px solid var(--border-line); border-radius: 12px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); scroll-margin-top: 120px;}
+        .sec-head { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; border-bottom: 1px solid var(--border-line); padding-bottom: 20px;}
+        .sec-num { width: 40px; height: 40px; background: rgba(0, 229, 255, 0.1); border: 1px solid var(--cyan-glow); border-radius: 8px; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--cyan-glow); font-weight: 900;}
+        .sec-title { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--text-main); font-weight: 800;}
+
+        /* STEPS & INFO BLOCKS */
+        .step-block { margin-bottom: 25px; padding-left: 20px; border-left: 2px dashed var(--border-line); position: relative;}
+        .step-block::before { content: ''; position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background: var(--cyan-glow); border-radius: 50%; box-shadow: 0 0 10px var(--cyan-glow);}
+        .step-block h4 { font-family: 'Space Mono', monospace; font-size: 1.1rem; color: var(--text-main); margin-bottom: 10px; text-transform: uppercase;}
+        .step-block p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 10px;}
+        
+        .code-snippet { background: #000; border: 1px solid var(--border-line); padding: 15px; border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--success); margin: 15px 0;}
+        .alert-box { background: rgba(245, 158, 11, 0.1); border-left: 4px solid var(--warning); padding: 15px; border-radius: 0 8px 8px 0; margin: 20px 0;}
+        .alert-box strong { color: var(--warning); font-family: 'Orbitron', sans-serif; letter-spacing: 1px;}
+        .alert-box p { margin: 5px 0 0 0; font-size: 0.9rem;}
+
+        @media (max-width: 950px) {
+            main { flex-direction: column; }
+            .manual-sidebar { width: 100%; position: static; height: auto;}
+            .manual-section { padding: 25px; }
+        }
+
+        /* 🚀 5. MOBILE MENU & FOOTER */
+        .mobile-overlay { position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: rgba(10, 15, 28, 0.98); backdrop-filter: blur(20px); z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-left: 1px solid var(--cyan-glow); display: flex; flex-direction: column; gap: 30px; }
+        .mobile-overlay.active { right: 0; }
+        .m-nav-close { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 2.5rem; color: var(--text-muted); cursor: pointer; }
+        .m-nav-links { list-style: none; display: flex; flex-direction: column; gap: 25px; }
+        .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; }
+        
+        footer { margin-top: auto; background: rgba(3, 7, 18, 0.95); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; font-size: 0.85rem; color: var(--text-muted); position: relative; z-index: 10; }
+    </style>
+</head>
+<body>
+
+    <!-- SVG SHIELD -->
+    <svg style="display:none;">
+        <symbol id="shield-logo" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/>
+            <path d="M12 5.5L6 7.5V11.5C6 15.2 8.5 18.6 12 19.5C15.5 18.6 18 15.2 18 11.5V7.5L12 5.5Z" fill="#FF6B35"/>
+            <path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="#FFFFFF"/>
+        </symbol>
+    </svg>
+
+    <!-- BACKGROUND CANVAS -->
+    <canvas id="interactiveCanvas"></canvas>
+    <div class="grid-overlay"></div>
+
+    <!-- NAVBAR -->
+    <nav class="nav">
+        <a href="index.html" class="brand">
+            <svg class="brand-svg"><use href="#shield-logo"></use></svg>
+            <div class="brand-name">RAKSHA<span>-</span>SURAKSHA</div>
+        </a>
+        <div class="desktop-nav">
+            <ul class="nav-links">
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+                <li><a href="manual.html" class="active">MANUAL</a></li>
+                <li><a href="faqs.html">FAQS</a></li>
+            </ul>
+            <button class="auth-btn" onclick="window.location.href='dashboard.html'">WEB TERMINAL</button>
+        </div>
+        <button class="mobile-nav-btn" onclick="document.getElementById('mobileNav').classList.add('active')">☰</button>
+    </nav>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-overlay" id="mobileNav">
+        <button class="m-nav-close" onclick="document.getElementById('mobileNav').classList.remove('active')">×</button>
+        <ul class="m-nav-links">
+            <li><a href="index.html">HOME</a></li>
+            <li><a href="about.html">ABOUT</a></li>
+            <li><a href="manual.html" class="active">MANUAL</a></li>
+            <li><a href="faqs.html">FAQS</a></li>
+        </ul>
+        <button class="auth-btn" style="width: 100%; margin-top: 30px;" onclick="window.location.href='dashboard.html'">WEB TERMINAL</button>
+    </div>
+
+    <main>
+        <!-- TABLE OF CONTENTS SIDEBAR -->
+        <aside class="manual-sidebar">
+            <div class="sidebar-title">OPERATIONAL DIRECTIVES</div>
+            <a href="#sec-setup" class="toc-link active">1. App Installation</a>
+            <a href="#sec-link" class="toc-link">2. Device Authorization</a>
+            <a href="#sec-web" class="toc-link">3. Web Terminal Controls</a>
+            <a href="#sec-sms" class="toc-link">4. Offline SMS Fallback</a>
+            <a href="#sec-sos" class="toc-link">5. Emergency SOS Trigger</a>
+        </aside>
+
+        <!-- MANUAL CONTENT -->
+        <div class="manual-content">
+            
+            <div class="page-header">
+                <h1>Tactical Manual</h1>
+                <p>Complete operational guide for deploying and commanding the Raksha-Suraksha system.</p>
+            </div>
+
+            <!-- SECTION 1: APP INSTALLATION -->
+            <section class="manual-section" id="sec-setup">
+                <div class="sec-head">
+                    <div class="sec-num">01</div>
+                    <h2 class="sec-title">App Deployment & Permissions</h2>
+                </div>
+                
+                <div class="step-block">
+                    <h4>Step A: Install the Sentinel-X APK</h4>
+                    <p>Download the official Raksha-Suraksha APK to your target Android device. Since it is a system-level security app, you must allow installation from "Unknown Sources" in your Android settings.</p>
+                </div>
+
+                <div class="step-block">
+                    <h4>Step B: Grant Device Administrator</h4>
+                    <p>Upon opening the app, you will be prompted to activate <strong>Device Administrator</strong> rights. This is a critical security measure that prevents a thief from uninstalling the app or force-stopping it from the settings menu.</p>
+                </div>
+
+                <div class="step-block">
+                    <h4>Step C: Enable Accessibility & Location</h4>
+                    <p>The app requires <strong>Accessibility Services</strong> to remotely lock the screen and force volume overrides. It also requires <strong>Location (Allow all the time)</strong> to transmit live GPS coordinates to the dashboard.</p>
+                    <div class="alert-box">
+                        <strong>⚠️ MANDATORY DND OVERRIDE</strong>
+                        <p>You must allow the app to override "Do Not Disturb" settings so that the Anti-Theft Siren can ring at 100% volume even if the phone is on silent mode.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: DEVICE LINKING -->
+            <section class="manual-section" id="sec-link">
+                <div class="sec-head">
+                    <div class="sec-num">02</div>
+                    <h2 class="sec-title">Authorizing the Uplink</h2>
+                </div>
+                
+                <div class="step-block">
+                    <h4>Step A: Create an Agent Account</h4>
+                    <p>On this website, navigate to the Web Terminal and click "Secure Login" to register a new account. Use a secure email and a strong master passcode.</p>
+                </div>
+
+                <div class="step-block">
+                    <h4>Step B: Login on the Android App</h4>
+                    <p>Open the Sentinel-X app on your phone and log in using the <strong>exact same email and passcode</strong> you used on the website. This securely binds your physical phone to your web dashboard.</p>
+                </div>
+
+                <div class="step-block">
+                    <h4>Step C: Verify the Connection</h4>
+                    <p>Open the <strong>Device Linking</strong> module on your Web Dashboard. You should instantly see your phone's hardware model (e.g., "Samsung Galaxy") listed as <span style="color:var(--success); font-family:'Space Mono';">[ONLINE]</span>.</p>
+                </div>
+            </section>
+
+            <!-- SECTION 3: WEB CONTROLS -->
+            <section class="manual-section" id="sec-web">
+                <div class="sec-head">
+                    <div class="sec-num">03</div>
+                    <h2 class="sec-title">Web Terminal Operations (Online)</h2>
+                </div>
+                
+                <p style="color: var(--text-muted); margin-bottom: 25px; line-height: 1.6;">If your device is connected to the internet (WiFi or Mobile Data), you can control it instantly from the Web Terminal's "App Controls" module.</p>
+
+                <div class="step-block">
+                    <h4>Trigger Anti-Theft Siren</h4>
+                    <p>Clicking <strong>TRIGGER SIREN</strong> will bypass the phone's silent mode, force the media volume to 100%, and play an inescapable high-pitch alarm.</p>
+                </div>
+
+                <div class="step-block">
+                    <h4>Instant Screen Lock</h4>
+                    <p>Clicking <strong>INSTANT LOCK</strong> utilizes the Accessibility Service to instantly turn off the screen and lock the device, protecting your personal data from thieves.</p>
+                </div>
+
+                <div class="step-block">
+                    <h4>Force Emergency Dial</h4>
+                    <p>Using the Custom SOS Auto-Dialer, you can type a number into the dashboard, and the phone will autonomously open its dialer and call that number (e.g., 112 for Police).</p>
+                </div>
+            </section>
+
+            <!-- SECTION 4: OFFLINE SMS -->
+            <section class="manual-section" id="sec-sms">
+                <div class="sec-head">
+                    <div class="sec-num" style="color: var(--warning); border-color: var(--warning); background: rgba(245, 158, 11, 0.1);">04</div>
+                    <h2 class="sec-title">Offline SMS Fallback</h2>
+                </div>
+                
+                <p style="color: var(--text-muted); margin-bottom: 25px; line-height: 1.6;">If a thief turns off your mobile data, the web terminal cannot reach the phone. You must use any other phone to send specific text messages (SMS) to your stolen phone's number to trigger offline actions.</p>
+
+                <div class="step-block">
+                    <h4>Trigger Siren (Offline)</h4>
+                    <p>Send the following exact text message to your stolen phone to force the alarm to sound:</p>
+                    <div class="code-snippet">RAKSHA_ALARM_ON</div>
+                </div>
+
+                <div class="step-block">
+                    <h4>Lock Screen (Offline)</h4>
+                    <p>Send the following text message to instantly lock the display:</p>
+                    <div class="code-snippet">RAKSHA_LOCK_NOW</div>
+                </div>
+
+                <div class="step-block">
+                    <h4>Get GPS Location (Offline)</h4>
+                    <p>Send the following text message to force the phone to reply with a Google Maps link of its current location:</p>
+                    <div class="code-snippet">RAKSHA_LOCATE_ME</div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div>© 2026 R.K Sentinel 3-Tier Tactical Command System</div>
+        <div>All Systems Normal</div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Interactive Canvas Background
+        const canvas = document.getElementById('interactiveCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        
+        let particles = [];
+        let mouse = { x: null, y: null, radius: 150 };
+
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
+
+        for (let i = 0; i < 80; i++) {
+            particles.push({
+                x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
+                size: Math.random() * 2 + 0.5
+            });
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.x += p.vx; p.y += p.vy;
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 229, 255, 0.4)'; ctx.fill();
+
+                if(mouse.x != null) {
+                    let dx = mouse.x - p.x; let dy = mouse.y - p.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < mouse.radius) {
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y);
+                        ctx.strokeStyle = `rgba(0, 229, 255, ${1 - distance/mouse.radius})`;
+                        ctx.lineWidth = 1; ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+        // Scrollspy Logic for Sidebar TOC
+        const sections = document.querySelectorAll('.manual-section');
+        const navLi = document.querySelectorAll('.toc-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLi.forEach(a => {
+                a.classList.remove('active');
+                if (a.getAttribute('href').includes(current)) {
+                    a.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
