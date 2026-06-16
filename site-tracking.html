@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raksha-Suraksha | Harsha Institutes Perimeter</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root { --harsha-gold: #FFB300; --bg-deep: #050A14; }
+        body { background: var(--bg-deep); color: #fff; font-family: 'Space Mono', monospace; }
+        
+        .nav { padding: 20px 5%; border-bottom: 2px solid var(--harsha-gold); display: flex; justify-content: space-between; align-items: center; }
+        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; color: var(--harsha-gold); }
+
+        #siteMap { width: 100%; height: 60vh; border: 2px solid var(--harsha-gold); margin-top: 20px; border-radius: 8px;}
+        
+        .control-panel { margin-top: 20px; display: flex; gap: 20px; }
+        .btn-tac { background: var(--harsha-gold); color: #000; border: none; padding: 15px 30px; font-weight: 800; cursor: pointer; text-transform: uppercase; border-radius: 4px; }
+        
+        .status-card { background: rgba(255,179,0,0.1); border: 1px solid var(--harsha-gold); padding: 20px; border-radius: 8px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <nav class="nav">
+        <div class="brand-name">RAKSHA-SURAKSHA | HARSHA INSTITUTES COMMAND</div>
+        <a href="services.html" style="color: #fff; text-decoration: none;">EXIT TERMINAL</a>
+    </nav>
+
+    <main style="padding: 100px 5%;">
+        <h1>SITE LOCATION TRACKING: HARSHA INSTITUTES PERIMETER</h1>
+        <p>Live geo-fence monitoring for campus security protocols.</p>
+
+        <div id="siteMap"></div>
+
+        <div class="control-panel">
+            <button class="btn-tac" onclick="simulatePerimeterEntry()">SIMULATE CAMPUS ENTRY</button>
+            <button class="btn-tac" onclick="clearRadar()">CLEAR RADAR</button>
+        </div>
+
+        <div class="status-card" id="perimeterStatus">
+            > STATUS: PERIMETER SCANNING...
+        </div>
+    </main>
+
+    <script>
+        // Initialize Map centered on Harsha Institutes area
+        const map = L.map('siteMap').setView([13.0456, 77.4981], 16); 
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {}).addTo(map);
+
+        // Harsha Institutes Geo-Fence
+        const harshaZone = L.circle([13.0456, 77.4981], {
+            color: '#FFB300', fillColor: '#FFB300', fillOpacity: 0.2, radius: 200
+        }).addTo(map).bindPopup("<b>HARSHA INSTITUTES CAMPUS</b>");
+
+        let deviceMarker;
+
+        function simulatePerimeterEntry() {
+            const entryCoords = [13.0460, 77.4985];
+            if(deviceMarker) map.removeLayer(deviceMarker);
+            
+            deviceMarker = L.marker(entryCoords).addTo(map).bindPopup("ASSET DETECTED").openPopup();
+            map.flyTo(entryCoords, 18);
+            
+            document.getElementById('perimeterStatus').innerHTML = 
+                "> <span style='color:#00E676;'>ALERT: ASSET ENTERED HARSHA INSTITUTES PERIMETER</span>";
+        }
+
+        function clearRadar() {
+            if(deviceMarker) map.removeLayer(deviceMarker);
+            document.getElementById('perimeterStatus').innerHTML = "> STATUS: PERIMETER CLEAR.";
+        }
+    </script>
+</body>
+</html>
