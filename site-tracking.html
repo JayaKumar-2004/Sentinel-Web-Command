@@ -3,78 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha-Suraksha | Harsha Institutes Perimeter</title>
+    <title>Raksha-Suraksha | Live Site Tracking</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        :root { --harsha-gold: #FFB300; --bg-deep: #050A14; }
-        body { background: var(--bg-deep); color: #fff; font-family: 'Space Mono', monospace; }
-        
-        .nav { padding: 20px 5%; border-bottom: 2px solid var(--harsha-gold); display: flex; justify-content: space-between; align-items: center; }
-        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; color: var(--harsha-gold); }
+        :root { 
+            --bg-deep: #050A14; 
+            --harsha-gold: #FFB300; 
+            --text-main: #F8FAFC; 
+            --border-line: rgba(255, 179, 0, 0.3);
+            --danger: #EF4444;
+            --success: #10B981;
+        }
 
-        #siteMap { width: 100%; height: 60vh; border: 2px solid var(--harsha-gold); margin-top: 20px; border-radius: 8px;}
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { display: flex; flex-direction: column; height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow: hidden; }
         
-        .control-panel { margin-top: 20px; display: flex; gap: 20px; }
-        .btn-tac { background: var(--harsha-gold); color: #000; border: none; padding: 15px 30px; font-weight: 800; cursor: pointer; text-transform: uppercase; border-radius: 4px; }
+        /* NAVBAR */
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: rgba(10, 15, 30, 0.95); border-bottom: 2px solid var(--harsha-gold); z-index: 1500; }
+        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--harsha-gold); letter-spacing: 2px;}
+        .btn-exit { background: transparent; border: 1px solid var(--harsha-gold); color: var(--harsha-gold); padding: 8px 16px; border-radius: 4px; text-decoration: none; font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: bold; transition: 0.3s; }
+        .btn-exit:hover { background: var(--harsha-gold); color: #000; }
+
+        /* MAIN LAYOUT */
+        main { display: flex; flex-direction: column; flex-grow: 1; position: relative; padding: 20px; gap: 20px;}
         
-        .status-card { background: rgba(255,179,0,0.1); border: 1px solid var(--harsha-gold); padding: 20px; border-radius: 8px; margin-top: 20px; }
+        /* STATUS HUD */
+        .status-hud { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.6); border: 1px solid var(--border-line); padding: 15px 25px; border-radius: 8px; backdrop-filter: blur(10px); z-index: 1000;}
+        .hud-left { display: flex; flex-direction: column; gap: 5px; }
+        .hud-title { font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 1.2rem; color: var(--text-main); text-transform: uppercase; }
+        .hud-sub { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: #94A3B8; }
+        
+        .hud-alert { display: flex; align-items: center; gap: 10px; font-family: 'Space Mono', monospace; font-weight: bold; padding: 10px 20px; border-radius: 4px; border: 1px solid var(--border-line); background: rgba(255, 255, 255, 0.05); color: #FFF; transition: 0.3s;}
+        .hud-alert.breach { border-color: var(--danger); background: rgba(239, 68, 68, 0.15); color: var(--danger); animation: pulseAlert 1.5s infinite; }
+        .hud-alert.secure { border-color: var(--success); color: var(--success); }
+        @keyframes pulseAlert { 0%, 100% { box-shadow: 0 0 0 rgba(239,68,68,0); } 50% { box-shadow: 0 0 20px rgba(239,68,68,0.5); } }
+
+        /* FULLSCREEN MAP */
+        #siteMap { flex-grow: 1; width: 100%; border-radius: 8px; border: 2px solid var(--harsha-gold); z-index: 1; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+
+        /* CUSTOM LEAFLET CONTROLS STYLING */
+        .leaflet-control-layers { background: rgba(10, 15, 30, 0.9) !important; border: 1px solid var(--harsha-gold) !important; color: #FFF !important; font-family: 'Inter', sans-serif; }
+        .leaflet-control-layers-expanded { padding: 10px; border-radius: 6px; }
+
+        #authLoader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; color: var(--harsha-gold); font-size: 1.5rem; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
+    <div id="authLoader">VERIFYING SECURE UPLINK...</div>
+
     <nav class="nav">
         <div class="brand-name">RAKSHA-SURAKSHA | HARSHA INSTITUTES COMMAND</div>
-        <a href="services.html" style="color: #fff; text-decoration: none;">EXIT TERMINAL</a>
+        <a href="services.html" class="btn-exit">⍈ EXIT TERMINAL</a>
     </nav>
 
-    <main style="padding: 100px 5%;">
-        <h1>SITE LOCATION TRACKING: HARSHA INSTITUTES PERIMETER</h1>
-        <p>Live geo-fence monitoring for campus security protocols.</p>
+    <main>
+        <div class="status-hud">
+            <div class="hud-left">
+                <div class="hud-title">Live Perimeter Tracking</div>
+                <div class="hud-sub" id="dataTime">Awaiting Satellite Sync...</div>
+            </div>
+            <div class="hud-alert" id="perimeterStatus">
+                <span class="dot" style="width:10px;height:10px;border-radius:50%;background:#FFF;display:inline-block;"></span>
+                SCANNING SECTOR...
+            </div>
+        </div>
 
         <div id="siteMap"></div>
-
-        <div class="control-panel">
-            <button class="btn-tac" onclick="simulatePerimeterEntry()">SIMULATE CAMPUS ENTRY</button>
-            <button class="btn-tac" onclick="clearRadar()">CLEAR RADAR</button>
-        </div>
-
-        <div class="status-card" id="perimeterStatus">
-            > STATUS: PERIMETER SCANNING...
-        </div>
     </main>
 
     <script>
-        // Initialize Map centered on Harsha Institutes area
-        const map = L.map('siteMap').setView([13.0456, 77.4981], 16); 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {}).addTo(map);
+        // 🚀 1. FIREBASE AUTH & DATABASE INIT
+        const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
+        firebase.initializeApp(fbCfg);
+        
+        firebase.auth().onAuthStateChanged(user => { 
+            if (!user) { 
+                window.location.href = 'index.html'; 
+            } else { 
+                document.getElementById('authLoader').style.display = 'none'; 
+                startLiveTracking(user.uid);
+            }
+        });
 
-        // Harsha Institutes Geo-Fence
-        const harshaZone = L.circle([13.0456, 77.4981], {
-            color: '#FFB300', fillColor: '#FFB300', fillOpacity: 0.2, radius: 200
-        }).addTo(map).bindPopup("<b>HARSHA INSTITUTES CAMPUS</b>");
+        // 🚀 2. LEAFLET "GOOGLE MAPS STYLE" INITIALIZATION
+        // Define Harsha Institutes Coordinates
+        const harshaCenter = [13.0456, 77.4981];
+        const harshaRadiusMeters = 300; // 300 meter geofence radius
 
-        let deviceMarker;
+        // Set up the Map Layers
+        const streetsLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap', maxZoom: 19
+        });
+        
+        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri', maxZoom: 19
+        });
 
-        function simulatePerimeterEntry() {
-            const entryCoords = [13.0460, 77.4985];
-            if(deviceMarker) map.removeLayer(deviceMarker);
+        const map = L.map('siteMap', {
+            center: harshaCenter,
+            zoom: 16,
+            layers: [satelliteLayer] // Defaults to Satellite view
+        });
+
+        // Add the Top-Right Google Maps-style Layer Switcher
+        const baseMaps = {
+            "🛰️ Satellite View": satelliteLayer,
+            "🗺️ Street Map": streetsLayer
+        };
+        L.control.layers(baseMaps, null, {position: 'topright'}).addTo(map);
+
+        // Draw the Harsha Geofence
+        const perimeterCircle = L.circle(harshaCenter, {
+            color: '#FFB300', fillColor: '#FFB300', fillOpacity: 0.15, radius: harshaRadiusMeters
+        }).addTo(map).bindPopup("<b>HARSHA INSTITUTES PERIMETER</b><br>Active Monitoring Zone");
+
+        // Custom Markers
+        const targetIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
+        });
+
+        let targetMarker = null;
+
+        // 🚀 3. LIVE FIREBASE TRACKING & GEOFENCE MATH
+        function startLiveTracking(uid) {
+            const devicesRef = firebase.database().ref('agents/' + uid + '/devices');
             
-            deviceMarker = L.marker(entryCoords).addTo(map).bindPopup("ASSET DETECTED").openPopup();
-            map.flyTo(entryCoords, 18);
-            
-            document.getElementById('perimeterStatus').innerHTML = 
-                "> <span style='color:#00E676;'>ALERT: ASSET ENTERED HARSHA INSTITUTES PERIMETER</span>";
-        }
+            // Listen for ANY location updates across the user's connected devices
+            devicesRef.on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        const deviceData = childSnapshot.val();
+                        
+                        if (deviceData && deviceData.location) {
+                            const lat = deviceData.location.latitude;
+                            const lng = deviceData.location.longitude;
+                            const currentLatLng = L.latLng(lat, lng);
 
-        function clearRadar() {
-            if(deviceMarker) map.removeLayer(deviceMarker);
-            document.getElementById('perimeterStatus').innerHTML = "> STATUS: PERIMETER CLEAR.";
+                            // Update Time HUD
+                            document.getElementById('dataTime').innerText = "Last Sync: " + new Date().toLocaleTimeString();
+
+                            // Move Marker & Pan Map
+                            if (!targetMarker) {
+                                targetMarker = L.marker(currentLatLng, {icon: targetIcon, title: "Tracked Asset"}).addTo(map);
+                            } else {
+                                targetMarker.setLatLng(currentLatLng);
+                            }
+                            // Smoothly follow the target
+                            map.panTo(currentLatLng); 
+
+                            // GEOFENCE CALCULATION
+                            const distanceToCampus = map.distance(currentLatLng, L.latLng(harshaCenter));
+                            const statusHud = document.getElementById('perimeterStatus');
+
+                            if (distanceToCampus <= harshaRadiusMeters) {
+                                // Target is INSIDE Harsha Institutes
+                                statusHud.className = "hud-alert breach";
+                                statusHud.innerHTML = `<span class="dot" style="background:var(--danger); width:10px;height:10px;border-radius:50%;display:inline-block;"></span> ASSET INSIDE PERIMETER (${Math.round(distanceToCampus)}m from center)`;
+                            } else {
+                                // Target is OUTSIDE
+                                statusHud.className = "hud-alert secure";
+                                statusHud.innerHTML = `<span class="dot" style="background:var(--success); width:10px;height:10px;border-radius:50%;display:inline-block;"></span> ASSET OUTSIDE PERIMETER (${Math.round(distanceToCampus)}m away)`;
+                            }
+                        }
+                    });
+                }
+            });
         }
     </script>
 </body>
