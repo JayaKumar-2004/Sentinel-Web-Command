@@ -1,103 +1,563 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha-Suraksha | Tactical App Location</title>
-    
+    <title>Raksha Suraksha | Tactical App Location</title>
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* 🚀 DYNAMIC THEME VARIABLES */
         :root[data-theme="dark"] {
-            --bg-deep: #050A14; --bg-panel: rgba(10, 15, 30, 0.85); --cyan-glow: #00E5FF;
-            --text-main: #F8FAFC; --text-muted: #94A3B8; --border-line: rgba(0, 229, 255, 0.2);
-            --shadow-color: rgba(0, 229, 255, 0.3); --danger: #EF4444; --success: #10B981;
-            --warning: #F59E0B; --input-bg: rgba(0,0,0,0.8);
+            --bg-deep: #030712;
+            --bg-panel: rgba(8, 15, 30, 0.88);
+            --bg-card: rgba(10, 18, 36, 0.8);
+            --cyan-glow: #00F0FF;
+            --neon-pink: #FF2A85;
+            --orange-alert: #FF6B35;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-line: rgba(0, 240, 255, 0.22);
+            --shadow-color: rgba(0, 240, 255, 0.35);
+            --danger: #EF4444;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --input-bg: rgba(2, 6, 23, 0.85);
+            --ambient-light: radial-gradient(circle at 50% 15%, rgba(0, 240, 255, 0.12) 0%, transparent 65%);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; }
-        main { flex-grow: 1; padding: 120px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 10; width: 100%;}
-        .content-wrapper { width: 100%; max-width: 1300px; display: flex; flex-direction: column; gap: 30px;}
+        :root[data-theme="light"] {
+            --bg-deep: #F1F5F9;
+            --bg-panel: rgba(255, 255, 255, 0.95);
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --cyan-glow: #0284C7;
+            --neon-pink: #DB2777;
+            --orange-alert: #EA580C;
+            --text-main: #0F172A;
+            --text-muted: #475569;
+            --border-line: rgba(2, 132, 199, 0.22);
+            --shadow-color: rgba(2, 132, 199, 0.25);
+            --danger: #DC2626;
+            --success: #059669;
+            --warning: #D97706;
+            --input-bg: #FFFFFF;
+            --ambient-light: radial-gradient(circle at 50% 15%, rgba(2, 132, 199, 0.08) 0%, transparent 65%);
+        }
 
-        /* BACKGROUND */
-        #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
-        .grid-overlay { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.2; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            overflow-x: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        /* CURSOR ANALYSIS OVERLAY */
+        .cursor-hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 2500;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        body:hover .cursor-hud { opacity: 1; }
+
+        .cursor-reticle {
+            width: 26px;
+            height: 26px;
+            border: 1.5px solid var(--cyan-glow);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--shadow-color), inset 0 0 8px var(--shadow-color);
+            position: relative;
+        }
+
+        .cursor-reticle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: var(--orange-alert);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-readout {
+            background: rgba(3, 7, 18, 0.88);
+            border: 1px solid var(--border-line);
+            color: var(--cyan-glow);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            padding: 3px 7px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        @media (pointer: coarse) { .cursor-hud { display: none; } }
+
+        /* BACKGROUND ANIMATION */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -4;
+            background: var(--ambient-light);
+            pointer-events: none;
+        }
+
+        #interactiveCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: -3;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+            background-image:
+                linear-gradient(var(--border-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
+            background-size: 56px 56px;
+            opacity: 0.22;
+            animation: gridDrift 22s linear infinite;
+        }
+
+        @keyframes gridDrift {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 56px 56px, 56px 56px; }
+        }
+
+        main {
+            flex-grow: 1;
+            padding: 104px 5% 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+            width: 100%;
+        }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 1280px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
 
         /* NAVBAR */
-        .nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500; }
-        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-        .brand-svg { width: 40px; height: 40px; filter: drop-shadow(0 0 8px var(--shadow-color));}
-        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--text-main); letter-spacing: 2px;}
-        .brand-name span { color: #FF6B35; }
-        
-        .desktop-nav { display: flex; align-items: center; gap: 20px; }
-        .nav-links { display: flex; gap: 25px; list-style: none; }
-        .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700;}
-        .nav-links a:hover, .nav-links a.active { color: var(--cyan-glow); text-shadow: 0 0 8px var(--shadow-color); }
-        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; }
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 15px 5%;
+            background: var(--bg-panel);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-line);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1500;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-name {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.3rem;
+            color: var(--text-main);
+            letter-spacing: 2px;
+        }
+
+        .brand-name span { color: var(--orange-alert); }
+
+        .desktop-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 22px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-family: 'Space Mono', monospace;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.82rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: 0.25s;
+            font-weight: 700;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--cyan-glow);
+            text-shadow: 0 0 10px var(--shadow-color);
+        }
+
+        .theme-btn {
+            background: rgba(0, 240, 255, 0.06);
+            border: 1px solid var(--border-line);
+            color: var(--text-main);
+            border-radius: 6px;
+            padding: 7px 11px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+            cursor: pointer;
+        }
+
+        .theme-btn:hover { border-color: var(--cyan-glow); }
+
+        .mobile-nav-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--cyan-glow);
+            font-size: 2rem;
+            cursor: pointer;
+        }
 
         /* HEADER */
-        .header-area { display: flex; align-items: center; justify-content: space-between; width: 100%; border-bottom: 1px solid var(--border-line); padding-bottom: 15px; }
-        .btn-back { background: rgba(0, 229, 255, 0.1); color: var(--cyan-glow); border: 1px solid var(--border-line); padding: 6px 14px; border-radius: 4px; font-family: 'Space Mono', monospace; font-size: 0.75rem; text-decoration: none; font-weight: bold; transition: 0.3s; text-transform: uppercase;}
-        .btn-back:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 10px var(--shadow-color); }
-        .header-area h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(1.2rem, 4vw, 1.8rem); font-weight: 900; letter-spacing: 1px; text-align: center; color: var(--text-main); }
+        .header-area {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            border-bottom: 1px solid var(--border-line);
+            padding-bottom: 14px;
+            gap: 12px;
+        }
 
-        /* 🚀 TACTICAL MAP CONTAINER */
-        .map-panel { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; padding: 25px; backdrop-filter: blur(10px); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-        
-        .map-hud { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
-        .hud-status { display: flex; align-items: center; gap: 10px; font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 4px;}
-        .pulse-dot { width: 8px; height: 8px; background: var(--text-muted); border-radius: 50%; }
-        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .btn-back {
+            background: rgba(0, 240, 255, 0.08);
+            color: var(--cyan-glow);
+            border: 1px solid var(--border-line);
+            padding: 7px 14px;
+            border-radius: 5px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.76rem;
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.2s;
+            text-transform: uppercase;
+        }
 
-        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
-        .btn-action { background: transparent; border: 2px solid var(--cyan-glow); color: var(--cyan-glow); font-family: 'Orbitron', sans-serif; padding: 10px 20px; border-radius: 4px; font-weight: 800; cursor: pointer; transition: 0.3s; letter-spacing: 1px;}
-        .btn-action:hover { background: var(--cyan-glow); color: #000; box-shadow: 0 0 15px var(--shadow-color); }
-        .btn-archive { border-color: var(--warning); color: var(--warning); }
-        .btn-archive:hover { background: var(--warning); color: #000; box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+        .btn-back:hover {
+            background: var(--cyan-glow);
+            color: #02050E;
+        }
 
-        #tacticalMap { width: 100%; height: 500px; border-radius: 8px; border: 1px solid var(--border-line); z-index: 1;}
+        .header-area h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.25rem, 3.8vw, 1.9rem);
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-align: center;
+            color: var(--text-main);
+        }
 
-        /* 🚀 DATA METRICS GRID */
-        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
-        .data-box { background: rgba(0,0,0,0.4); border: 1px solid var(--border-line); padding: 15px; border-radius: 6px; text-align: center; }
-        .data-label { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase;}
-        .data-value { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--cyan-glow); font-weight: 800; }
+        /* FLEX NEON MAP PANEL */
+        .map-panel {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-line);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 0 24px rgba(0, 240, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
 
-        /* 🚀 OFFLINE FALLBACK INPUT */
-        .offline-panel { background: rgba(245, 158, 11, 0.05); border: 1px solid var(--warning); border-radius: 12px; padding: 25px; margin-top: 10px; }
-        .offline-title { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--warning); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; font-weight: 800;}
-        .offline-desc { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;}
-        
-        .input-row { display: flex; gap: 15px; flex-wrap: wrap; }
-        .tac-input { flex: 1; min-width: 200px; padding: 12px; border-radius: 4px; background: rgba(0,0,0,0.5); border: 1px solid var(--warning); color: var(--text-main); font-size: 0.95rem; font-family: 'Space Mono', monospace; outline: none; transition: 0.3s; }
-        .tac-input:focus { box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
-        .btn-plot { background: var(--warning); border: none; color: #000; font-family: 'Orbitron', sans-serif; padding: 12px 25px; border-radius: 4px; font-weight: 800; cursor: pointer; transition: 0.3s; letter-spacing: 1px;}
-        .btn-plot:hover { background: #FFF; box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
+        .map-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--cyan-glow), var(--neon-pink));
+        }
 
-        footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-top: auto; width: 100%;}
-        
-        @media (max-width: 850px) { .desktop-nav { display: none !important; } .mobile-nav-btn { display: block !important; } #tacticalMap{height: 400px;}}
+        .map-hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .hud-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            background: rgba(2, 6, 23, 0.75);
+            border: 1px solid var(--border-line);
+            padding: 8px 14px;
+            border-radius: 6px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--cyan-glow);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--cyan-glow);
+            animation: pulseDot 1.5s infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.35; }
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            background: rgba(0, 240, 255, 0.08);
+            border: 1.5px solid var(--cyan-glow);
+            color: var(--cyan-glow);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.78rem;
+            padding: 9px 16px;
+            border-radius: 5px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s;
+            letter-spacing: 0.8px;
+        }
+
+        .btn-action:hover {
+            background: var(--cyan-glow);
+            color: #02050E;
+            box-shadow: 0 0 16px var(--shadow-color);
+        }
+
+        .btn-archive {
+            border-color: var(--warning);
+            color: var(--warning);
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .btn-archive:hover {
+            background: var(--warning);
+            color: #02050E;
+        }
+
+        .btn-sim {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            background: rgba(255, 42, 133, 0.08);
+        }
+
+        .btn-sim:hover {
+            background: var(--neon-pink);
+            color: #FFFFFF;
+        }
+
+        #tacticalMap {
+            width: 100%;
+            height: 460px;
+            border-radius: 8px;
+            border: 1px solid var(--border-line);
+            z-index: 1;
+            background: #070E1D;
+        }
+
+        /* Dark-mode map filter for standard OSM tiles so there is zero API key error */
+        :root[data-theme="dark"] .leaflet-tile-pane {
+            filter: invert(92%) hue-rotate(180deg) brightness(92%) contrast(105%);
+        }
+
+        /* FLEX DATA METRICS */
+        .data-flex-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .data-box {
+            flex: 1 1 190px;
+            background: rgba(2, 6, 23, 0.72);
+            border: 1px solid var(--border-line);
+            padding: 14px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .data-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .data-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.15rem;
+            color: var(--cyan-glow);
+            font-weight: 800;
+        }
+
+        /* OFFLINE FALLBACK PANEL */
+        .offline-panel {
+            background: rgba(245, 158, 11, 0.06);
+            border: 1.5px solid var(--warning);
+            border-radius: 12px;
+            padding: 22px 24px;
+        }
+
+        .offline-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.98rem;
+            color: var(--warning);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+        }
+
+        .offline-desc {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tac-input {
+            flex: 1;
+            min-width: 180px;
+            padding: 11px 12px;
+            border-radius: 5px;
+            background: var(--input-bg);
+            border: 1px solid var(--warning);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-family: 'Space Mono', monospace;
+            outline: none;
+        }
+
+        .btn-plot {
+            background: var(--warning);
+            border: none;
+            color: #02050E;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.82rem;
+            padding: 11px 22px;
+            border-radius: 5px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s;
+            letter-spacing: 0.8px;
+        }
+
+        .btn-plot:hover {
+            background: #FFFFFF;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+        }
+
+        footer {
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border-line);
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: auto;
+            width: 100%;
+        }
+
+        @media (max-width: 850px) {
+            .desktop-nav { display: none !important; }
+            .mobile-nav-btn { display: block !important; }
+            #tacticalMap { height: 360px; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- CURSOR ANALYSIS HUD -->
+    <div class="cursor-hud" id="cursorHud">
+        <div class="cursor-reticle"></div>
+        <div class="cursor-readout" id="cursorReadout">MAP // X:0 Y:0</div>
+    </div>
+
+    <div class="ambient-bg"></div>
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
     <nav class="nav">
         <a href="index.html" class="brand">
-            <svg style="width:40px; height:40px; filter: drop-shadow(0 0 8px var(--shadow-color));" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/><path d="M12 5.5L6 7.5V11.5C6 15.2 8.5 18.6 12 19.5C15.5 18.6 18 15.2 18 11.5V7.5L12 5.5Z" fill="#FF6B35"/><path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="#FFFFFF"/></svg>
-            <div class="brand-name">RAKSHA<span>-</span>SURAKSHA</div>
+            <svg style="width:36px; height:36px; filter: drop-shadow(0 0 8px var(--shadow-color));" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#0284C7"/>
+                <path d="M12 5.5L6 7.5V11.5C6 15.2 8.5 18.6 12 19.5C15.5 18.6 18 15.2 18 11.5V7.5L12 5.5Z" fill="#FF6B35"/>
+                <path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="#FFFFFF"/>
+            </svg>
+            <div class="brand-name">RAKSHA<span> SURAKSHA</span></div>
         </a>
         <div class="desktop-nav">
             <ul class="nav-links">
@@ -107,16 +567,17 @@
                 <li><a href="downloads.html">DOWNLOADS</a></li>
                 <li><a href="faqs.html">FAQS</a></li>
             </ul>
+            <button class="theme-btn" onclick="toggleTheme()">🌓</button>
         </div>
     </nav>
 
     <main>
         <div class="content-wrapper">
-            
+
             <div class="header-area">
                 <a href="services.html" class="btn-back">← Back</a>
                 <h1>APP LOCATION TRACKING</h1>
-                <div style="width:70px;"></div>
+                <button class="theme-btn" onclick="toggleTheme()">🌓</button>
             </div>
 
             <div class="map-panel">
@@ -125,14 +586,15 @@
                         <span class="pulse-dot"></span> SATELLITE UPLINK STANDBY
                     </div>
                     <div class="btn-group">
-                        <button class="btn-action btn-archive" onclick="loadDatabaseHistory()">📁 PULL DATABASE ARCHIVE</button>
-                        <button class="btn-action" onclick="pingLiveLocation()">📡 PING DEVICE (ONLINE)</button>
+                        <button class="btn-action btn-archive" onclick="loadDatabaseHistory()">📁 PULL ARCHIVE</button>
+                        <button class="btn-action btn-sim" onclick="simulateLiveDevicePing()">📱 LIVE DEVICE SIM</button>
+                        <button class="btn-action" onclick="pingLiveLocation()">📡 PING DEVICE</button>
                     </div>
                 </div>
-                
+
                 <div id="tacticalMap"></div>
 
-                <div class="data-grid">
+                <div class="data-flex-grid">
                     <div class="data-box">
                         <div class="data-label">LATITUDE</div>
                         <div class="data-value" id="valLat">--.----</div>
@@ -154,11 +616,13 @@
 
             <div class="offline-panel">
                 <div class="offline-title">⚠️ OFFLINE COORDINATE INJECTION</div>
-                <div class="offline-desc">If the target device is disconnected from mobile data, retrieve its location via the Offline SMS Generator. Paste the returned SMS coordinates here to manually plot the target.</div>
-                
+                <div class="offline-desc">
+                    If the target device has no mobile data, paste coordinates returned via SMS fallback to plot the position manually.
+                </div>
+
                 <div class="input-row">
-                    <input type="number" id="manualLat" class="tac-input" placeholder="Latitude (e.g., 12.9716)">
-                    <input type="number" id="manualLng" class="tac-input" placeholder="Longitude (e.g., 77.5946)">
+                    <input type="number" step="any" id="manualLat" class="tac-input" placeholder="Latitude (e.g., 13.1005)">
+                    <input type="number" step="any" id="manualLng" class="tac-input" placeholder="Longitude (e.g., 77.3963)">
                     <button class="btn-plot" onclick="plotManualLocation()">PLOT TARGET</button>
                 </div>
             </div>
@@ -167,142 +631,252 @@
     </main>
 
     <footer>
-        <div>© 2026 R.K Sentinel 3-Tier Tactical Command System</div>
+        <div>© 2026 Raksha Suraksha 3-Tier Tactical Command System</div>
         <div>GPS Routing Matrix Active</div>
     </footer>
 
     <script>
-        // 🚀 1. MESH BACKGROUND
-        const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let particles = [];
-        for (let i = 0; i < 50; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4 }); }
-        function animateCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particles.length; i++) {
-                let p = particles[i]; p.x += p.vx; p.y += p.vy;
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1; if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2); ctx.fillStyle = `rgba(0, 229, 255, 0.3)`; ctx.fill();
-            } requestAnimationFrame(animateCanvas);
-        } animateCanvas();
+        function toggleTheme() {
+            const root = document.documentElement;
+            const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            root.setAttribute('data-theme', next);
+            localStorage.setItem('tactical_theme', next);
+        }
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('tactical_theme') || 'dark');
 
-        // 🚀 2. FIREBASE INIT
-        const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
-        firebase.initializeApp(fbCfg);
-        
+        /* CURSOR ANALYSIS & BACKGROUND ANIMATION */
+        const cursorHud = document.getElementById('cursorHud');
+        const cursorReadout = document.getElementById('cursorReadout');
+        let pointerX = window.innerWidth / 2;
+        let pointerY = window.innerHeight / 2;
+        let pointerActive = false;
+
+        window.addEventListener('pointermove', (e) => {
+            pointerX = e.clientX;
+            pointerY = e.clientY;
+            pointerActive = true;
+            if (cursorHud) {
+                cursorHud.style.left = pointerX + 'px';
+                cursorHud.style.top = pointerY + 'px';
+                cursorReadout.textContent = `MAP // ${Math.round(pointerX)},${Math.round(pointerY)}`;
+            }
+        });
+
+        const canvas = document.getElementById('interactiveCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        const nodes = Array.from({ length: 36 }, () => ({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5
+        }));
+
+        function animateCanvas(now) {
+            ctx.clearRect(0, 0, width, height);
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const primaryRgb = isLight ? '2, 132, 199' : '0, 240, 255';
+            const accentRgb = isLight ? '219, 39, 119' : '255, 42, 133';
+
+            ctx.strokeStyle = `rgba(${primaryRgb}, 0.08)`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let x = 0; x <= width; x += 40) {
+                const y = height * 0.5 + Math.sin(x * 0.008 + (now || 0) * 0.0015) * 32;
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            for (let i = 0; i < nodes.length; i++) {
+                const p = nodes[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0 || p.x > width) p.vx *= -1;
+                if (p.y < 0 || p.y > height) p.vy *= -1;
+
+                ctx.fillStyle = `rgba(${primaryRgb}, 0.55)`;
+                ctx.fillRect(p.x - 1, p.y - 1, 2.5, 2.5);
+
+                if (pointerActive) {
+                    const dist = Math.hypot(pointerX - p.x, pointerY - p.y);
+                    if (dist < 160) {
+                        ctx.strokeStyle = `rgba(${accentRgb}, ${0.4 * (1 - dist / 160)})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(pointerX, pointerY);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+        requestAnimationFrame(animateCanvas);
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        /* FIREBASE INIT */
+        const fbCfg = {
+            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI",
+            authDomain: "sentinel-vault-fb4b7.firebaseapp.com",
+            projectId: "sentinel-vault-fb4b7",
+            storageBucket: "sentinel-vault-fb4b7.firebasestorage.app",
+            messagingSenderId: "192301825793",
+            appId: "1:192301825793:web:734530705f4084608fe500"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(fbCfg);
+
         let globalUser = null;
-        firebase.auth().onAuthStateChanged(user => { 
-            if (!user) { window.location.href = 'index.html'; } 
-            else { 
-                globalUser = user; 
+        firebase.auth().onAuthStateChanged(user => {
+            if (!user) {
+                window.location.href = 'index.html';
+            } else {
+                globalUser = user;
                 listenToDeviceLocation(user.uid);
             }
         });
 
-        // 🚀 3. LEAFLET MAP INITIALIZATION & ROUTE TRACKING
-        let map, marker, circle;
-        let trackingPathCoords = []; // Array to hold the history of coordinates
-        let polyline = null;         // The line drawn on the map
-        
-        // Initial center set to general India, will snap to live data immediately
-        map = L.map('tacticalMap').setView([20.5937, 78.9629], 5); 
-
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OSM & CARTO', subdomains: 'abcd', maxZoom: 20
+        /* LEAFLET MAP WITH FREE OSM TILES (NO API KEY NEEDED) */
+        const map = L.map('tacticalMap').setView([13.1005, 77.3963], 12);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
+
+        let marker = null;
+        let circle = null;
+        let trackingPathCoords = [];
+        let polyline = null;
 
         const tacticalIcon = L.icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
         });
 
-        // 🚀 4. CORE PLOTTING LOGIC (NOW WITH ROUTE DRAWING)
         function updateMapData(lat, lng, accuracy, source) {
-            document.getElementById('valLat').innerText = parseFloat(lat).toFixed(5);
-            document.getElementById('valLng').innerText = parseFloat(lng).toFixed(5);
+            const numLat = parseFloat(lat);
+            const numLng = parseFloat(lng);
+            if (Number.isNaN(numLat) || Number.isNaN(numLng)) return;
+
+            document.getElementById('valLat').innerText = numLat.toFixed(5);
+            document.getElementById('valLng').innerText = numLng.toFixed(5);
             document.getElementById('valAcc').innerText = accuracy ? `± ${Math.round(accuracy)}m` : 'MANUAL';
             document.getElementById('valTime').innerText = new Date().toLocaleTimeString();
 
             const statusBox = document.getElementById('connStatus');
-            statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--success); box-shadow:0 0 10px var(--success); animation: pulseDot 1.5s infinite;"></span> LIVE TARGET ACQUIRED (${source})`;
+            statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--success); box-shadow:0 0 10px var(--success);"></span> LIVE TARGET ACQUIRED (${source})`;
             statusBox.style.color = "var(--success)";
-            statusBox.style.borderColor = "rgba(16, 185, 129, 0.3)";
-            statusBox.style.background = "rgba(16, 185, 129, 0.1)";
+            statusBox.style.borderColor = "rgba(16, 185, 129, 0.35)";
 
-            // Push to History Array
-            trackingPathCoords.push([lat, lng]);
+            trackingPathCoords.push([numLat, numLng]);
+            if (polyline) map.removeLayer(polyline);
+            polyline = L.polyline(trackingPathCoords, {
+                color: '#00F0FF',
+                weight: 3,
+                opacity: 0.8,
+                dashArray: '6, 6'
+            }).addTo(map);
 
-            // Draw/Update the Tracking Line
-            if (polyline) {
-                map.removeLayer(polyline);
-            }
-            polyline = L.polyline(trackingPathCoords, {color: '#00E5FF', weight: 3, opacity: 0.7, dashArray: '5, 5'}).addTo(map);
-
-            // Fly to the new point
-            map.flyTo([lat, lng], 16, { animate: true, duration: 2 });
+            map.flyTo([numLat, numLng], 15, { animate: true, duration: 1.4 });
 
             if (marker) map.removeLayer(marker);
             if (circle) map.removeLayer(circle);
 
-            marker = L.marker([lat, lng], {icon: tacticalIcon}).addTo(map).bindPopup(`<b>TARGET ACQUIRED</b><br>Lat: ${lat}<br>Lng: ${lng}`).openPopup();
-            if(accuracy) circle = L.circle([lat, lng], { color: '#00E5FF', fillColor: '#00E5FF', fillOpacity: 0.15, radius: accuracy }).addTo(map);
+            marker = L.marker([numLat, numLng], { icon: tacticalIcon })
+                .addTo(map)
+                .bindPopup(`<b>TARGET ACQUIRED</b><br>${source}<br>${numLat.toFixed(5)}, ${numLng.toFixed(5)}`)
+                .openPopup();
+
+            if (accuracy) {
+                circle = L.circle([numLat, numLng], {
+                    color: '#00F0FF',
+                    fillColor: '#00F0FF',
+                    fillOpacity: 0.14,
+                    radius: accuracy
+                }).addTo(map);
+            }
         }
 
-        // 🚀 5. PRESENTATION DEMO CHEAT CODE (DATABASE ARCHIVE)
+        let simStep = 0;
+        function simulateLiveDevicePing() {
+            const routeSamples = [
+                { lat: 13.0995, lng: 77.3955, acc: 12 },
+                { lat: 13.1005, lng: 77.3963, acc: 9 },
+                { lat: 13.1018, lng: 77.3979, acc: 11 }
+            ];
+            const pt = routeSamples[simStep % routeSamples.length];
+            simStep++;
+            updateMapData(pt.lat, pt.lng, pt.acc, "DEVICE GPS SIM");
+        }
+
         function loadDatabaseHistory() {
-            // This clears any current single-pin tracking and loads a collection of local databases points (Near Nelamangala/Bangalore)
-            trackingPathCoords = []; 
+            trackingPathCoords = [];
             if (polyline) map.removeLayer(polyline);
-            
+
             const dbArchive = [
-                { lat: 12.9716, lng: 77.5946 }, // Bangalore Central
-                { lat: 13.0100, lng: 77.5500 }, // Moving Northwest
-                { lat: 13.0600, lng: 77.4500 }, // Moving toward Nelamangala
-                { lat: 13.1005, lng: 77.3963 }  // Nelamangala Arrived
+                { lat: 12.9716, lng: 77.5946 },
+                { lat: 13.0100, lng: 77.5500 },
+                { lat: 13.0600, lng: 77.4500 },
+                { lat: 13.1005, lng: 77.3963 }
             ];
 
             let i = 0;
             const statusBox = document.getElementById('connStatus');
-            statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--warning); box-shadow:0 0 10px var(--warning);"></span> PULLING DATABASE COLLECTION...`;
+            statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--warning); box-shadow:0 0 10px var(--warning);"></span> PULLING ARCHIVE ROUTE...`;
             statusBox.style.color = "var(--warning)";
-            statusBox.style.borderColor = "var(--warning)";
-            statusBox.style.background = "rgba(245, 158, 11, 0.1)";
 
-            // Loop through the array to simulate live database plotting over time
             const interval = setInterval(() => {
                 if (i < dbArchive.length) {
-                    updateMapData(dbArchive[i].lat, dbArchive[i].lng, 15, "ARCHIVE LOG " + (i+1));
+                    updateMapData(dbArchive[i].lat, dbArchive[i].lng, 15, `ARCHIVE ${i + 1}`);
                     i++;
                 } else {
                     clearInterval(interval);
                     statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--success); box-shadow:0 0 10px var(--success);"></span> ARCHIVE ROUTE PLOTTED`;
+                    statusBox.style.color = "var(--success)";
                 }
-            }, 1000); // Plots a new point every 1 second for visual effect
+            }, 850);
         }
 
-        // 🚀 6. FIREBASE ONLINE COMMAND
         function pingLiveLocation() {
-            if (!globalUser) return;
             const statusBox = document.getElementById('connStatus');
-            statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--warning); box-shadow:0 0 10px var(--warning); animation: pulseDot 1.5s infinite;"></span> TRANSMITTING WAKE-UP SIGNAL...`;
-            statusBox.style.color = "var(--warning)"; statusBox.style.borderColor = "var(--warning)"; statusBox.style.background = "rgba(245, 158, 11, 0.1)";
+            statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--warning); box-shadow:0 0 10px var(--warning);"></span> DISPATCHING GET_LOCATION...`;
+            statusBox.style.color = "var(--warning)";
+
+            if (!globalUser) {
+                setTimeout(simulateLiveDevicePing, 600);
+                return;
+            }
 
             firebase.database().ref('users/' + globalUser.uid + '/CurrentCommand').set({
-                command: "GET_LOCATION", timestamp: Date.now()
+                command: "GET_LOCATION",
+                timestamp: Date.now()
             }).then(() => {
-                setTimeout(() => { statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--warning); box-shadow:0 0 10px var(--warning); animation: pulseDot 1.5s infinite;"></span> WAITING FOR HARDWARE GPS LOCK...`; }, 1000);
-            }).catch(error => { alert("Failed to transmit command: " + error.message); });
+                statusBox.innerHTML = `<span class="pulse-dot" style="background:var(--warning); box-shadow:0 0 10px var(--warning);"></span> WAITING FOR ANDROID GPS REPLY...`;
+            }).catch(error => {
+                alert("Failed to transmit command: " + error.message);
+            });
         }
 
-        // Live Listener
         function listenToDeviceLocation(uid) {
             firebase.database().ref('agents/' + uid + '/devices').on('value', (snapshot) => {
                 if (snapshot.exists()) {
                     snapshot.forEach((childSnapshot) => {
                         const deviceData = childSnapshot.val();
                         if (deviceData && deviceData.location) {
-                            updateMapData(deviceData.location.latitude, deviceData.location.longitude, deviceData.location.accuracy, "FIREBASE UPLINK");
+                            updateMapData(
+                                deviceData.location.latitude,
+                                deviceData.location.longitude,
+                                deviceData.location.accuracy,
+                                "FIREBASE UPLINK"
+                            );
                         }
                     });
                 }
@@ -312,8 +886,8 @@
         function plotManualLocation() {
             const lat = document.getElementById('manualLat').value;
             const lng = document.getElementById('manualLng').value;
-            if(!lat || !lng) return alert("Please input coordinates.");
-            trackingPathCoords = []; // Reset line for fresh offline input
+            if (!lat || !lng) return alert("Please input latitude and longitude.");
+            trackingPathCoords = [];
             updateMapData(lat, lng, null, "OFFLINE INJECT");
         }
     </script>
