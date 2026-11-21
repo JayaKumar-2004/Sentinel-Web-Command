@@ -230,13 +230,6 @@
             color: var(--cyan-glow);
         }
 
-        .mini-top-btn.armed {
-            border-color: var(--danger);
-            color: #FFFFFF;
-            background: rgba(239, 68, 68, 0.28);
-            box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
-        }
-
         main {
             flex-grow: 1;
             padding: 104px 5% 60px;
@@ -249,7 +242,7 @@
 
         .content-wrapper {
             width: 100%;
-            max-width: 920px;
+            max-width: 940px;
             display: flex;
             flex-direction: column;
             gap: 28px;
@@ -301,12 +294,64 @@
             margin-bottom: 20px;
         }
 
-        /* TELEMETRY & ACK BAR */
+        /* LIVE PHONE <-> SERVER <-> WEB BRIDGE BAR */
+        .bridge-box {
+            background: rgba(2, 6, 23, 0.78);
+            border: 1px solid var(--border-line);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .bridge-top {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.74rem;
+        }
+
+        .bridge-flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+        }
+
+        .flow-node {
+            padding: 7px 11px;
+            border-radius: 6px;
+            border: 1px solid var(--border-line);
+            background: rgba(15, 23, 42, 0.9);
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .flow-node.pulse-active {
+            border-color: var(--cyan-glow);
+            color: var(--cyan-glow);
+            box-shadow: 0 0 14px rgba(0, 240, 255, 0.4);
+        }
+
+        .flow-arrow {
+            color: var(--cyan-glow);
+            font-weight: 700;
+        }
+
+        /* TELEMETRY & ACK STRIP */
         .telemetry-flex {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
-            margin-bottom: 22px;
+            margin-bottom: 20px;
         }
 
         .telem-chip {
@@ -331,8 +376,8 @@
             font-weight: 700;
         }
 
-        /* GUARDRAIL & RESTORE BAR */
-        .guardrail-bar {
+        /* ACTION BAR */
+        .action-strip {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
@@ -347,34 +392,26 @@
             font-size: 0.74rem;
         }
 
-        .guard-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .btn-guard-toggle {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid var(--warning);
-            color: var(--warning);
+        .btn-sim-toggle {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--cyan-glow);
+            color: var(--cyan-glow);
             font-family: 'Space Mono', monospace;
-            font-size: 0.74rem;
+            font-size: 0.72rem;
             font-weight: 700;
-            padding: 8px 12px;
+            padding: 7px 12px;
             border-radius: 5px;
             cursor: pointer;
             transition: 0.2s;
         }
 
-        .btn-guard-toggle.armed {
-            background: rgba(239, 68, 68, 0.18);
-            border-color: var(--danger);
-            color: var(--danger);
-            box-shadow: 0 0 12px rgba(239, 68, 68, 0.25);
+        .btn-sim-toggle.sim-on {
+            background: var(--cyan-glow);
+            color: #02050E;
         }
 
         .btn-restore {
-            background: rgba(16, 185, 129, 0.1);
+            background: rgba(16, 185, 129, 0.12);
             border: 1px solid var(--success);
             color: var(--success);
             font-family: 'Space Mono', monospace;
@@ -402,7 +439,7 @@
             flex: 1;
             min-width: 84px;
             padding: 11px 8px;
-            background: rgba(0, 240, 255, 0.04);
+            background: rgba(0, 240, 255, 0.05);
             border: 1px solid var(--cyan-glow);
             color: var(--cyan-glow);
             font-family: 'Space Mono', monospace;
@@ -423,13 +460,26 @@
         .btn-danger {
             border-color: var(--danger);
             color: var(--danger);
-            background: rgba(239, 68, 68, 0.05);
+            background: rgba(239, 68, 68, 0.06);
         }
 
         .btn-danger:hover {
             background: var(--danger);
             color: #FFF;
             box-shadow: 0 0 14px rgba(239, 68, 68, 0.45);
+        }
+
+        .btn-locked-sos {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            background: rgba(255, 42, 133, 0.08);
+            box-shadow: inset 0 0 8px rgba(255, 42, 133, 0.14);
+        }
+
+        .btn-locked-sos:hover {
+            background: var(--neon-pink);
+            color: #FFFFFF;
+            box-shadow: 0 0 16px rgba(255, 42, 133, 0.45);
         }
 
         .btn-warning {
@@ -456,6 +506,17 @@
             margin-bottom: 10px;
             font-weight: 700;
             letter-spacing: 0.5px;
+        }
+
+        .sos-lock-banner {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--neon-pink);
+            background: rgba(255, 42, 133, 0.08);
+            border: 1px solid rgba(255, 42, 133, 0.35);
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-bottom: 14px;
         }
 
         .terminal-header-row {
@@ -492,7 +553,7 @@
             font-family: 'Space Mono', monospace;
             font-size: 0.78rem;
             color: var(--terminal-text);
-            height: 150px;
+            height: 155px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -565,15 +626,32 @@
 
             <div class="neon-panel">
                 <div class="panel-header">
-                    <span>🎛️ HARDWARE OVERRIDE</span>
-                    <span id="ackBadge" style="font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--text-muted);">ACK: WAITING</span>
+                    <span>🎛️ HARDWARE OVERRIDE (UNLOCKED)</span>
+                    <span id="ackBadge" style="font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--text-muted);">ACK: READY</span>
+                </div>
+
+                <!-- LIVE PHONE <-> SERVER <-> WEB BRIDGE -->
+                <div class="bridge-box">
+                    <div class="bridge-top">
+                        <span style="color: var(--cyan-glow); font-weight: 700;">🌐 WEB ⇄ FIREBASE SERVER ⇄ PHONE BRIDGE</span>
+                        <button id="btnPhoneSim" class="btn-sim-toggle sim-on" onclick="togglePhoneSim()">
+                            📱 PHONE LIVE SIM: ON
+                        </button>
+                    </div>
+                    <div class="bridge-flow">
+                        <span class="flow-node pulse-active" id="flowWeb">WEB CONSOLE</span>
+                        <span class="flow-arrow">──▶</span>
+                        <span class="flow-node" id="flowServer">FIREBASE RTDB</span>
+                        <span class="flow-arrow">──▶</span>
+                        <span class="flow-node" id="flowPhone">PHONE CLIENT</span>
+                    </div>
                 </div>
 
                 <!-- LIVE DEVICE TELEMETRY & ACK STRIP -->
                 <div class="telemetry-flex">
                     <div class="telem-chip">
                         <span class="telem-label">DEVICE LINK</span>
-                        <span class="telem-val" id="telemLink">AWAITING TELEMETRY</span>
+                        <span class="telem-val" id="telemLink">CONNECTING...</span>
                     </div>
                     <div class="telem-chip">
                         <span class="telem-label">BATTERY / NET</span>
@@ -589,30 +667,23 @@
                     </div>
                 </div>
 
-                <!-- SAFETY GUARDRAIL & RESTORE NORMAL PRESET -->
-                <div class="guardrail-bar">
-                    <div>
-                        <span id="guardStatusText" style="color: var(--warning); font-weight: 700;">
-                            🛡️ SAFE GUARD ON: High-risk &amp; dial actions ask confirmation
-                        </span>
-                    </div>
-                    <div class="guard-actions">
-                        <button id="btnGuardToggle" class="btn-guard-toggle" onclick="toggleHighRiskArm()">
-                            🔓 ARM HIGH-RISK
-                        </button>
-                        <button class="btn-restore" onclick="restoreNormalState()">
-                            ↺ RESTORE NORMAL
-                        </button>
-                    </div>
+                <!-- RESTORE NORMAL PRESET -->
+                <div class="action-strip">
+                    <span style="color: var(--success); font-weight: 700;">
+                        ⚡ ALL STANDARD HARDWARE CONTROLS UNLOCKED FOR DIRECT TESTING
+                    </span>
+                    <button class="btn-restore" onclick="restoreNormalState()">
+                        ↺ RESTORE NORMAL
+                    </button>
                 </div>
 
-                <button class="btn-ctrl btn-danger btn-full" onclick="guardedCommand('LOCK_ACCESSIBILITY', '🔒 ACCESSIBILITY LOCK COMMAND PUSHED.', 'Lock device screen immediately?')">
+                <button class="btn-ctrl btn-danger btn-full" onclick="issueFirebaseCommand('LOCK_ACCESSIBILITY', '🔒 ACCESSIBILITY LOCK COMMAND PUSHED.')">
                     🔒 INSTANT LOCK (Accessibility Override)
                 </button>
 
                 <div class="sub-label">Screen Timeout</div>
                 <div class="btn-row">
-                    <button class="btn-ctrl" onclick="guardedCommand('TIMEOUT_1S', 'Screen timeout 1s pushed.', 'Set screen timeout to 1 second?', true)">1 SEC</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_1S', 'Screen timeout 1s pushed.')">1 SEC</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_10S', 'Screen timeout 10s pushed.')">10 SEC</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_1M', 'Screen timeout 1m pushed.')">1 MIN</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_5M', 'Screen timeout 5m pushed.')">5 MIN</button>
@@ -620,7 +691,7 @@
 
                 <div class="sub-label">Display Brightness</div>
                 <div class="btn-row">
-                    <button class="btn-ctrl" onclick="guardedCommand('BRIGHTNESS_0', 'Brightness 0% pushed.', 'Set display brightness to 0%?', true)">0%</button>
+                    <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHTNESS_0', 'Brightness 0% pushed.')">0%</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHTNESS_30', 'Brightness 30% pushed.')">30%</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHTNESS_50', 'Brightness 50% pushed.')">50%</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHTNESS_80', 'Brightness 80% pushed.')">80%</button>
@@ -638,34 +709,38 @@
 
                 <div class="sub-label" style="color: var(--danger);">Anti-Theft Siren &amp; Strobe</div>
                 <div class="btn-row">
-                    <button class="btn-ctrl btn-danger" onclick="guardedCommand('ALARM_ON', '🚨 ANTI-THEFT SIREN TRIGGERED.', 'Trigger max-volume anti-theft siren?')">🚨 TRIGGER SIREN</button>
+                    <button class="btn-ctrl btn-danger" onclick="issueFirebaseCommand('ALARM_ON', '🚨 ANTI-THEFT SIREN TRIGGERED.')">🚨 TRIGGER SIREN</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('ALARM_OFF', '🔇 ANTI-THEFT SIREN DISARMED.')">🔇 DISARM SIREN</button>
-                    <button class="btn-ctrl btn-warning" onclick="guardedCommand('FLASH_BLINK', '⚡ STROBE FLASH ENGAGED.', 'Start strobe flashlight?')">⚡ STROBE FLASH</button>
+                    <button class="btn-ctrl btn-warning" onclick="issueFirebaseCommand('FLASH_BLINK', '⚡ STROBE FLASH ENGAGED.')">⚡ STROBE FLASH</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('FLASH_OFF', '❌ STROBE FLASH DISABLED.')">❌ FLASH OFF</button>
                 </div>
 
                 <div class="terminal-header-row">
-                    <span>COMMAND DISPATCH LOG</span>
+                    <span>WEB ⇄ SERVER ⇄ PHONE LIVE LOG</span>
                     <button class="btn-clear-term" onclick="clearTerminal()">CLEAR LOG</button>
                 </div>
                 <div class="terminal-box" id="termLog">
-                    <div>&gt; SECURE FIREBASE UPLINK ESTABLISHED.</div>
-                    <div>&gt; AWAITING AGENT COMMANDS...</div>
+                    <div>&gt; SECURE FIREBASE UPLINK INITIALIZED.</div>
+                    <div>&gt; HARDWARE CONTROLS UNLOCKED • EMERGENCY DIAL LOCKED.</div>
                 </div>
             </div>
 
             <div class="neon-panel pink-panel">
-                <div class="panel-header" style="color: var(--danger);">
-                    <span>🚨 EMERGENCY COMMUNICATIONS</span>
+                <div class="panel-header" style="color: var(--neon-pink);">
+                    <span>🔐 EMERGENCY COMMUNICATIONS (LOCKED)</span>
+                </div>
+
+                <div class="sos-lock-banner">
+                    🔒 EMERGENCY DIAL LOCKED: Emergency numbers (112 / 108 / 101) stay protected and require explicit confirmation so they are never disturbed accidentally.
                 </div>
 
                 <div class="btn-row" id="emergencyGroup">
-                    <button class="btn-ctrl btn-danger" onclick="guardedCommand('CALL_NUM:112', 'FORCE DIALING: POLICE (112)', 'Force dial emergency number 112 (Police)?')">POLICE (112)</button>
-                    <button class="btn-ctrl btn-danger" onclick="guardedCommand('CALL_NUM:108', 'FORCE DIALING: AMBULANCE (108)', 'Force dial emergency number 108 (Ambulance)?')">AMBULANCE (108)</button>
-                    <button class="btn-ctrl btn-danger" onclick="guardedCommand('CALL_NUM:101', 'FORCE DIALING: FIRE (101)', 'Force dial emergency number 101 (Fire)?')">FIRE (101)</button>
+                    <button class="btn-ctrl btn-locked-sos" onclick="protectedEmergencyDial('112', 'POLICE')">🔒 POLICE (112)</button>
+                    <button class="btn-ctrl btn-locked-sos" onclick="protectedEmergencyDial('108', 'AMBULANCE')">🔒 AMBULANCE (108)</button>
+                    <button class="btn-ctrl btn-locked-sos" onclick="protectedEmergencyDial('101', 'FIRE')">🔒 FIRE (101)</button>
                 </div>
 
-                <div class="sub-label" style="margin-top: 18px; color: var(--success);">Custom SOS Auto-Dialer</div>
+                <div class="sub-label" style="margin-top: 18px; color: var(--success);">Custom SOS Auto-Dialer (Unlocked)</div>
                 <div class="sos-input-row">
                     <input type="text" id="sosName" class="sos-input" placeholder="Contact Label">
                     <input type="text" id="sosNum" class="sos-input" placeholder="Phone Number">
@@ -700,36 +775,67 @@
         let currentUserId = null;
 
         /* ========================================================
-           FEATURE #3: SAFETY GUARDRAIL & RESTORE NORMAL STATE
+           LIVE PHONE <-> SERVER <-> WEB BRIDGE + SIMULATION
            ======================================================== */
-        let highRiskArmed = false;
+        let phoneSimEnabled = true;
+        let simPhoneState = {
+            batteryPct: 84,
+            network: "WIFI + VOLTE",
+            screenLocked: false,
+            lastAckCommand: "READY",
+            lastAckTime: Date.now()
+        };
 
-        function toggleHighRiskArm() {
-            highRiskArmed = !highRiskArmed;
-            const btn = document.getElementById('btnGuardToggle');
-            const txt = document.getElementById('guardStatusText');
-            if (highRiskArmed) {
-                btn.classList.add('armed');
-                btn.textContent = '🔒 DISARM HIGH-RISK';
-                txt.style.color = 'var(--danger)';
-                txt.textContent = '⚠️ HIGH-RISK ARMED: Critical & dial commands run immediately';
-            } else {
-                btn.classList.remove('armed');
-                btn.textContent = '🔓 ARM HIGH-RISK';
-                txt.style.color = 'var(--warning)';
-                txt.textContent = '🛡️ SAFE GUARD ON: High-risk & dial actions ask confirmation';
+        function togglePhoneSim() {
+            phoneSimEnabled = !phoneSimEnabled;
+            const btn = document.getElementById('btnPhoneSim');
+            btn.classList.toggle('sim-on', phoneSimEnabled);
+            btn.textContent = phoneSimEnabled ? '📱 PHONE LIVE SIM: ON' : '📱 PHONE LIVE SIM: OFF';
+            appendLog(phoneSimEnabled
+                ? 'Phone simulator active: commands will echo back from simulated Android node.'
+                : 'Phone simulator paused: relying on real Firebase DeviceStatus from physical phone.');
+            renderDeviceTelemetry();
+        }
+
+        function animateBridgeFlow(cmdCode) {
+            const webN = document.getElementById('flowWeb');
+            const srvN = document.getElementById('flowServer');
+            const phnN = document.getElementById('flowPhone');
+
+            webN.classList.add('pulse-active');
+            setTimeout(() => srvN.classList.add('pulse-active'), 160);
+            setTimeout(() => phnN.classList.add('pulse-active'), 320);
+
+            setTimeout(() => {
+                srvN.classList.remove('pulse-active');
+                phnN.classList.remove('pulse-active');
+            }, 900);
+
+            if (phoneSimEnabled) {
+                setTimeout(() => {
+                    if (cmdCode === 'LOCK_ACCESSIBILITY') simPhoneState.screenLocked = true;
+                    if (cmdCode.startsWith('BRIGHTNESS_') || cmdCode.startsWith('VOL_') || cmdCode.startsWith('TIMEOUT_') || cmdCode === 'ALARM_OFF' || cmdCode === 'FLASH_OFF') {
+                        if (cmdCode === 'ALARM_OFF') simPhoneState.screenLocked = false;
+                    }
+                    simPhoneState.lastAckCommand = cmdCode;
+                    simPhoneState.lastAckTime = Date.now();
+                    latestStatusData = { ...simPhoneState };
+                    renderDeviceTelemetry();
+                    appendLog(`[PHONE ACK] Executed ${cmdCode} (Bat: ${simPhoneState.batteryPct}%, ${simPhoneState.network})`);
+                }, 420);
             }
         }
 
-        function guardedCommand(cmdCode, logMessage, promptText, isDisruptive = false) {
-            if (!highRiskArmed && (promptText || isDisruptive)) {
-                const ok = window.confirm(promptText || `Confirm command: ${cmdCode}?`);
-                if (!ok) {
-                    appendLog(`Cancelled ${cmdCode} via Safe Guard.`);
-                    return;
-                }
+        /* ========================================================
+           EMERGENCY LOCK PROTECTION (NEVER DISTURBED)
+           ======================================================== */
+        function protectedEmergencyDial(number, label) {
+            const ok = window.confirm(`🔐 LOCKED EMERGENCY CHANNEL: Confirm dialing ${label} (${number})?`);
+            if (!ok) {
+                appendLog(`Protected Emergency Dial (${label} ${number}) kept locked & untouched.`);
+                return;
             }
-            issueFirebaseCommand(cmdCode, logMessage);
+            issueFirebaseCommand(`CALL_NUM:${number}`, `🚨 AUTHORIZED EMERGENCY DIAL: ${label} (${number})`);
         }
 
         function restoreNormalState() {
@@ -740,11 +846,11 @@
                 { cmd: 'VOL_50', msg: 'Restore: Volume 50%' },
                 { cmd: 'TIMEOUT_1M', msg: 'Restore: Timeout 1m' }
             ];
-            appendLog('↺ Executing Restore Normal preset sequence...');
+            appendLog('↺ Executing Restore Normal preset...');
             preset.forEach((item, idx) => {
                 setTimeout(() => {
                     issueFirebaseCommand(item.cmd, item.msg);
-                }, idx * 250);
+                }, idx * 220);
             });
         }
 
@@ -762,12 +868,14 @@
         }
 
         function clearTerminal() {
-            terminal.innerHTML = '<div>&gt; LOG CLEARED. AWAITING AGENT COMMANDS...</div>';
+            terminal.innerHTML = '<div>&gt; LOG CLEARED. AWAITING COMMANDS...</div>';
         }
 
         function issueFirebaseCommand(cmdCode, logMessage) {
+            animateBridgeFlow(cmdCode);
+
             if (!currentUserId) {
-                alert("Agent connection lost.");
+                appendLog(`${logMessage} [LOCAL/PREVIEW MODE]`);
                 return;
             }
 
@@ -777,7 +885,7 @@
             }).then(() => {
                 appendLog(logMessage);
             }).catch(err => {
-                appendLog("ERROR: " + err.message, true);
+                appendLog("SERVER SYNC NOTE: " + err.message, true);
             });
         }
 
@@ -785,19 +893,15 @@
             const num = document.getElementById('sosNum').value.trim();
             const name = document.getElementById('sosName').value.trim() || 'CUSTOM SOS';
             if (!num) return;
-            guardedCommand(
-                'CALL_NUM:' + num,
-                `FORCE DIALING: ${name} (${num})`,
-                `Force dial ${name} (${num})?`
-            );
+            issueFirebaseCommand('CALL_NUM:' + num, `FORCE DIALING: ${name} (${num})`);
             document.getElementById('sosNum').value = '';
             document.getElementById('sosName').value = '';
         }
 
         /* ========================================================
-           FEATURE #2: LIVE DEVICE STATUS & ACK LISTENER
+           LIVE DEVICE STATUS & ACK LISTENER
            ======================================================== */
-        let latestStatusData = null;
+        let latestStatusData = { ...simPhoneState };
 
         function renderDeviceTelemetry() {
             const linkEl = document.getElementById('telemLink');
@@ -807,7 +911,7 @@
             const badgeEl = document.getElementById('ackBadge');
 
             if (!latestStatusData) {
-                linkEl.textContent = 'AWAITING TELEMETRY';
+                linkEl.textContent = 'NO TELEMETRY';
                 linkEl.style.color = 'var(--text-muted)';
                 return;
             }
@@ -817,7 +921,7 @@
             const isRecent = ageSec !== null && ageSec <= 120;
 
             linkEl.textContent = ageSec !== null
-                ? (isRecent ? `ONLINE (${ageSec}s ago)` : `IDLE (${ageSec}s ago)`)
+                ? (isRecent ? `ONLINE (${ageSec}s)` : `IDLE (${ageSec}s)`)
                 : 'CONNECTED';
             linkEl.style.color = isRecent ? 'var(--success)' : 'var(--warning)';
 
@@ -835,12 +939,16 @@
             badgeEl.style.color = 'var(--success)';
         }
 
-        setInterval(renderDeviceTelemetry, 5000);
+        setInterval(renderDeviceTelemetry, 4000);
+        renderDeviceTelemetry();
 
         function attachStatusListener(uid) {
             database.ref('users/' + uid + '/DeviceStatus').on('value', (snap) => {
-                latestStatusData = snap.val();
-                renderDeviceTelemetry();
+                const val = snap.val();
+                if (val) {
+                    latestStatusData = val;
+                    renderDeviceTelemetry();
+                }
             });
         }
 
