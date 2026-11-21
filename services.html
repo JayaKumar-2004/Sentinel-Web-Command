@@ -1,166 +1,641 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha-Suraksha | Active Services</title>
-    
+    <title>Raksha Suraksha | Active Services</title>
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* 🚀 1. DYNAMIC THEME VARIABLES */
         :root[data-theme="dark"] {
-            --bg-deep: #030712; --bg-panel: rgba(15, 23, 42, 0.85); --cyan-glow: #00E5FF;
-            --text-main: #F8FAFC; --text-muted: #94A3B8; --border-line: rgba(0, 229, 255, 0.2);
-            --shadow-color: rgba(0, 229, 255, 0.3); --danger: #EF4444; --danger-bg: rgba(239, 68, 68, 0.1);
-            --success: #10B981; --warning: #F59E0B; --input-bg: rgba(0,0,0,0.8);
+            --bg-deep: #030712;
+            --bg-panel: rgba(8, 15, 30, 0.86);
+            --bg-card: rgba(10, 18, 36, 0.78);
+            --cyan-glow: #00F0FF;
+            --neon-pink: #FF2A85;
+            --orange-alert: #FF6B35;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-line: rgba(0, 240, 255, 0.22);
+            --shadow-color: rgba(0, 240, 255, 0.35);
+            --danger: #EF4444;
+            --danger-bg: rgba(239, 68, 68, 0.12);
+            --success: #10B981;
+            --ambient-light: radial-gradient(circle at 50% 15%, rgba(0, 240, 255, 0.12) 0%, transparent 65%);
         }
 
         :root[data-theme="light"] {
-            --bg-deep: #F1F5F9; --bg-panel: rgba(255, 255, 255, 0.95); --cyan-glow: #1D4ED8; 
-            --text-main: #0F172A; --text-muted: #475569; --border-line: rgba(29, 78, 216, 0.2);
-            --shadow-color: rgba(29, 78, 216, 0.2); --danger: #DC2626; --danger-bg: rgba(220, 38, 38, 0.1);
-            --success: #059669; --warning: #D97706; --input-bg: #FFFFFF;
+            --bg-deep: #F1F5F9;
+            --bg-panel: rgba(255, 255, 255, 0.94);
+            --bg-card: rgba(255, 255, 255, 0.88);
+            --cyan-glow: #0284C7;
+            --neon-pink: #DB2777;
+            --orange-alert: #EA580C;
+            --text-main: #0F172A;
+            --text-muted: #475569;
+            --border-line: rgba(2, 132, 199, 0.22);
+            --shadow-color: rgba(2, 132, 199, 0.25);
+            --danger: #DC2626;
+            --danger-bg: rgba(220, 38, 38, 0.1);
+            --success: #059669;
+            --ambient-light: radial-gradient(circle at 50% 15%, rgba(2, 132, 199, 0.08) 0%, transparent 65%);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
-        body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; transition: background-color 0.4s ease; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
 
-        /* 🚀 2. DYNAMIC GEOMETRIC CANVAS */
-        #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
-        .grid-overlay { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.2; }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            overflow-x: hidden;
+            transition: background-color 0.3s ease;
+        }
 
-        /* 🚀 3. SMART TOP NAVBAR */
-        .nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500; }
-        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0;}
-        .brand-svg { width: 40px; height: 40px; filter: drop-shadow(0 0 8px var(--shadow-color));}
-        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--text-main); letter-spacing: 2px;}
-        .brand-name span { color: #FF6B35; }
-        
-        .desktop-nav { display: flex; align-items: center; gap: 20px; flex-wrap: nowrap;}
-        .nav-links { display: flex; gap: 25px; list-style: none; margin-right: 15px; }
-        .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; font-weight: 700; white-space: nowrap;}
-        .nav-links a:hover, .nav-links a.active { color: var(--cyan-glow); text-shadow: 0 0 8px var(--shadow-color); }
+        /* ========================================================
+           CURSOR ANALYSIS OVERLAY
+           ======================================================== */
+        .cursor-hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 2500;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
 
-        .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); flex-shrink: 0;}
-        .theme-toggle:hover { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
-        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2.2rem; cursor: pointer; flex-shrink: 0;}
+        body:hover .cursor-hud {
+            opacity: 1;
+        }
 
-        /* GOOGLE-STYLE PROFILE DROPDOWN */
-        .user-profile-container { position: relative; display: inline-block; z-index: 1000; flex-shrink: 0;}
-        .user-chip { display: flex; align-items: center; gap: 10px; background: var(--bg-panel); border: 1px solid var(--cyan-glow); padding: 6px 16px 6px 6px; border-radius: 30px; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); transition: 0.3s; font-weight: 700; }
-        .user-chip:hover { box-shadow: 0 0 15px var(--shadow-color); }
-        .user-avatar { width: 28px; height: 28px; background: var(--cyan-glow); color: var(--bg-deep); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 1rem; flex-shrink: 0; }
+        .cursor-reticle {
+            width: 26px;
+            height: 26px;
+            border: 1.5px solid var(--cyan-glow);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--shadow-color), inset 0 0 8px var(--shadow-color);
+            position: relative;
+        }
+
+        .cursor-reticle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: var(--orange-alert);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-readout {
+            background: rgba(3, 7, 18, 0.88);
+            border: 1px solid var(--border-line);
+            color: var(--cyan-glow);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            padding: 3px 7px;
+            border-radius: 4px;
+            white-space: nowrap;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+        }
+
+        @media (pointer: coarse) {
+            .cursor-hud { display: none; }
+        }
+
+        /* ========================================================
+           BACKGROUND ANIMATION ENGINE
+           ======================================================== */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -4;
+            background: var(--ambient-light);
+            pointer-events: none;
+        }
+
+        #interactiveCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: -3;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+            background-image:
+                linear-gradient(var(--border-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
+            background-size: 56px 56px;
+            opacity: 0.24;
+            animation: gridDrift 22s linear infinite;
+        }
+
+        @keyframes gridDrift {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 56px 56px, 56px 56px; }
+        }
+
+        /* ========================================================
+           NAVBAR & PROFILE
+           ======================================================== */
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: var(--bg-panel);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-line);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1500;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .brand-svg {
+            width: 38px;
+            height: 38px;
+            filter: drop-shadow(0 0 8px var(--shadow-color));
+        }
+
+        .brand-name {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.3rem;
+            color: var(--text-main);
+            letter-spacing: 2px;
+        }
+
+        .brand-name span {
+            color: var(--orange-alert);
+        }
+
+        .desktop-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+            margin-right: 10px;
+        }
+
+        .nav-links a {
+            font-family: 'Space Mono', monospace;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: 0.25s;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--cyan-glow);
+            text-shadow: 0 0 10px var(--shadow-color);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-line);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.15rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.25s;
+            color: var(--text-main);
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--cyan-glow);
+            box-shadow: 0 0 12px var(--shadow-color);
+        }
+
+        .mobile-nav-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--cyan-glow);
+            font-size: 2rem;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .user-profile-container { position: relative; display: inline-block; z-index: 1000; flex-shrink: 0; }
+        .user-chip {
+            display: flex; align-items: center; gap: 10px; background: var(--bg-panel);
+            border: 1px solid var(--cyan-glow); padding: 6px 14px 6px 6px; border-radius: 30px;
+            cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--text-main); font-weight: 700;
+        }
+        .user-avatar {
+            width: 28px; height: 28px; background: var(--cyan-glow); color: #02050E; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; flex-shrink: 0;
+        }
         .agent-name-txt { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; }
-        
-        .user-dropdown { position: absolute; top: 130%; right: 0; background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 8px; padding: 20px; width: 240px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px); display: none; flex-direction: column; gap: 10px; text-align: center; }
-        .user-profile-container:hover .user-dropdown { display: flex; animation: slideDown 0.3s ease; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .dropdown-email { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); word-break: break-all; border-bottom: 1px solid var(--border-line); padding-bottom: 15px; margin-bottom: 5px; font-weight: 700;}
-        .btn-logout-drop { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 10px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+
+        .user-dropdown {
+            position: absolute; top: 125%; right: 0; background: var(--bg-panel); border: 1px solid var(--border-line);
+            border-radius: 8px; padding: 18px; width: 240px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px);
+            display: none; flex-direction: column; gap: 10px; text-align: center;
+        }
+        .user-profile-container:hover .user-dropdown { display: flex; animation: slideDown 0.25s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .dropdown-email {
+            font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--text-muted);
+            word-break: break-all; border-bottom: 1px solid var(--border-line); padding-bottom: 12px;
+        }
+        .btn-logout-drop {
+            background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 9px; border-radius: 4px;
+            font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px;
+        }
         .btn-logout-drop:hover { background: var(--danger-bg); }
 
-        /* 🚀 4. MOBILE SLIDE-OUT MENU */
-        .mobile-overlay { position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: var(--bg-panel); backdrop-filter: blur(20px); z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-left: 2px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 30px; }
+        /* ========================================================
+           MOBILE SLIDE-OUT MENU
+           ======================================================== */
+        .mobile-overlay {
+            position: fixed; top: 0; right: -100%; width: 280px; height: 100vh;
+            background: var(--bg-panel); backdrop-filter: blur(20px); z-index: 3000;
+            padding: 75px 25px 30px; transition: right 0.35s ease; border-left: 2px solid var(--cyan-glow);
+            box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 25px;
+        }
         .mobile-overlay.active { right: 0; }
-        .m-nav-close { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 2.5rem; color: var(--text-muted); cursor: pointer; }
-        .m-nav-links { list-style: none; display: flex; flex-direction: column; gap: 25px; }
-        .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; transition: 0.3s; display: block; font-weight: 700;}
+        .m-nav-close { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 2.2rem; color: var(--text-muted); cursor: pointer; }
+        .m-nav-links { list-style: none; display: flex; flex-direction: column; gap: 20px; }
+        .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; letter-spacing: 2px; font-weight: 700; }
         .m-nav-links a:hover, .m-nav-links a.active { color: var(--cyan-glow); }
 
-        /* 🚀 5. MAIN CONTENT & DESKTOP GRID FIXES */
-        main { flex-grow: 1; padding: 120px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; }
-        .content-wrapper { width: 100%; max-width: 1400px; /* LAPTOP WIDE VIEW */ display: flex; flex-direction: column; gap: 40px;}
-        
-        .header-title { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 20px;}
-        .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); color: var(--text-main); font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 15px;}
-        .sys-status { display: inline-flex; align-items: center; gap: 8px; color: var(--success); font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.85rem; letter-spacing: 1px; padding: 8px 20px; border: 1px solid var(--success); border-radius: 30px; background: rgba(16, 185, 129, 0.1);}
-        .pulse-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulseDot 1.5s infinite; }
-        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-        /* 🚀 STRICT LAPTOP GRID SYSTEM */
-        .services-grid { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); /* FORCES 3 COLUMNS ON DESKTOP */
-            gap: 30px; 
-            width: 100%; 
+        /* ========================================================
+           MAIN & FLEX NEON SERVICE CARDS
+           ======================================================== */
+        main {
+            flex-grow: 1;
+            padding: 112px 5% 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 10;
         }
 
-        .service-card { 
-            background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; 
-            padding: 35px 30px; display: flex; flex-direction: column; 
-            transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            min-height: 320px; /* Consistent heights on desktop */
+        .content-wrapper {
+            width: 100%;
+            max-width: 1320px;
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
         }
-        .service-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px var(--shadow-color); border-color: var(--cyan-glow);}
-        
-        .c-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px;}
-        .c-icon { font-size: 1.8rem; color: var(--cyan-glow); filter: drop-shadow(0 0 5px var(--shadow-color));}
-        .c-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; }
-        
-        .service-card p { font-family: 'Space Mono', monospace; font-size: 0.95rem; color: var(--text-muted); margin-bottom: 30px; line-height: 1.7; flex-grow: 1;}
-        
-        .btn-outline { 
-            padding: 14px; border-radius: 6px; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; 
-            font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; 
-            background: transparent; color: var(--cyan-glow); border: 1px solid var(--cyan-glow); 
-            width: 100%; display: inline-block; text-align: center; text-decoration: none; margin-top: auto;
-        }
-        .btn-outline:hover { background: rgba(0, 229, 255, 0.1); box-shadow: 0 0 15px var(--shadow-color);}
 
-        /* 🚀 TIER-3 VAULT LAPTOP SPAN OVERRIDE */
-        .card-danger { 
-            border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.02); 
-            grid-column: 1 / -1; /* SPANS FULL WIDTH ON LAPTOP */
-            flex-direction: row; align-items: center; justify-content: space-between; gap: 30px;
-            min-height: auto; padding: 40px;
+        .header-title {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
-        .card-danger .c-head { margin-bottom: 0; min-width: 300px; }
-        .card-danger p { margin-bottom: 0; text-align: left; }
-        .card-danger .btn-outline { width: auto; padding: 16px 40px; white-space: nowrap;}
-        
-        .card-danger:hover { border-color: var(--danger); box-shadow: 0 15px 40px rgba(239, 68, 68, 0.2); }
-        .card-danger .c-icon, .card-danger .c-title { color: var(--danger); filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.4)); }
-        .btn-outline-danger { border-color: var(--danger); color: var(--danger); }
-        .btn-outline-danger:hover { background: rgba(239, 68, 68, 0.1); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); color: var(--danger); }
 
-        footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); position: relative; z-index: 10; margin-top: auto;}
-
-        /* RESPONSIVE BREAKPOINTS */
-        @media (max-width: 1100px) {
-            .services-grid { grid-template-columns: repeat(2, 1fr); }
-            .card-danger { flex-direction: column; text-align: center; }
-            .card-danger .c-head { justify-content: center; }
-            .card-danger p { text-align: center; margin-bottom: 20px; }
-            .card-danger .btn-outline { width: 100%; }
+        .header-title h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.6rem);
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            background: linear-gradient(90deg, var(--text-main), var(--cyan-glow), var(--neon-pink), var(--cyan-glow));
+            background-size: 250% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: gradientFlow 6s linear infinite;
         }
+
+        @keyframes gradientFlow {
+            to { background-position: 250% center; }
+        }
+
+        .sys-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--success);
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            padding: 7px 18px;
+            border: 1px solid var(--success);
+            border-radius: 30px;
+            background: rgba(16, 185, 129, 0.1);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.18);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success);
+            animation: pulseDot 1.5s infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.35; }
+        }
+
+        /* FLEX NEON CARDS CONTAINER */
+        .services-flex-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 24px;
+            width: 100%;
+        }
+
+        .neon-service-card {
+            flex: 1 1 320px;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-line);
+            border-radius: 12px;
+            padding: 26px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(14px);
+            transition: transform 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
+            box-shadow: 0 0 16px rgba(0, 240, 255, 0.08);
+            min-height: 290px;
+        }
+
+        .neon-service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--cyan-glow), var(--neon-pink));
+            opacity: 0.85;
+        }
+
+        .neon-service-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--cyan-glow);
+            box-shadow: 0 0 28px rgba(0, 240, 255, 0.28), inset 0 0 14px rgba(0, 240, 255, 0.08);
+        }
+
+        .neon-service-card.pink-neon:hover {
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 28px rgba(255, 42, 133, 0.28), inset 0 0 14px rgba(255, 42, 133, 0.08);
+        }
+
+        .card-top-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        .neon-pill {
+            background: rgba(0, 240, 255, 0.14);
+            border: 1px solid rgba(0, 240, 255, 0.35);
+            color: var(--cyan-glow);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .neon-service-card.pink-neon .neon-pill {
+            background: rgba(255, 42, 133, 0.14);
+            border-color: rgba(255, 42, 133, 0.4);
+            color: var(--neon-pink);
+        }
+
+        .c-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .c-icon {
+            font-size: 1.7rem;
+            color: var(--cyan-glow);
+            filter: drop-shadow(0 0 6px var(--shadow-color));
+        }
+
+        .c-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.08rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .neon-service-card p {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.65;
+            flex-grow: 1;
+        }
+
+        .btn-outline {
+            padding: 13px;
+            border-radius: 6px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.25s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(0, 240, 255, 0.05);
+            color: var(--cyan-glow);
+            border: 1.5px solid var(--cyan-glow);
+            width: 100%;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            margin-top: auto;
+        }
+
+        .btn-outline:hover {
+            background: var(--cyan-glow);
+            color: #02050E;
+            box-shadow: 0 0 20px var(--shadow-color);
+        }
+
+        /* TIER-3 VAULT FULL-WIDTH NEON BANNER */
+        .card-danger {
+            flex: 1 1 100%;
+            max-width: 100%;
+            min-height: auto;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 32px;
+            border-color: rgba(239, 68, 68, 0.35);
+            background: rgba(239, 68, 68, 0.04);
+        }
+
+        .card-danger::before {
+            background: linear-gradient(90deg, var(--danger), var(--orange-alert));
+        }
+
+        .card-danger:hover {
+            border-color: var(--danger);
+            box-shadow: 0 0 28px rgba(239, 68, 68, 0.28), inset 0 0 12px rgba(239, 68, 68, 0.08);
+        }
+
+        .card-danger .c-icon,
+        .card-danger .c-title {
+            color: var(--danger);
+            filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.4));
+        }
+
+        .card-danger p {
+            margin-bottom: 0;
+        }
+
+        .card-danger .btn-outline-danger {
+            width: auto;
+            padding: 14px 32px;
+            white-space: nowrap;
+            border-color: var(--danger);
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.06);
+        }
+
+        .card-danger .btn-outline-danger:hover {
+            background: var(--danger);
+            color: #FFFFFF;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.45);
+        }
+
+        footer {
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border-line);
+            padding: 22px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 10;
+            margin-top: auto;
+        }
+
+        @media (max-width: 960px) {
+            .card-danger {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .card-danger .c-head {
+                justify-content: center;
+            }
+            .card-danger .btn-outline-danger {
+                width: 100%;
+            }
+        }
+
         @media (max-width: 850px) {
             .desktop-nav { display: none !important; }
             .mobile-nav-btn { display: block !important; }
         }
-        @media (max-width: 768px) {
-            .services-grid { grid-template-columns: 1fr; }
-            .card-danger { grid-column: auto; }
-        }
 
-        #authLoader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; color: var(--cyan-glow); font-size: 1.5rem; letter-spacing: 2px;}
+        #authLoader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-deep);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--cyan-glow);
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+        }
     </style>
 </head>
 <body>
 
+    <!-- CURSOR ANALYSIS HUD -->
+    <div class="cursor-hud" id="cursorHud">
+        <div class="cursor-reticle"></div>
+        <div class="cursor-readout" id="cursorReadout">SERVICES // X:0 Y:0</div>
+    </div>
+
     <svg style="display:none;">
         <symbol id="shield-logo" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#1D4ED8"/>
+            <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="#0284C7"/>
             <path d="M12 5.5L6 7.5V11.5C6 15.2 8.5 18.6 12 19.5C15.5 18.6 18 15.2 18 11.5V7.5L12 5.5Z" fill="#FF6B35"/>
             <path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="#FFFFFF"/>
         </symbol>
     </svg>
 
     <div id="authLoader">VERIFYING CREDENTIALS...</div>
+    <div class="ambient-bg"></div>
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
@@ -168,7 +643,7 @@
     <nav class="nav">
         <a href="index.html" class="brand">
             <svg class="brand-svg"><use href="#shield-logo"></use></svg>
-            <div class="brand-name">RAKSHA<span>-</span>SURAKSHA</div>
+            <div class="brand-name">RAKSHA<span> SURAKSHA</span></div>
         </a>
 
         <div class="desktop-nav" id="desktopNavContainer">
@@ -178,12 +653,12 @@
                 <li><a href="manual.html">MANUAL</a></li>
                 <li><a href="downloads.html">DOWNLOADS</a></li>
             </ul>
-            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk" title="Toggle Theme">🌓</button>
             <div id="desktopAuthState"></div>
         </div>
 
         <div style="display: flex; align-items: center; gap: 15px;">
-            <button class="theme-toggle" style="display: none;" onclick="toggleTheme()" id="themeBtnMob">🌓</button>
+            <button class="theme-toggle" style="display: none;" onclick="toggleTheme()" id="themeBtnMob" title="Toggle Theme">🌓</button>
             <button class="mobile-nav-btn" onclick="toggleMobileNav()">☰</button>
         </div>
     </nav>
@@ -203,91 +678,128 @@
     <!-- MAIN CONTENT -->
     <main>
         <div class="content-wrapper">
-            
             <div class="header-title">
                 <h1>Active Services</h1>
                 <div class="sys-status"><span class="pulse-dot"></span> SECURE UPLINK ESTABLISHED</div>
             </div>
 
-            <!-- TALL CARDS GRID (LAPTOP OPTIMIZED) -->
-            <div class="services-grid">
-                
-                <div class="service-card">
-                    <div class="c-head">
-                        <div class="c-icon">🎛️</div>
-                        <div class="c-title">APP CONTROLS</div>
+            <!-- FLEX NEON SERVICES GRID -->
+            <div class="services-flex-grid">
+                <div class="neon-service-card">
+                    <div>
+                        <div class="card-top-meta">
+                            <span>MOD-01</span>
+                            <span class="neon-pill">COMMAND</span>
+                        </div>
+                        <div class="c-head">
+                            <div class="c-icon">🎛️</div>
+                            <div class="c-title">APP CONTROLS</div>
+                        </div>
+                        <p>Remote device locking, hardware overrides, and system parameter adjustments.</p>
                     </div>
-                    <p>Remote device locking, hardware overrides, and system parameter modification.</p>
                     <a href="app-controls.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
-                <div class="service-card">
-                    <div class="c-head">
-                        <div class="c-icon">📍</div>
-                        <div class="c-title">APP LOCATION</div>
+                <div class="neon-service-card pink-neon">
+                    <div>
+                        <div class="card-top-meta">
+                            <span>MOD-02</span>
+                            <span class="neon-pill">GPS LINK</span>
+                        </div>
+                        <div class="c-head">
+                            <div class="c-icon">📍</div>
+                            <div class="c-title">APP LOCATION</div>
+                        </div>
+                        <p>Access precision coordinates and real-time device tracking telemetry.</p>
                     </div>
-                    <p>Access precision GPS coordinates and real-time ghost device tracking networks.</p>
                     <a href="map.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
-                <div class="service-card">
-                    <div class="c-head">
-                        <div class="c-icon">💬</div>
-                        <div class="c-title">MESSAGE CONTROL</div>
+                <div class="neon-service-card">
+                    <div>
+                        <div class="card-top-meta">
+                            <span>MOD-03</span>
+                            <span class="neon-pill">SMS BUS</span>
+                        </div>
+                        <div class="c-head">
+                            <div class="c-icon">💬</div>
+                            <div class="c-title">MESSAGE CONTROL</div>
+                        </div>
+                        <p>Manage SMS routing, offline payloads, and automated alert triggers.</p>
                     </div>
-                    <p>Manage SMS routing, offline payloads, and automated emergency logic.</p>
                     <a href="message-control.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
-                <div class="service-card">
-                    <div class="c-head">
-                        <div class="c-icon">🔗</div>
-                        <div class="c-title">DEVICE LINKING</div>
+                <div class="neon-service-card pink-neon">
+                    <div>
+                        <div class="card-top-meta">
+                            <span>MOD-04</span>
+                            <span class="neon-pill">SYNC</span>
+                        </div>
+                        <div class="c-head">
+                            <div class="c-icon">🔗</div>
+                            <div class="c-title">DEVICE LINKING</div>
+                        </div>
+                        <p>Pair target devices, review active sessions, and verify agent tokens.</p>
                     </div>
-                    <p>Synchronize external hardware, review active sessions, and verify authorization.</p>
                     <a href="app-linking.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
-                <div class="service-card">
-                    <div class="c-head">
-                        <div class="c-icon">🌤️</div>
-                        <div class="c-title">WEATHER CORE INTEL</div>
+                <div class="neon-service-card">
+                    <div>
+                        <div class="card-top-meta">
+                            <span>MOD-05</span>
+                            <span class="neon-pill">INTEL</span>
+                        </div>
+                        <div class="c-head">
+                            <div class="c-icon">🌤️</div>
+                            <div class="c-title">WEATHER CORE INTEL</div>
+                        </div>
+                        <p>Pull live local weather indices to support outdoor field operations.</p>
                     </div>
-                    <p>Pull live local meteorological tracking indices to safeguard field assets.</p>
                     <a href="weather.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
-                <div class="service-card">
-                    <div class="c-head">
-                        <div class="c-icon">📡</div>
-                        <div class="c-title">SITE LOCATION TRACKING</div>
+                <div class="neon-service-card pink-neon">
+                    <div>
+                        <div class="card-top-meta">
+                            <span>MOD-06</span>
+                            <span class="neon-pill">VECTOR</span>
+                        </div>
+                        <div class="c-head">
+                            <div class="c-icon">📡</div>
+                            <div class="c-title">SITE LOCATION TRACKING</div>
+                        </div>
+                        <p>Initialize graphical coordinate mapping pipelines for tracked assets.</p>
                     </div>
-                    <p>Initialize real-time graphical coordinate mapping pipelines for target devices.</p>
                     <a href="site-tracking.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
-                <!-- FULL SPANNING ROW ON LAPTOP -->
-                <div class="service-card card-danger">
-                    <div class="c-head">
-                        <div class="c-icon">🛡️</div>
-                        <div class="c-title">TIER-3 EVIDENCE VAULT</div>
+                <!-- FULL-WIDTH TIER-3 VAULT CARD -->
+                <div class="neon-service-card card-danger">
+                    <div>
+                        <div class="card-top-meta">
+                            <span>TIER-3 // RESTRICTED</span>
+                            <span class="neon-pill" style="background: rgba(239,68,68,0.16); border-color: rgba(239,68,68,0.45); color: var(--danger);">HIGH SECURITY</span>
+                        </div>
+                        <div class="c-head">
+                            <div class="c-icon">🛡️</div>
+                            <div class="c-title">TIER-3 EVIDENCE VAULT</div>
+                        </div>
+                        <p>Authorized agents only. Access encrypted media and incident capture logs.</p>
                     </div>
-                    <p>Authorized agents only. Access the highly secure cloud video and audio extraction portal.</p>
                     <a href="evidence-vault.html" class="btn-outline btn-outline-danger">ENTER VAULT</a>
                 </div>
-
             </div>
-
         </div>
     </main>
 
     <footer>
-        <div>© 2026 R.K Sentinel 3-Tier Tactical Command System</div>
+        <div>© 2026 Raksha Suraksha 3-Tier Tactical Command System</div>
         <div>All Systems Normal</div>
     </footer>
 
     <script>
-        // Theme Logic
         function initTheme() {
             const savedTheme = localStorage.getItem('tactical_theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
@@ -301,68 +813,154 @@
             localStorage.setItem('tactical_theme', newTheme);
         }
         function updateMobileThemeBtnVis() {
-            if(window.innerWidth <= 850) { document.getElementById('themeBtnMob').style.display = 'flex'; } 
-            else { document.getElementById('themeBtnMob').style.display = 'none'; }
+            document.getElementById('themeBtnMob').style.display = window.innerWidth <= 850 ? 'flex' : 'none';
         }
-        initTheme(); window.addEventListener('resize', updateMobileThemeBtnVis);
-        function toggleMobileNav() { document.getElementById('mobileNav').classList.toggle('active'); }
+        initTheme();
+        window.addEventListener('resize', updateMobileThemeBtnVis);
+        function toggleMobileNav() {
+            document.getElementById('mobileNav').classList.toggle('active');
+        }
 
-        // Canvas Animation
-        const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let particles = []; let mouse = { x: null, y: null, radius: 200 };
-        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
-        window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
-        for (let i = 0; i < 65; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5, size: Math.random() * 2 + 1 }); }
-        
-        function animateCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        /* ========================================================
+           CURSOR ANALYSIS TRACKER
+           ======================================================== */
+        const cursorHud = document.getElementById('cursorHud');
+        const cursorReadout = document.getElementById('cursorReadout');
+        let pointerX = window.innerWidth / 2;
+        let pointerY = window.innerHeight / 2;
+        let pointerActive = false;
+
+        window.addEventListener('pointermove', (e) => {
+            pointerX = e.clientX;
+            pointerY = e.clientY;
+            pointerActive = true;
+
+            if (cursorHud) {
+                cursorHud.style.left = pointerX + 'px';
+                cursorHud.style.top = pointerY + 'px';
+                const card = e.target.closest('.neon-service-card');
+                const label = card
+                    ? card.querySelector('.c-title')?.textContent.trim() || 'MODULE'
+                    : 'SERVICES GRID';
+                cursorReadout.textContent = `${label} // ${Math.round(pointerX)},${Math.round(pointerY)}`;
+            }
+        });
+
+        /* ========================================================
+           BACKGROUND CONSTELLATION + CURSOR ANALYSIS CANVAS
+           ======================================================== */
+        const canvas = document.getElementById('interactiveCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const NODE_COUNT = 38;
+        const nodes = [];
+        for (let i = 0; i < NODE_COUNT; i++) {
+            nodes.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                vx: (Math.random() - 0.5) * 0.55,
+                vy: (Math.random() - 0.5) * 0.55
+            });
+        }
+
+        function animateCanvas(now) {
+            ctx.clearRect(0, 0, width, height);
             const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-            const rgbLine = isLight ? '29, 78, 216' : '0, 229, 255';
-            const fillPoly = isLight ? 'rgba(29, 78, 216, 0.04)' : 'rgba(0, 229, 255, 0.03)';
+            const primaryRgb = isLight ? '2, 132, 199' : '0, 240, 255';
+            const accentRgb = isLight ? '219, 39, 119' : '255, 42, 133';
 
-            for (let i = 0; i < particles.length; i++) {
-                let p = particles[i]; p.x += p.vx; p.y += p.vy;
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1; if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                for (let j = i + 1; j < particles.length; j++) {
-                    let p2 = particles[j]; let dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
-                    if (dist < 140) {
-                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.2 - dist/700})`; ctx.lineWidth = 0.5; ctx.stroke();
-                        for(let k = j + 1; k < particles.length; k++) {
-                            let p3 = particles[k]; let dist2 = Math.sqrt((p2.x - p3.x)**2 + (p2.y - p3.y)**2); let dist3 = Math.sqrt((p.x - p3.x)**2 + (p.y - p3.y)**2);
-                            if (dist2 < 140 && dist3 < 140) {
-                                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.closePath();
-                                ctx.fillStyle = fillPoly; ctx.fill();
-                            }
-                        }
+            ctx.strokeStyle = `rgba(${primaryRgb}, 0.08)`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let x = 0; x <= width; x += 40) {
+                const y = height * 0.5 + Math.sin(x * 0.008 + (now || 0) * 0.0015) * 32;
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            for (let i = 0; i < NODE_COUNT; i++) {
+                const p = nodes[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0 || p.x > width) p.vx *= -1;
+                if (p.y < 0 || p.y > height) p.vy *= -1;
+
+                ctx.fillStyle = `rgba(${primaryRgb}, 0.55)`;
+                ctx.fillRect(p.x - 1, p.y - 1, 2.5, 2.5);
+
+                if (pointerActive) {
+                    const dist = Math.hypot(pointerX - p.x, pointerY - p.y);
+                    if (dist < 165) {
+                        ctx.strokeStyle = `rgba(${accentRgb}, ${0.42 * (1 - dist / 165)})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(pointerX, pointerY);
+                        ctx.stroke();
                     }
                 }
-                if(mouse.x != null) {
-                    let dx = mouse.x - p.x; let dy = mouse.y - p.y; let distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < mouse.radius) {
-                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y);
-                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.8 - distance/mouse.radius})`; ctx.lineWidth = 1; ctx.stroke();
+
+                for (let j = i + 1; j < NODE_COUNT; j++) {
+                    const p2 = nodes[j];
+                    const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                    if (dist < 115) {
+                        ctx.strokeStyle = `rgba(${primaryRgb}, ${0.14 - dist / 900})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
                     }
                 }
-            } requestAnimationFrame(animateCanvas);
-        } animateCanvas(); window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+            }
 
-        // Firebase Auth
-        const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
+            requestAnimationFrame(animateCanvas);
+        }
+        requestAnimationFrame(animateCanvas);
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        /* ========================================================
+           FIREBASE AUTHENTICATION
+           ======================================================== */
+        const fbCfg = {
+            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI",
+            authDomain: "sentinel-vault-fb4b7.firebaseapp.com",
+            projectId: "sentinel-vault-fb4b7",
+            storageBucket: "sentinel-vault-fb4b7.firebasestorage.app",
+            messagingSenderId: "192301825793",
+            appId: "1:192301825793:web:734530705f4084608fe500"
+        };
         firebase.initializeApp(fbCfg);
-        
-        firebase.auth().onAuthStateChanged(user => { 
-            if (!user) { window.location.href = 'index.html'; } 
-            else {
+
+        firebase.auth().onAuthStateChanged(user => {
+            if (!user) {
+                window.location.href = 'index.html';
+            } else {
                 document.getElementById('authLoader').style.display = 'none';
                 const agentName = user.email.split('@')[0].toUpperCase();
                 const initial = agentName.charAt(0);
-                const profileUI = `<div class="user-profile-container"><div class="user-chip"><div class="user-avatar">${initial}</div><span class="agent-name-txt">AGENT ${agentName}</span></div><div class="user-dropdown"><div class="dropdown-email">${user.email}</div><button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ SECURE LOGOUT</button></div></div>`;
+                const profileUI = `
+                    <div class="user-profile-container">
+                        <div class="user-chip">
+                            <div class="user-avatar">${initial}</div>
+                            <span class="agent-name-txt">AGENT ${agentName}</span>
+                        </div>
+                        <div class="user-dropdown">
+                            <div class="dropdown-email">${user.email}</div>
+                            <button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ SECURE LOGOUT</button>
+                        </div>
+                    </div>`;
                 document.getElementById('desktopAuthState').innerHTML = profileUI;
                 document.getElementById('mobileAuthState').innerHTML = profileUI;
             }
         });
     </script>
 </body>
-                        </html>
+</html>
