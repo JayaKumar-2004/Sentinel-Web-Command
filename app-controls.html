@@ -206,12 +206,6 @@
             box-shadow: 0 0 12px var(--shadow-color);
         }
 
-        .nav-right-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
         .mini-top-btn {
             background: rgba(0, 240, 255, 0.06);
             border: 1px solid var(--border-line);
@@ -242,7 +236,7 @@
 
         .content-wrapper {
             width: 100%;
-            max-width: 940px;
+            max-width: 960px;
             display: flex;
             flex-direction: column;
             gap: 28px;
@@ -294,19 +288,21 @@
             margin-bottom: 20px;
         }
 
-        /* LIVE PHONE <-> SERVER <-> WEB BRIDGE BAR */
-        .bridge-box {
-            background: rgba(2, 6, 23, 0.78);
+        /* ========================================================
+           VISUAL LIVE DEMO: WEBSITE <-> SERVER/CLOUD <-> DEVICE
+           ======================================================== */
+        .live-topo-card {
+            background: rgba(2, 6, 23, 0.82);
             border: 1px solid var(--border-line);
             border-radius: 10px;
-            padding: 16px;
-            margin-bottom: 20px;
+            padding: 18px;
+            margin-bottom: 22px;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 16px;
         }
 
-        .bridge-top {
+        .topo-header {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
@@ -316,34 +312,157 @@
             font-size: 0.74rem;
         }
 
-        .bridge-flow {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
+        .btn-sim-toggle {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--cyan-glow);
+            color: var(--cyan-glow);
             font-family: 'Space Mono', monospace;
             font-size: 0.72rem;
-        }
-
-        .flow-node {
-            padding: 7px 11px;
-            border-radius: 6px;
-            border: 1px solid var(--border-line);
-            background: rgba(15, 23, 42, 0.9);
-            color: var(--text-main);
             font-weight: 700;
+            padding: 7px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
         }
 
-        .flow-node.pulse-active {
+        .btn-sim-toggle.sim-on {
+            background: var(--cyan-glow);
+            color: #02050E;
+        }
+
+        .topo-stage {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .topo-node-box {
+            flex: 1 1 210px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1.5px solid var(--border-line);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 10px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .topo-node-box.active-beam {
             border-color: var(--cyan-glow);
-            color: var(--cyan-glow);
-            box-shadow: 0 0 14px rgba(0, 240, 255, 0.4);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);
         }
 
-        .flow-arrow {
+        .topo-node-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 800;
             color: var(--cyan-glow);
-            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .packet-channel {
+            align-self: center;
+            min-width: 58px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--neon-pink);
+        }
+
+        .packet-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--cyan-glow);
+            box-shadow: 0 0 12px var(--cyan-glow);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .packet-dot.traveling {
+            opacity: 1;
+            transform: scale(1.25);
+            background: var(--neon-pink);
+            box-shadow: 0 0 14px var(--neon-pink);
+        }
+
+        /* Mini Phone Mockup Screen */
+        .phone-screen-frame {
+            background: #050B18;
+            border: 2px solid rgba(148, 163, 184, 0.35);
+            border-radius: 12px;
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+            min-height: 112px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.68rem;
+            transition: filter 0.25s, box-shadow 0.25s, border-color 0.25s;
+        }
+
+        .phone-screen-frame.locked-state {
+            border-color: var(--danger);
+            box-shadow: inset 0 0 18px rgba(239, 68, 68, 0.35);
+        }
+
+        .phone-screen-frame.siren-state {
+            animation: sirenPulse 0.45s infinite alternate;
+        }
+
+        @keyframes sirenPulse {
+            from { box-shadow: inset 0 0 12px rgba(255, 42, 133, 0.35); border-color: var(--neon-pink); }
+            to { box-shadow: inset 0 0 24px rgba(255, 107, 53, 0.65); border-color: var(--orange-alert); }
+        }
+
+        .phone-screen-frame.strobe-state {
+            animation: strobeFlash 0.18s infinite alternate;
+        }
+
+        @keyframes strobeFlash {
+            from { background: #050B18; }
+            to { background: rgba(255, 255, 255, 0.25); }
+        }
+
+        .mini-bar-track {
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .mini-bar-fill {
+            height: 100%;
+            width: 80%;
+            background: linear-gradient(90deg, var(--cyan-glow), var(--neon-pink));
+            transition: width 0.25s ease;
+        }
+
+        .server-json-box {
+            background: #020617;
+            border: 1px solid var(--border-line);
+            border-radius: 8px;
+            padding: 9px 10px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.66rem;
+            color: var(--terminal-text);
+            line-height: 1.5;
+            word-break: break-all;
         }
 
         /* TELEMETRY & ACK STRIP */
@@ -390,24 +509,6 @@
             margin-bottom: 22px;
             font-family: 'Space Mono', monospace;
             font-size: 0.74rem;
-        }
-
-        .btn-sim-toggle {
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid var(--cyan-glow);
-            color: var(--cyan-glow);
-            font-family: 'Space Mono', monospace;
-            font-size: 0.72rem;
-            font-weight: 700;
-            padding: 7px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-sim-toggle.sim-on {
-            background: var(--cyan-glow);
-            color: #02050E;
         }
 
         .btn-restore {
@@ -549,15 +650,15 @@
             background: var(--input-bg);
             border: 1px solid var(--border-line);
             border-radius: 6px;
-            padding: 14px;
+            padding: 12px 14px;
             font-family: 'Space Mono', monospace;
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             color: var(--terminal-text);
-            height: 155px;
+            height: 120px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
             margin-top: 6px;
         }
 
@@ -581,9 +682,7 @@
             outline: none;
         }
 
-        .sos-input:focus {
-            border-color: var(--cyan-glow);
-        }
+        .sos-input:focus { border-color: var(--cyan-glow); }
 
         #authLoader {
             position: fixed;
@@ -630,20 +729,69 @@
                     <span id="ackBadge" style="font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--text-muted);">ACK: READY</span>
                 </div>
 
-                <!-- LIVE PHONE <-> SERVER <-> WEB BRIDGE -->
-                <div class="bridge-box">
-                    <div class="bridge-top">
-                        <span style="color: var(--cyan-glow); font-weight: 700;">🌐 WEB ⇄ FIREBASE SERVER ⇄ PHONE BRIDGE</span>
+                <!-- VISUAL LIVE DEMO: WEBSITE <-> SERVER/CLOUD <-> DEVICE -->
+                <div class="live-topo-card">
+                    <div class="topo-header">
+                        <span style="color: var(--cyan-glow); font-weight: 700;">⚡ LIVE SYSTEM TOPOLOGY DEMO (WEB • CLOUD SERVER • DEVICE)</span>
                         <button id="btnPhoneSim" class="btn-sim-toggle sim-on" onclick="togglePhoneSim()">
-                            📱 PHONE LIVE SIM: ON
+                            📱 DEVICE DEMO: ON
                         </button>
                     </div>
-                    <div class="bridge-flow">
-                        <span class="flow-node pulse-active" id="flowWeb">WEB CONSOLE</span>
-                        <span class="flow-arrow">──▶</span>
-                        <span class="flow-node" id="flowServer">FIREBASE RTDB</span>
-                        <span class="flow-arrow">──▶</span>
-                        <span class="flow-node" id="flowPhone">PHONE CLIENT</span>
+
+                    <div class="topo-stage">
+                        <!-- NODE 1: WEBSITE -->
+                        <div class="topo-node-box active-beam" id="topoWebBox">
+                            <div class="topo-node-title">
+                                <span>🖥️ WEBSITE</span>
+                                <span style="color: var(--success);">UI</span>
+                            </div>
+                            <div style="font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--text-muted);">
+                                Dispatches command payload to cloud endpoint.
+                            </div>
+                            <div class="server-json-box" id="webCmdPreview">CMD: READY</div>
+                        </div>
+
+                        <div class="packet-channel">
+                            <span class="packet-dot" id="pktLeft"></span>
+                        </div>
+
+                        <!-- NODE 2: SERVER & CLOUD -->
+                        <div class="topo-node-box" id="topoServerBox">
+                            <div class="topo-node-title">
+                                <span>☁️ CLOUD SERVER</span>
+                                <span style="color: var(--cyan-glow);">RTDB</span>
+                            </div>
+                            <div class="server-json-box" id="serverPayloadBox">
+                                {"path":"CurrentCommand","cmd":"READY"}
+                            </div>
+                        </div>
+
+                        <div class="packet-channel">
+                            <span class="packet-dot" id="pktRight"></span>
+                        </div>
+
+                        <!-- NODE 3: VISUAL DEVICE SCREEN -->
+                        <div class="topo-node-box" id="topoDeviceBox">
+                            <div class="topo-node-title">
+                                <span>📱 DEVICE NODE</span>
+                                <span id="deviceScreenTag" style="color: var(--success);">UNLOCKED</span>
+                            </div>
+                            <div class="phone-screen-frame" id="visualPhoneScreen">
+                                <div>
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <span id="visModeLabel">● STANDBY</span>
+                                        <span id="visBrightLabel">80% BRT</span>
+                                    </div>
+                                    <div class="mini-bar-track">
+                                        <div class="mini-bar-fill" id="visBrightBar" style="width: 80%;"></div>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 8px; display:flex; justify-content:space-between; color: var(--text-muted);">
+                                    <span id="visVolLabel">VOL: 50%</span>
+                                    <span id="visTimeLabel">TO: 1M</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -716,12 +864,11 @@
                 </div>
 
                 <div class="terminal-header-row">
-                    <span>WEB ⇄ SERVER ⇄ PHONE LIVE LOG</span>
-                    <button class="btn-clear-term" onclick="clearTerminal()">CLEAR LOG</button>
+                    <span>SIGNAL TRACE</span>
+                    <button class="btn-clear-term" onclick="clearTerminal()">CLEAR</button>
                 </div>
                 <div class="terminal-box" id="termLog">
-                    <div>&gt; SECURE FIREBASE UPLINK INITIALIZED.</div>
-                    <div>&gt; HARDWARE CONTROLS UNLOCKED • EMERGENCY DIAL LOCKED.</div>
+                    <div>&gt; TOPOLOGY READY: WEB • CLOUD SERVER • DEVICE</div>
                 </div>
             </div>
 
@@ -775,13 +922,18 @@
         let currentUserId = null;
 
         /* ========================================================
-           LIVE PHONE <-> SERVER <-> WEB BRIDGE + SIMULATION
+           VISUAL LIVE DEMO: WEBSITE <-> SERVER/CLOUD <-> DEVICE
            ======================================================== */
         let phoneSimEnabled = true;
-        let simPhoneState = {
+        let visualDevice = {
+            brightness: 80,
+            volume: 50,
+            timeout: '1M',
+            locked: false,
+            siren: false,
+            strobe: false,
             batteryPct: 84,
             network: "WIFI + VOLTE",
-            screenLocked: false,
             lastAckCommand: "READY",
             lastAckTime: Date.now()
         };
@@ -790,40 +942,105 @@
             phoneSimEnabled = !phoneSimEnabled;
             const btn = document.getElementById('btnPhoneSim');
             btn.classList.toggle('sim-on', phoneSimEnabled);
-            btn.textContent = phoneSimEnabled ? '📱 PHONE LIVE SIM: ON' : '📱 PHONE LIVE SIM: OFF';
-            appendLog(phoneSimEnabled
-                ? 'Phone simulator active: commands will echo back from simulated Android node.'
-                : 'Phone simulator paused: relying on real Firebase DeviceStatus from physical phone.');
+            btn.textContent = phoneSimEnabled ? '📱 DEVICE DEMO: ON' : '📱 DEVICE DEMO: OFF';
+            appendLog(phoneSimEnabled ? 'Device visual demo enabled.' : 'Device visual demo paused.');
             renderDeviceTelemetry();
         }
 
-        function animateBridgeFlow(cmdCode) {
-            const webN = document.getElementById('flowWeb');
-            const srvN = document.getElementById('flowServer');
-            const phnN = document.getElementById('flowPhone');
+        function updateVisualDevice(cmdCode) {
+            if (cmdCode === 'LOCK_ACCESSIBILITY') visualDevice.locked = true;
+            if (cmdCode === 'ALARM_ON') visualDevice.siren = true;
+            if (cmdCode === 'ALARM_OFF') { visualDevice.siren = false; visualDevice.locked = false; }
+            if (cmdCode === 'FLASH_BLINK') visualDevice.strobe = true;
+            if (cmdCode === 'FLASH_OFF') visualDevice.strobe = false;
 
-            webN.classList.add('pulse-active');
-            setTimeout(() => srvN.classList.add('pulse-active'), 160);
-            setTimeout(() => phnN.classList.add('pulse-active'), 320);
+            if (cmdCode.startsWith('BRIGHTNESS_')) {
+                visualDevice.brightness = parseInt(cmdCode.split('_')[1], 10) || 0;
+            }
+            if (cmdCode.startsWith('VOL_')) {
+                visualDevice.volume = parseInt(cmdCode.split('_')[1], 10) || 0;
+            }
+            if (cmdCode.startsWith('TIMEOUT_')) {
+                visualDevice.timeout = cmdCode.split('_')[1];
+            }
+
+            const screenEl = document.getElementById('visualPhoneScreen');
+            const tagEl = document.getElementById('deviceScreenTag');
+            const modeEl = document.getElementById('visModeLabel');
+            const brtLbl = document.getElementById('visBrightLabel');
+            const brtBar = document.getElementById('visBrightBar');
+            const volLbl = document.getElementById('visVolLabel');
+            const timeLbl = document.getElementById('visTimeLabel');
+
+            screenEl.classList.toggle('locked-state', visualDevice.locked);
+            screenEl.classList.toggle('siren-state', visualDevice.siren);
+            screenEl.classList.toggle('strobe-state', visualDevice.strobe);
+
+            tagEl.textContent = visualDevice.locked ? 'LOCKED' : 'UNLOCKED';
+            tagEl.style.color = visualDevice.locked ? 'var(--danger)' : 'var(--success)';
+
+            if (visualDevice.siren) {
+                modeEl.textContent = '🚨 SIREN ACTIVE';
+                modeEl.style.color = 'var(--neon-pink)';
+            } else if (visualDevice.strobe) {
+                modeEl.textContent = '⚡ STROBE FLASH';
+                modeEl.style.color = 'var(--warning)';
+            } else if (visualDevice.locked) {
+                modeEl.textContent = '🔒 SCREEN LOCKED';
+                modeEl.style.color = 'var(--danger)';
+            } else {
+                modeEl.textContent = '● ACTIVE NODE';
+                modeEl.style.color = 'var(--cyan-glow)';
+            }
+
+            brtLbl.textContent = `${visualDevice.brightness}% BRT`;
+            brtBar.style.width = `${visualDevice.brightness}%`;
+            volLbl.textContent = `VOL: ${visualDevice.volume}%`;
+            timeLbl.textContent = `TO: ${visualDevice.timeout}`;
+        }
+
+        function animateTopologyFlow(cmdCode) {
+            const webBox = document.getElementById('topoWebBox');
+            const srvBox = document.getElementById('topoServerBox');
+            const devBox = document.getElementById('topoDeviceBox');
+            const pktLeft = document.getElementById('pktLeft');
+            const pktRight = document.getElementById('pktRight');
+            const webPrev = document.getElementById('webCmdPreview');
+            const srvPrev = document.getElementById('serverPayloadBox');
+
+            webPrev.textContent = `CMD: ${cmdCode}`;
+            webBox.classList.add('active-beam');
+            pktLeft.classList.add('traveling');
 
             setTimeout(() => {
-                srvN.classList.remove('pulse-active');
-                phnN.classList.remove('pulse-active');
-            }, 900);
+                pktLeft.classList.remove('traveling');
+                srvBox.classList.add('active-beam');
+                srvPrev.textContent = `{"cmd":"${cmdCode}","sync":"OK"}`;
+                pktRight.classList.add('traveling');
+            }, 220);
 
-            if (phoneSimEnabled) {
-                setTimeout(() => {
-                    if (cmdCode === 'LOCK_ACCESSIBILITY') simPhoneState.screenLocked = true;
-                    if (cmdCode.startsWith('BRIGHTNESS_') || cmdCode.startsWith('VOL_') || cmdCode.startsWith('TIMEOUT_') || cmdCode === 'ALARM_OFF' || cmdCode === 'FLASH_OFF') {
-                        if (cmdCode === 'ALARM_OFF') simPhoneState.screenLocked = false;
-                    }
-                    simPhoneState.lastAckCommand = cmdCode;
-                    simPhoneState.lastAckTime = Date.now();
-                    latestStatusData = { ...simPhoneState };
+            setTimeout(() => {
+                pktRight.classList.remove('traveling');
+                if (phoneSimEnabled) {
+                    devBox.classList.add('active-beam');
+                    updateVisualDevice(cmdCode);
+                    visualDevice.lastAckCommand = cmdCode;
+                    visualDevice.lastAckTime = Date.now();
+                    latestStatusData = {
+                        batteryPct: visualDevice.batteryPct,
+                        network: visualDevice.network,
+                        screenLocked: visualDevice.locked,
+                        lastAckCommand: visualDevice.lastAckCommand,
+                        lastAckTime: visualDevice.lastAckTime
+                    };
                     renderDeviceTelemetry();
-                    appendLog(`[PHONE ACK] Executed ${cmdCode} (Bat: ${simPhoneState.batteryPct}%, ${simPhoneState.network})`);
-                }, 420);
-            }
+                }
+            }, 460);
+
+            setTimeout(() => {
+                srvBox.classList.remove('active-beam');
+                devBox.classList.remove('active-beam');
+            }, 950);
         }
 
         /* ========================================================
@@ -832,7 +1049,7 @@
         function protectedEmergencyDial(number, label) {
             const ok = window.confirm(`🔐 LOCKED EMERGENCY CHANNEL: Confirm dialing ${label} (${number})?`);
             if (!ok) {
-                appendLog(`Protected Emergency Dial (${label} ${number}) kept locked & untouched.`);
+                appendLog(`Protected Emergency Dial (${label} ${number}) kept locked.`);
                 return;
             }
             issueFirebaseCommand(`CALL_NUM:${number}`, `🚨 AUTHORIZED EMERGENCY DIAL: ${label} (${number})`);
@@ -846,16 +1063,16 @@
                 { cmd: 'VOL_50', msg: 'Restore: Volume 50%' },
                 { cmd: 'TIMEOUT_1M', msg: 'Restore: Timeout 1m' }
             ];
-            appendLog('↺ Executing Restore Normal preset...');
+            appendLog('↺ Restoring normal device state...');
             preset.forEach((item, idx) => {
                 setTimeout(() => {
                     issueFirebaseCommand(item.cmd, item.msg);
-                }, idx * 220);
+                }, idx * 240);
             });
         }
 
         /* ========================================================
-           FIREBASE COMMAND WRITER & TERMINAL LOG
+           FIREBASE COMMAND WRITER & SIGNAL TRACE
            ======================================================== */
         const terminal = document.getElementById('termLog');
 
@@ -868,14 +1085,14 @@
         }
 
         function clearTerminal() {
-            terminal.innerHTML = '<div>&gt; LOG CLEARED. AWAITING COMMANDS...</div>';
+            terminal.innerHTML = '<div>&gt; TRACE CLEARED.</div>';
         }
 
         function issueFirebaseCommand(cmdCode, logMessage) {
-            animateBridgeFlow(cmdCode);
+            animateTopologyFlow(cmdCode);
 
             if (!currentUserId) {
-                appendLog(`${logMessage} [LOCAL/PREVIEW MODE]`);
+                appendLog(`${logMessage} [DEMO]`);
                 return;
             }
 
@@ -885,7 +1102,7 @@
             }).then(() => {
                 appendLog(logMessage);
             }).catch(err => {
-                appendLog("SERVER SYNC NOTE: " + err.message, true);
+                appendLog("CLOUD SYNC: " + err.message, true);
             });
         }
 
@@ -901,7 +1118,13 @@
         /* ========================================================
            LIVE DEVICE STATUS & ACK LISTENER
            ======================================================== */
-        let latestStatusData = { ...simPhoneState };
+        let latestStatusData = {
+            batteryPct: visualDevice.batteryPct,
+            network: visualDevice.network,
+            screenLocked: visualDevice.locked,
+            lastAckCommand: visualDevice.lastAckCommand,
+            lastAckTime: visualDevice.lastAckTime
+        };
 
         function renderDeviceTelemetry() {
             const linkEl = document.getElementById('telemLink');
