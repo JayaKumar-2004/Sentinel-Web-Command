@@ -1,135 +1,786 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha-Suraksha | About Us</title>
-    
-    <!-- Premium Tech Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>Raksha Suraksha | About Us</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* 🚀 DYNAMIC THEME VARIABLES */
         :root[data-theme="dark"] {
             --bg-deep: #030712;
-            --bg-panel: rgba(15, 23, 42, 0.85);
-            --cyan-glow: #00E5FF;
+            --bg-panel: rgba(8, 15, 30, 0.86);
+            --bg-card: rgba(10, 18, 36, 0.78);
+            --cyan-glow: #00F0FF;
+            --neon-pink: #FF2A85;
+            --orange-alert: #FF6B35;
             --text-main: #F8FAFC;
             --text-muted: #94A3B8;
-            --border-line: rgba(0, 229, 255, 0.2);
-            --shadow-color: rgba(0, 229, 255, 0.3);
+            --border-line: rgba(0, 240, 255, 0.22);
+            --shadow-color: rgba(0, 240, 255, 0.35);
             --danger: #EF4444;
             --success: #10B981;
             --warning: #F59E0B;
-            --card-inner: rgba(30, 41, 59, 0.5);
+            --card-inner: rgba(15, 23, 42, 0.72);
         }
 
         :root[data-theme="light"] {
-            --bg-deep: #F1F5F9; 
-            --bg-panel: rgba(255, 255, 255, 0.95);
-            --cyan-glow: #1D4ED8; 
+            --bg-deep: #F1F5F9;
+            --bg-panel: rgba(255, 255, 255, 0.94);
+            --bg-card: rgba(255, 255, 255, 0.88);
+            --cyan-glow: #0284C7;
+            --neon-pink: #DB2777;
+            --orange-alert: #EA580C;
             --text-main: #0F172A;
             --text-muted: #475569;
-            --border-line: rgba(29, 78, 216, 0.2);
-            --shadow-color: rgba(29, 78, 216, 0.2);
+            --border-line: rgba(2, 132, 199, 0.22);
+            --shadow-color: rgba(2, 132, 199, 0.25);
             --danger: #DC2626;
             --success: #059669;
             --warning: #D97706;
-            --card-inner: rgba(226, 232, 240, 0.6);
+            --card-inner: rgba(255, 255, 255, 0.85);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
-        body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; transition: background-color 0.4s ease; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
 
-        /* 🚀 BACKGROUND EFFECTS */
-        #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
-        .grid-overlay { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.2; }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            overflow-x: hidden;
+            transition: background-color 0.3s ease;
+        }
 
-        /* 🚀 TOP NAVBAR */
-        .nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500; }
-        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0;}
-        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--text-main); letter-spacing: 2px; text-transform: uppercase;}
-        
-        .desktop-nav { display: flex; align-items: center; gap: 30px; flex-wrap: nowrap;}
-        .nav-links { display: flex; gap: 20px; list-style: none; }
-        .nav-links a { color: var(--text-muted); text-decoration: none; font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
-        .nav-links a:hover, .nav-links a.active { color: var(--cyan-glow); text-shadow: 0 0 8px var(--shadow-color); }
+        /* ========================================================
+           CURSOR ANALYSIS OVERLAY
+           ======================================================== */
+        .cursor-hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 2500;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
 
-        .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 35px; height: 35px; font-size: 1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; color: var(--text-main); flex-shrink: 0;}
-        .theme-toggle:hover { border-color: var(--cyan-glow); box-shadow: 0 0 10px var(--shadow-color); }
+        body:hover .cursor-hud {
+            opacity: 1;
+        }
 
-        .user-chip { display: flex; align-items: center; gap: 10px; background: transparent; border: 1px solid var(--cyan-glow); padding: 5px 15px 5px 5px; border-radius: 30px; font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-main); font-weight: 700; cursor: pointer; transition: 0.3s;}
-        .user-chip:hover { background: rgba(0, 229, 255, 0.1); box-shadow: 0 0 15px var(--shadow-color); }
-        .user-avatar { width: 26px; height: 26px; background: var(--cyan-glow); color: var(--bg-deep); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; }
-        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2rem; cursor: pointer; flex-shrink: 0;}
+        .cursor-reticle {
+            width: 26px;
+            height: 26px;
+            border: 1.5px solid var(--cyan-glow);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--shadow-color), inset 0 0 8px var(--shadow-color);
+            position: relative;
+        }
 
-        /* 🚀 MAIN INTERFACE */
-        main { flex-grow: 1; padding: 120px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; }
-        .content-wrapper { width: 100%; max-width: 1000px; display: flex; flex-direction: column; gap: 50px;}
-        
-        .header-title { text-align: center; margin-bottom: 10px;}
-        .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); color: var(--text-main); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;}
-        .header-title h1 span { color: var(--cyan-glow); }
-        .header-title p { font-family: 'Space Mono', monospace; font-size: clamp(0.85rem, 2vw, 1rem); color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase;}
+        .cursor-reticle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: var(--orange-alert);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
 
-        .mission-panel { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; padding: 40px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; overflow: hidden;}
-        .mission-panel::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, var(--cyan-glow), transparent); }
-        .mission-panel p { font-size: 1.1rem; color: var(--text-main); line-height: 1.8; font-weight: 600; max-width: 800px; margin: 0 auto;}
+        .cursor-readout {
+            background: rgba(3, 7, 18, 0.88);
+            border: 1px solid var(--border-line);
+            color: var(--cyan-glow);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            padding: 3px 7px;
+            border-radius: 4px;
+            white-space: nowrap;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+        }
 
-        .section-heading { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--text-main); font-weight: 800; border-bottom: 1px solid var(--border-line); padding-bottom: 15px; margin-bottom: 30px; display: flex; align-items: center; gap: 12px;}
-        .section-heading::before { content: '■'; color: var(--cyan-glow); font-size: 1rem;}
+        @media (pointer: coarse) {
+            .cursor-hud { display: none; }
+        }
 
-        /* PROBLEM VS SOLUTION CARDS */
-        .vs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .vs-card { background: var(--card-inner); border: 1px solid var(--border-line); border-radius: 12px; padding: 30px; backdrop-filter: blur(5px); transition: 0.3s;}
-        .vs-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); background: var(--bg-panel);}
-        .vs-icon { font-size: 2.5rem; margin-bottom: 15px; }
-        .vs-card h3 { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--text-main); margin-bottom: 10px;}
-        .vs-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;}
+        /* ========================================================
+           BACKGROUND ANIMATION ENGINE
+           ======================================================== */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -4;
+            background: var(--ambient-light);
+            pointer-events: none;
+        }
+
+        #interactiveCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: -3;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+            background-image:
+                linear-gradient(var(--border-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
+            background-size: 56px 56px;
+            opacity: 0.24;
+            animation: gridDrift 22s linear infinite;
+        }
+
+        @keyframes gridDrift {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 56px 56px, 56px 56px; }
+        }
+
+        /* ========================================================
+           TOP NAVBAR
+           ======================================================== */
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 15px 5%;
+            background: var(--bg-panel);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-line);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1500;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .brand-name {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: var(--text-main);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .brand-name span {
+            color: var(--orange-alert);
+        }
+
+        .desktop-nav {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.25s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--cyan-glow);
+            text-shadow: 0 0 10px var(--shadow-color);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-line);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.25s;
+            color: var(--text-main);
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--cyan-glow);
+            box-shadow: 0 0 10px var(--shadow-color);
+        }
+
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: transparent;
+            border: 1px solid var(--cyan-glow);
+            padding: 5px 14px 5px 5px;
+            border-radius: 30px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-main);
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .user-chip:hover {
+            background: rgba(0, 240, 255, 0.1);
+            box-shadow: 0 0 15px var(--shadow-color);
+        }
+
+        .user-avatar {
+            width: 26px;
+            height: 26px;
+            background: var(--cyan-glow);
+            color: #02050E;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 900;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .mobile-nav-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--cyan-glow);
+            font-size: 2rem;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* ========================================================
+           MAIN INTERFACE & FLEX NEON BOXES
+           ======================================================== */
+        main {
+            flex-grow: 1;
+            padding: 112px 5% 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 1140px;
+            display: flex;
+            flex-direction: column;
+            gap: 44px;
+        }
+
+        .header-title {
+            text-align: center;
+        }
+
+        .header-title h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--text-main), var(--cyan-glow), var(--neon-pink), var(--cyan-glow));
+            background-size: 250% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: gradientFlow 6s linear infinite;
+        }
+
+        @keyframes gradientFlow {
+            to { background-position: 250% center; }
+        }
+
+        .header-title p {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(0.85rem, 2vw, 1rem);
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .neon-panel {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-line);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            box-shadow: 0 0 22px rgba(0, 240, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(14px);
+        }
+
+        .neon-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--cyan-glow), var(--neon-pink));
+        }
+
+        .neon-panel p {
+            font-size: 1.05rem;
+            color: var(--text-main);
+            line-height: 1.8;
+            font-weight: 500;
+            max-width: 840px;
+            margin: 0 auto;
+        }
+
+        .section-heading {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            color: var(--text-main);
+            font-weight: 800;
+            border-bottom: 1px solid var(--border-line);
+            padding-bottom: 14px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-heading::before {
+            content: '■';
+            color: var(--cyan-glow);
+            font-size: 1rem;
+        }
+
+        /* FLEX NEON CARDS */
+        .flex-neon-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 24px;
+        }
+
+        .neon-card {
+            flex: 1 1 260px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: var(--card-inner);
+            border: 1.5px solid var(--border-line);
+            border-radius: 12px;
+            padding: 26px;
+            backdrop-filter: blur(12px);
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+            box-shadow: 0 0 14px rgba(0, 240, 255, 0.07);
+        }
+
+        .neon-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--cyan-glow);
+            box-shadow: 0 0 26px rgba(0, 240, 255, 0.25), inset 0 0 12px rgba(0, 240, 255, 0.06);
+        }
+
+        .neon-card.pink-neon:hover {
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 26px rgba(255, 42, 133, 0.26), inset 0 0 12px rgba(255, 42, 133, 0.06);
+        }
+
+        .vs-icon {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+        }
+
+        .neon-card h3,
+        .neon-card h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .neon-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.62;
+        }
+
+        /* ========================================================
+           COMPACT ANIME GRAPH & PING NETWORK EXAMPLE
+           ======================================================== */
+        .anime-ping-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-line);
+            border-radius: 12px;
+            padding: 22px 24px;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 0 22px rgba(0, 240, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .anime-ping-top {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.78rem;
+        }
+
+        .anime-badge {
+            color: var(--cyan-glow);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .anime-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .mini-hud-btn {
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid var(--cyan-glow);
+            color: var(--cyan-glow);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .mini-hud-btn:hover {
+            background: var(--cyan-glow);
+            color: #02050E;
+        }
+
+        .mini-hud-btn.pink {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            background: rgba(255, 42, 133, 0.08);
+        }
+
+        .mini-hud-btn.pink:hover {
+            background: var(--neon-pink);
+            color: #FFFFFF;
+        }
+
+        .anime-visual-flex {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        /* Animated Ping Graph Bars */
+        .ping-graph-wrap {
+            flex: 1 1 280px;
+            background: rgba(2, 6, 23, 0.72);
+            border: 1px solid var(--border-line);
+            border-radius: 8px;
+            padding: 12px 14px;
+        }
+
+        .ping-graph-header {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .ping-graph-header span strong {
+            color: var(--cyan-glow);
+        }
+
+        .ping-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            height: 64px;
+        }
+
+        .ping-bar {
+            flex: 1;
+            min-height: 10%;
+            border-radius: 3px 3px 0 0;
+            background: linear-gradient(180deg, var(--cyan-glow), rgba(0, 240, 255, 0.25));
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.35);
+            transition: height 0.28s ease;
+        }
+
+        .ping-bar.spike {
+            background: linear-gradient(180deg, var(--neon-pink), rgba(255, 42, 133, 0.25));
+            box-shadow: 0 0 10px rgba(255, 42, 133, 0.5);
+        }
+
+        /* Mini Network Node Ping Diagram */
+        .net-nodes-flex {
+            flex: 1 1 300px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            background: rgba(2, 6, 23, 0.72);
+            border: 1px solid var(--border-line);
+            border-radius: 8px;
+            padding: 16px 14px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+        }
+
+        .net-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-line);
+            background: rgba(15, 23, 42, 0.85);
+            min-width: 72px;
+        }
+
+        .net-node.active-pulse {
+            border-color: var(--cyan-glow);
+            box-shadow: 0 0 14px rgba(0, 240, 255, 0.45);
+        }
+
+        .net-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--cyan-glow), var(--neon-pink));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .net-line::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -20%;
+            width: 24%;
+            height: 6px;
+            background: #FFFFFF;
+            box-shadow: 0 0 10px var(--cyan-glow);
+            animation: packetPulse 1.4s linear infinite;
+        }
+
+        @keyframes packetPulse {
+            0% { left: -20%; }
+            100% { left: 105%; }
+        }
 
         /* HOW IT WORKS STEPS */
-        .step-container { display: flex; flex-direction: column; gap: 20px;}
-        .step-row { display: flex; align-items: center; gap: 25px; background: linear-gradient(90deg, var(--bg-panel), transparent); padding: 25px; border-radius: 12px; border-left: 4px solid var(--cyan-glow); box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
+        .step-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .step-row {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            background: linear-gradient(90deg, var(--bg-card), rgba(10, 18, 36, 0.35));
+            padding: 22px;
+            border-radius: 10px;
+            border: 1px solid var(--border-line);
+            border-left: 4px solid var(--cyan-glow);
+            box-shadow: 0 0 14px rgba(0, 240, 255, 0.06);
+        }
+
         .step-row:nth-child(2) { border-left-color: var(--warning); }
         .step-row:nth-child(3) { border-left-color: var(--success); }
-        .step-num { width: 50px; height: 50px; border-radius: 50%; background: var(--bg-deep); border: 2px solid var(--text-muted); color: var(--text-main); display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.2rem; flex-shrink: 0;}
-        .step-content h3 { font-family: 'Space Mono', monospace; color: var(--text-main); font-size: 1.1rem; margin-bottom: 8px; text-transform: uppercase;}
-        .step-content p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5;}
 
-        /* BENEFITS LIST */
-        .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .benefit-item { display: flex; align-items: flex-start; gap: 15px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px; border: 1px solid var(--border-line);}
-        .benefit-icon { color: var(--cyan-glow); font-size: 1.5rem;}
-        .benefit-text h4 { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--text-main); margin-bottom: 5px;}
-        .benefit-text p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;}
+        .step-num {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--bg-deep);
+            border: 2px solid var(--text-muted);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.15rem;
+            flex-shrink: 0;
+        }
 
-        footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 24px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); position: relative; z-index: 10; margin-top: auto;}
+        .step-content h3 {
+            font-family: 'Space Mono', monospace;
+            color: var(--text-main);
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .step-content p {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            line-height: 1.55;
+        }
+
+        footer {
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border-line);
+            padding: 22px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 10;
+            margin-top: auto;
+        }
 
         /* MOBILE MENU */
-        .mobile-overlay-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; backdrop-filter: blur(5px); }
-        .mobile-overlay { position: fixed; top: 0; right: -100%; width: 280px; height: 100vh; background: var(--bg-panel); backdrop-filter: blur(20px); z-index: 3000; padding: 80px 30px 40px 30px; transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-left: 1px solid var(--cyan-glow); box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 30px; }
-        .mobile-overlay.active { right: 0; }
-        .m-nav-close { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 2.5rem; color: var(--text-muted); cursor: pointer; }
-        .m-nav-links { list-style: none; display: flex; flex-direction: column; gap: 25px; }
-        .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; letter-spacing: 2px; transition: 0.3s; display: block; font-weight: 700;}
-        .m-nav-links a:hover, .m-nav-links a.active { color: var(--cyan-glow); }
+        .mobile-overlay-bg {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 999;
+            backdrop-filter: blur(5px);
+        }
+        .mobile-overlay-bg.active { display: block; }
 
-        @media (max-width: 850px) { .desktop-nav { display: none !important; } .mobile-nav-btn { display: block !important; } }
-        @media (max-width: 600px) { .step-row { flex-direction: column; align-items: flex-start; text-align: left; gap: 15px; padding: 20px;} .mission-panel { padding: 30px 20px; } }
+        .mobile-overlay {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-panel);
+            backdrop-filter: blur(20px);
+            z-index: 3000;
+            padding: 80px 30px 40px;
+            transition: right 0.35s ease;
+            border-left: 1.5px solid var(--cyan-glow);
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .mobile-overlay.active { right: 0; }
+
+        .m-nav-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: none;
+            border: none;
+            font-size: 2.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .m-nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .m-nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            transition: 0.25s;
+            display: block;
+            font-weight: 700;
+        }
+
+        .m-nav-links a:hover,
+        .m-nav-links a.active {
+            color: var(--cyan-glow);
+        }
+
+        @media (max-width: 850px) {
+            .desktop-nav { display: none !important; }
+            .mobile-nav-btn { display: block !important; }
+        }
+
+        @media (max-width: 600px) {
+            .step-row { flex-direction: column; align-items: flex-start; gap: 14px; padding: 20px; }
+            .neon-panel, .anime-ping-card { padding: 20px 16px; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- CURSOR ANALYSIS HUD -->
+    <div class="cursor-hud" id="cursorHud">
+        <div class="cursor-reticle"></div>
+        <div class="cursor-readout" id="cursorReadout">ABOUT // X:0 Y:0</div>
+    </div>
+
+    <div class="ambient-bg"></div>
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
     <nav class="nav">
         <a href="index.html" class="brand">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="filter: drop-shadow(0 0 5px var(--cyan-glow));">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="filter: drop-shadow(0 0 6px var(--cyan-glow));">
                 <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z" fill="var(--cyan-glow)"/>
                 <path d="M12 8.5L9.5 9.5V12C9.5 14 10.5 15.5 12 16C13.5 15.5 14.5 14 14.5 12V9.5L12 8.5Z" fill="var(--bg-deep)"/>
             </svg>
-            <div class="brand-name">RAKSHA-SURAKSHA</div>
+            <div class="brand-name">RAKSHA<span> SURAKSHA</span></div>
         </a>
 
         <div class="desktop-nav" id="desktopNavContainer">
@@ -139,18 +790,18 @@
                 <li><a href="about.html" class="active">ABOUT US</a></li>
                 <li><a href="faqs.html">FAQS</a></li>
             </ul>
-            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk" title="Toggle Theme">🌓</button>
             <div class="user-chip" id="authChip">
-                <div class="user-avatar">S</div>
+                <div class="user-avatar">R</div>
                 <div style="display:flex; flex-direction:column; line-height:1.2; text-align: left;">
-                    <span style="font-size:0.45rem; color:var(--text-muted);">AGENT</span>
-                    <span>SENTINEL3TIER</span>
+                    <span style="font-size:0.5rem; color:var(--text-muted);">NODE</span>
+                    <span>SURAKSHA3T</span>
                 </div>
             </div>
         </div>
 
         <div style="display: flex; align-items: center; gap: 15px;">
-            <button class="theme-toggle" style="display: none;" onclick="toggleTheme()" id="themeBtnMob">🌓</button>
+            <button class="theme-toggle" style="display: none;" onclick="toggleTheme()" id="themeBtnMob" title="Toggle Theme">🌓</button>
             <button class="mobile-nav-btn" onclick="toggleMobileNav()">☰</button>
         </div>
     </nav>
@@ -168,107 +819,154 @@
 
     <main>
         <div class="content-wrapper">
-            
             <div class="header-title">
-                <h1>ABOUT <span>RAKSHA-SURAKSHA</span></h1>
-                <p>Your Ultimate Digital Bodyguard</p>
+                <h1>ABOUT <span>RAKSHA SURAKSHA</span></h1>
+                <p>Dual-Channel Device Command &amp; Recovery Architecture</p>
             </div>
 
-            <!-- SIMPLE EXPLANATION -->
-            <div class="mission-panel">
-                <p>We built Raksha-Suraksha because standard phone tracking isn't enough. When a phone is stolen or you are in an emergency, you need absolute control. Our system connects your physical Android phone directly to a secure web dashboard, giving you the power to find, lock, and protect your device from anywhere on Earth.</p>
+            <!-- MISSION PANEL -->
+            <div class="neon-panel">
+                <p>
+                    Raksha Suraksha connects an Android client app with a web command console so you keep control even if mobile data or Wi-Fi is turned off. Cloud sync handles fast real-time commands, while SMS fallback keeps critical actions moving in low-signal or offline zones.
+                </p>
             </div>
 
-            <!-- THE PROBLEM VS SOLUTION -->
+            <!-- PROBLEM VS SOLUTION (FLEX NEON) -->
             <div>
                 <h2 class="section-heading">WHY DO YOU NEED THIS?</h2>
-                <div class="vs-grid">
-                    <div class="vs-card" style="border-top: 3px solid var(--danger);">
+                <div class="flex-neon-grid">
+                    <div class="neon-card pink-neon" style="border-top: 3px solid var(--danger);">
                         <div class="vs-icon">❌</div>
                         <h3 style="color: var(--danger);">The Flaw in Standard Apps</h3>
-                        <p>Most tracking apps (like Find My Device) have a fatal flaw: they instantly stop working the moment a thief turns off your mobile data, cuts Wi-Fi, or puts the phone in airplane mode. If the internet dies, you lose your phone.</p>
+                        <p>
+                            Most tracking apps stop working as soon as mobile data or Wi-Fi is switched off, leaving a gap when connectivity drops.
+                        </p>
                     </div>
-                    <div class="vs-card" style="border-top: 3px solid var(--success);">
+                    <div class="neon-card" style="border-top: 3px solid var(--success);">
                         <div class="vs-icon">✅</div>
-                        <h3 style="color: var(--success);">The Raksha-Suraksha Solution</h3>
-                        <p>Our app survives offline. By using a secure SMS fallback network, we can still communicate with your phone even without an internet connection. You can still trigger the siren, lock the screen, and track the location.</p>
+                        <h3 style="color: var(--success);">The Raksha Suraksha Solution</h3>
+                        <p>
+                            Uses cloud telemetry when online and falls back to SMS command routing when data is unavailable so alerts and location pings still get through.
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <!-- HOW IT WORKS (SIMPLE 3 STEPS) -->
+            <!-- LITTLE ANIME-STYLE GRAPH & PING NETWORK EXAMPLE -->
+            <div>
+                <h2 class="section-heading">NETWORK PING &amp; GRAPH PULSE</h2>
+                <div class="anime-ping-card">
+                    <div class="anime-ping-top">
+                        <span class="anime-badge" id="animeLinkLabel">⚡ LINK: CLOUD SYNC ACTIVE</span>
+                        <div class="anime-controls">
+                            <button class="mini-hud-btn" onclick="triggerPingPulse(false)">PING NODE</button>
+                            <button class="mini-hud-btn pink" onclick="triggerPingPulse(true)">SMS BURST</button>
+                        </div>
+                    </div>
+
+                    <div class="anime-visual-flex">
+                        <div class="ping-graph-wrap">
+                            <div class="ping-graph-header">
+                                <span>PING WAVEFORM</span>
+                                <span><strong id="pingMsVal">38ms</strong></span>
+                            </div>
+                            <div class="ping-bars" id="pingBars"></div>
+                        </div>
+
+                        <div class="net-nodes-flex">
+                            <div class="net-node active-pulse" id="nodeWeb">
+                                <span>🖥️</span>
+                                <span>WEB</span>
+                            </div>
+                            <div class="net-line"></div>
+                            <div class="net-node" id="nodeRelay">
+                                <span>☁️</span>
+                                <span id="relayName">CLOUD</span>
+                            </div>
+                            <div class="net-line"></div>
+                            <div class="net-node" id="nodeDevice">
+                                <span>📱</span>
+                                <span>DEVICE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HOW IT WORKS STEPS -->
             <div>
                 <h2 class="section-heading">HOW IT WORKS</h2>
                 <div class="step-container">
                     <div class="step-row">
                         <div class="step-num" style="border-color: var(--cyan-glow); color: var(--cyan-glow);">1</div>
                         <div class="step-content">
-                            <h3>Install & Link</h3>
-                            <p>Download the Sentinel-X app on your Android phone and log in. Then, log into this website using the exact same email. Your phone and the website are now securely connected.</p>
+                            <h3>Install &amp; Link</h3>
+                            <p>Sign into the Raksha Suraksha app on your Android phone and log into the web portal with your account to link your device.</p>
                         </div>
                     </div>
                     <div class="step-row">
                         <div class="step-num" style="border-color: var(--warning); color: var(--warning);">2</div>
                         <div class="step-content">
                             <h3>Silent Monitoring</h3>
-                            <p>You can go about your day. The app sits quietly in the background, monitoring your phone's sensors for emergencies (like a harsh drop or crash) and waiting for your commands.</p>
+                            <p>The app runs quietly in the background, listening for commands and alert events without getting in your way.</p>
                         </div>
                     </div>
                     <div class="step-row">
                         <div class="step-num" style="border-color: var(--success); color: var(--success);">3</div>
                         <div class="step-content">
                             <h3>Take Command</h3>
-                            <p>If your phone goes missing, just log into this website from any computer or friend's phone. Press a button here, and your lost phone will instantly lock its screen or sound the alarm.</p>
+                            <p>Send location pings, lock directives, or siren triggers from the web dashboard over cloud or SMS fallback.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- KEY BENEFITS -->
+            <!-- KEY BENEFITS (FLEX NEON) -->
             <div>
                 <h2 class="section-heading">WHAT YOU GET</h2>
-                <div class="benefits-grid">
-                    <div class="benefit-item">
-                        <div class="benefit-icon">🔊</div>
-                        <div class="benefit-text">
-                            <h4>Override Silent Mode</h4>
-                            <p>Even if the thief puts your phone on silent, our commands force the alarm to play at 100% maximum volume.</p>
-                        </div>
+                <div class="flex-neon-grid">
+                    <div class="neon-card">
+                        <div class="vs-icon">🔊</div>
+                        <h4>Override Silent Mode</h4>
+                        <p>Triggers high-volume audible alerts remotely to help locate a misplaced phone nearby.</p>
                     </div>
-                    <div class="benefit-item">
-                        <div class="benefit-icon">📍</div>
-                        <div class="benefit-text">
-                            <h4>Offline Tracking</h4>
-                            <p>Get a Google Maps link to your phone's exact location, sent directly via text message if the internet is turned off.</p>
-                        </div>
+                    <div class="neon-card pink-neon">
+                        <div class="vs-icon">📍</div>
+                        <h4>Offline Tracking</h4>
+                        <p>Fetches location coordinates and sends map links even when mobile data is off.</p>
                     </div>
-                    <div class="benefit-item">
-                        <div class="benefit-icon">🚨</div>
-                        <div class="benefit-text">
-                            <h4>Automatic SOS</h4>
-                            <p>If the app detects a severe crash, it can automatically alert emergency services or your designated emergency contacts.</p>
-                        </div>
+                    <div class="neon-card">
+                        <div class="vs-icon">🚨</div>
+                        <h4>Automatic SOS</h4>
+                        <p>Sends rapid distress alerts and location details during emergency situations.</p>
                     </div>
-                    <div class="benefit-item">
-                        <div class="benefit-icon">🔒</div>
-                        <div class="benefit-text">
-                            <h4>Instant Hardware Lock</h4>
-                            <p>With one click, freeze the phone screen entirely so a thief cannot access your personal data or delete your apps.</p>
-                        </div>
+                    <div class="neon-card pink-neon">
+                        <div class="vs-icon">🔒</div>
+                        <h4>Instant Hardware Lock</h4>
+                        <p>Sends an immediate lock command to secure the screen against unauthorized access.</p>
                     </div>
                 </div>
             </div>
-
         </div>
     </main>
 
     <footer>
-        <div>© 2026 R.K Sentinel 3-Tier Tactical Command System</div>
-        <div>Designed for user safety and absolute device control.</div>
+        <div>© 2026 Raksha Suraksha 3-Tier Tactical Command System</div>
+        <div>Designed for user safety and reliable device control.</div>
     </footer>
 
+    <div class="mobile-overlay-bg" id="mobileOverlay" onclick="toggleMobileNav()"></div>
+    <div class="mobile-overlay" id="mobileNav">
+        <button class="m-nav-close" onclick="toggleMobileNav()">×</button>
+        <ul class="m-nav-links">
+            <li><a href="index.html">HOME</a></li>
+            <li><a href="services.html">SERVICES</a></li>
+            <li><a href="about.html" class="active">ABOUT US</a></li>
+            <li><a href="faqs.html">FAQS</a></li>
+        </ul>
+    </div>
+
     <script>
-        // Theme Logic
         function initTheme() {
             const savedTheme = localStorage.getItem('tactical_theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
@@ -282,42 +980,175 @@
             localStorage.setItem('tactical_theme', newTheme);
         }
         function updateMobileThemeBtnVis() {
-            if(window.innerWidth <= 850) { document.getElementById('themeBtnMob').style.display = 'flex'; } 
-            else { document.getElementById('themeBtnMob').style.display = 'none'; }
+            document.getElementById('themeBtnMob').style.display = window.innerWidth <= 850 ? 'flex' : 'none';
         }
-        initTheme(); window.addEventListener('resize', updateMobileThemeBtnVis);
+        initTheme();
+        window.addEventListener('resize', updateMobileThemeBtnVis);
 
-        // Mobile Menu Logic
-        function toggleMobileNav() { 
-            document.getElementById('mobileNav').classList.toggle('active'); 
-            document.getElementById('mobileOverlay').classList.toggle('active'); 
+        function toggleMobileNav() {
+            document.getElementById('mobileNav').classList.toggle('active');
+            document.getElementById('mobileOverlay').classList.toggle('active');
         }
 
-        // Canvas Animation
-        const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let particles = [];
-        for (let i = 0; i < 60; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5 }); }
-        
-        function animateCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        /* ========================================================
+           LITTLE ANIME PING WAVEFORM & NODE ANIMATION
+           ======================================================== */
+        const pingBarsEl = document.getElementById('pingBars');
+        const pingMsValEl = document.getElementById('pingMsVal');
+        const animeLinkLabelEl = document.getElementById('animeLinkLabel');
+        const relayNameEl = document.getElementById('relayName');
+        const BAR_COUNT = 14;
+        const barHeights = Array.from({ length: BAR_COUNT }, () => 25 + Math.floor(Math.random() * 55));
+
+        for (let i = 0; i < BAR_COUNT; i++) {
+            const b = document.createElement('div');
+            b.className = 'ping-bar';
+            b.style.height = barHeights[i] + '%';
+            pingBarsEl.appendChild(b);
+        }
+
+        function pushPingBar(pct, isSpike = false) {
+            barHeights.push(Math.max(12, Math.min(100, pct)));
+            barHeights.shift();
+            const bars = pingBarsEl.children;
+            for (let i = 0; i < BAR_COUNT; i++) {
+                bars[i].style.height = barHeights[i] + '%';
+                bars[i].classList.toggle('spike', isSpike && i === BAR_COUNT - 1);
+            }
+        }
+
+        function triggerPingPulse(isSmsBurst) {
+            const ms = isSmsBurst
+                ? (85 + Math.floor(Math.random() * 55))
+                : (22 + Math.floor(Math.random() * 38));
+            pingMsValEl.textContent = ms + 'ms';
+            relayNameEl.textContent = isSmsBurst ? 'SMS-BUS' : 'CLOUD';
+            animeLinkLabelEl.textContent = isSmsBurst
+                ? '📡 BURST: SMS FALLBACK ROUTE'
+                : '⚡ LINK: CLOUD SYNC ACTIVE';
+            pushPingBar(isSmsBurst ? 92 : 68, isSmsBurst);
+
+            const relayNode = document.getElementById('nodeRelay');
+            const devNode = document.getElementById('nodeDevice');
+            relayNode.classList.add('active-pulse');
+            setTimeout(() => {
+                relayNode.classList.remove('active-pulse');
+                devNode.classList.add('active-pulse');
+                setTimeout(() => devNode.classList.remove('active-pulse'), 320);
+            }, 240);
+        }
+
+        setInterval(() => {
+            const nextPct = 24 + Math.floor(Math.random() * 48);
+            const nextMs = 24 + Math.floor(Math.random() * 34);
+            pingMsValEl.textContent = nextMs + 'ms';
+            pushPingBar(nextPct, false);
+        }, 1200);
+
+        /* ========================================================
+           CURSOR ANALYSIS TRACKER
+           ======================================================== */
+        const cursorHud = document.getElementById('cursorHud');
+        const cursorReadout = document.getElementById('cursorReadout');
+        let pointerX = window.innerWidth / 2;
+        let pointerY = window.innerHeight / 2;
+        let pointerActive = false;
+
+        window.addEventListener('pointermove', (e) => {
+            pointerX = e.clientX;
+            pointerY = e.clientY;
+            pointerActive = true;
+
+            if (cursorHud) {
+                cursorHud.style.left = pointerX + 'px';
+                cursorHud.style.top = pointerY + 'px';
+                const box = e.target.closest('.neon-card, .anime-ping-card, .step-row');
+                const sector = box
+                    ? (box.querySelector('h3, h4, .anime-badge')?.textContent.trim().slice(0, 18) || 'NODE')
+                    : 'ABOUT GRID';
+                cursorReadout.textContent = `${sector} // ${Math.round(pointerX)},${Math.round(pointerY)}`;
+            }
+        });
+
+        /* ========================================================
+           BACKGROUND CONSTELLATION + CURSOR ANALYSIS CANVAS
+           ======================================================== */
+        const canvas = document.getElementById('interactiveCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const NODE_COUNT = 38;
+        const nodes = [];
+        for (let i = 0; i < NODE_COUNT; i++) {
+            nodes.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                vx: (Math.random() - 0.5) * 0.55,
+                vy: (Math.random() - 0.5) * 0.55
+            });
+        }
+
+        function animateCanvas(now) {
+            ctx.clearRect(0, 0, width, height);
             const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-            const rgbLine = isLight ? '29, 78, 216' : '0, 229, 255';
+            const primaryRgb = isLight ? '2, 132, 199' : '0, 240, 255';
+            const accentRgb = isLight ? '219, 39, 119' : '255, 42, 133';
 
-            for (let i = 0; i < particles.length; i++) {
-                let p = particles[i]; p.x += p.vx; p.y += p.vy;
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1; if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                for (let j = i + 1; j < particles.length; j++) {
-                    let p2 = particles[j]; let dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
-                    if (dist < 140) {
-                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(${rgbLine}, ${0.2 - dist/700})`; ctx.lineWidth = 0.5; ctx.stroke();
+            ctx.strokeStyle = `rgba(${primaryRgb}, 0.08)`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let x = 0; x <= width; x += 40) {
+                const y = height * 0.5 + Math.sin(x * 0.008 + (now || 0) * 0.0015) * 32;
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            for (let i = 0; i < NODE_COUNT; i++) {
+                const p = nodes[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0 || p.x > width) p.vx *= -1;
+                if (p.y < 0 || p.y > height) p.vy *= -1;
+
+                ctx.fillStyle = `rgba(${primaryRgb}, 0.55)`;
+                ctx.fillRect(p.x - 1, p.y - 1, 2.5, 2.5);
+
+                if (pointerActive) {
+                    const dist = Math.hypot(pointerX - p.x, pointerY - p.y);
+                    if (dist < 165) {
+                        ctx.strokeStyle = `rgba(${accentRgb}, ${0.42 * (1 - dist / 165)})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(pointerX, pointerY);
+                        ctx.stroke();
                     }
                 }
-            } requestAnimationFrame(animateCanvas);
-        } 
-        animateCanvas(); 
-        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+                for (let j = i + 1; j < NODE_COUNT; j++) {
+                    const p2 = nodes[j];
+                    const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                    if (dist < 115) {
+                        ctx.strokeStyle = `rgba(${primaryRgb}, ${0.14 - dist / 900})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animateCanvas);
+        }
+        requestAnimationFrame(animateCanvas);
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
     </script>
 </body>
 </html>
