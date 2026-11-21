@@ -1,75 +1,618 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha-Suraksha | App Controls</title>
-    
+    <title>Raksha Suraksha | App Controls</title>
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* 🚀 THEME VARIABLES */
-        :root[data-theme="dark"] { --bg-deep: #030712; --bg-panel: rgba(15, 23, 42, 0.85); --cyan-glow: #00E5FF; --text-main: #F8FAFC; --text-muted: #94A3B8; --border-line: rgba(0, 229, 255, 0.2); --shadow-color: rgba(0, 229, 255, 0.3); --danger: #EF4444; --danger-bg: rgba(239, 68, 68, 0.1); --warning: #F59E0B; --success: #10B981; --input-bg: rgba(0,0,0,0.8); --terminal-text: #10B981; }
-        :root[data-theme="light"] { --bg-deep: #F1F5F9; --bg-panel: rgba(255, 255, 255, 0.95); --cyan-glow: #1D4ED8; --text-main: #0F172A; --text-muted: #475569; --border-line: rgba(29, 78, 216, 0.2); --shadow-color: rgba(29, 78, 216, 0.2); --danger: #DC2626; --danger-bg: rgba(220, 38, 38, 0.1); --warning: #D97706; --success: #059669; --input-bg: #FFFFFF; --terminal-text: #059669; }
+        :root[data-theme="dark"] {
+            --bg-deep: #030712;
+            --bg-panel: rgba(8, 15, 30, 0.86);
+            --bg-card: rgba(10, 18, 36, 0.78);
+            --cyan-glow: #00F0FF;
+            --neon-pink: #FF2A85;
+            --orange-alert: #FF6B35;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-line: rgba(0, 240, 255, 0.22);
+            --shadow-color: rgba(0, 240, 255, 0.35);
+            --danger: #EF4444;
+            --danger-bg: rgba(239, 68, 68, 0.12);
+            --warning: #F59E0B;
+            --success: #10B981;
+            --input-bg: rgba(2, 6, 23, 0.9);
+            --terminal-text: #10B981;
+            --ambient-light: radial-gradient(circle at 50% 15%, rgba(0, 240, 255, 0.12) 0%, transparent 65%);
+        }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); }
-        #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
-        .grid-overlay { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.2; }
-        
-        .nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500; }
-        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--text-main); letter-spacing: 2px;}
-        .return-base-btn { font-family: 'Space Mono', monospace; color: var(--cyan-glow); text-decoration: none; font-size: 0.85rem; font-weight: 700; border: 1px solid var(--border-line); padding: 8px 16px; border-radius: 6px; background: rgba(0, 229, 255, 0.05); }
+        :root[data-theme="light"] {
+            --bg-deep: #F1F5F9;
+            --bg-panel: rgba(255, 255, 255, 0.94);
+            --bg-card: rgba(255, 255, 255, 0.88);
+            --cyan-glow: #0284C7;
+            --neon-pink: #DB2777;
+            --orange-alert: #EA580C;
+            --text-main: #0F172A;
+            --text-muted: #475569;
+            --border-line: rgba(2, 132, 199, 0.22);
+            --shadow-color: rgba(2, 132, 199, 0.25);
+            --danger: #DC2626;
+            --danger-bg: rgba(220, 38, 38, 0.1);
+            --warning: #D97706;
+            --success: #059669;
+            --input-bg: #FFFFFF;
+            --terminal-text: #059669;
+            --ambient-light: radial-gradient(circle at 50% 15%, rgba(2, 132, 199, 0.08) 0%, transparent 65%);
+        }
 
-        main { flex-grow: 1; padding: 100px 5% 60px 5%; display: flex; flex-direction: column; align-items: center; }
-        .content-wrapper { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 30px;}
-        .module-panel { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; backdrop-filter: blur(10px); padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .panel-header { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: var(--text-main); font-weight: 800; letter-spacing: 1px; display: flex; justify-content: center; margin-bottom: 25px;}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
 
-        .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;}
-        .btn-ctrl { flex: 1; min-width: 80px; padding: 10px 5px; background: transparent; border: 1px solid var(--cyan-glow); color: var(--cyan-glow); font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700; border-radius: 4px; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        .btn-ctrl:hover { background: var(--cyan-glow); color: var(--bg-deep); box-shadow: 0 0 10px var(--shadow-color); }
-        .btn-danger { border-color: var(--danger); color: var(--danger); }
-        .btn-danger:hover { background: var(--danger); color: #FFF; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
-        .btn-warning { border-color: var(--warning); color: var(--warning); }
-        .btn-warning:hover { background: var(--warning); color: #000; box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
-        .btn-full { width: 100%; margin-bottom: 20px; }
-        .sub-label { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-main); margin-bottom: 10px; font-weight: 700;}
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            overflow-x: hidden;
+            transition: background-color 0.3s ease;
+        }
 
-        .terminal-box { background: var(--input-bg); border: 1px solid var(--border-line); border-radius: 6px; padding: 15px; font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--terminal-text); height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
+        /* ========================================================
+           CURSOR ANALYSIS OVERLAY
+           ======================================================== */
+        .cursor-hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 2500;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
 
-        /* SOS Inputs */
-        .sos-input-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;}
-        .sos-input { flex: 1; min-width: 150px; background: transparent; border: 1px solid var(--border-line); padding: 10px; color: var(--text-main); font-family: 'Space Mono'; font-size: 0.85rem; border-radius: 4px; outline: none; }
-        
-        #authLoader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron'; color: var(--cyan-glow); font-size: 1.5rem; letter-spacing: 2px;}
+        body:hover .cursor-hud { opacity: 1; }
+
+        .cursor-reticle {
+            width: 26px;
+            height: 26px;
+            border: 1.5px solid var(--cyan-glow);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--shadow-color), inset 0 0 8px var(--shadow-color);
+            position: relative;
+        }
+
+        .cursor-reticle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: var(--orange-alert);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-readout {
+            background: rgba(3, 7, 18, 0.88);
+            border: 1px solid var(--border-line);
+            color: var(--cyan-glow);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            padding: 3px 7px;
+            border-radius: 4px;
+            white-space: nowrap;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+        }
+
+        @media (pointer: coarse) { .cursor-hud { display: none; } }
+
+        /* ========================================================
+           BACKGROUND ANIMATION ENGINE
+           ======================================================== */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -4;
+            background: var(--ambient-light);
+            pointer-events: none;
+        }
+
+        #interactiveCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: -3;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+            background-image:
+                linear-gradient(var(--border-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
+            background-size: 56px 56px;
+            opacity: 0.24;
+            animation: gridDrift 22s linear infinite;
+        }
+
+        @keyframes gridDrift {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 56px 56px, 56px 56px; }
+        }
+
+        /* ========================================================
+           NAVBAR & MAIN LAYOUT
+           ======================================================== */
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: var(--bg-panel);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-line);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1500;
+        }
+
+        .brand-name {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.15rem;
+            color: var(--text-main);
+            letter-spacing: 2px;
+        }
+
+        .brand-name span { color: var(--orange-alert); }
+
+        .return-base-btn {
+            font-family: 'Space Mono', monospace;
+            color: var(--cyan-glow);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 700;
+            border: 1px solid var(--border-line);
+            padding: 8px 14px;
+            border-radius: 6px;
+            background: rgba(0, 240, 255, 0.06);
+            transition: 0.2s;
+        }
+
+        .return-base-btn:hover {
+            border-color: var(--cyan-glow);
+            box-shadow: 0 0 12px var(--shadow-color);
+        }
+
+        .nav-right-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mini-top-btn {
+            background: rgba(0, 240, 255, 0.06);
+            border: 1px solid var(--border-line);
+            color: var(--text-main);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 7px 11px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .mini-top-btn:hover {
+            border-color: var(--cyan-glow);
+            color: var(--cyan-glow);
+        }
+
+        .mini-top-btn.armed {
+            border-color: var(--danger);
+            color: #FFFFFF;
+            background: rgba(239, 68, 68, 0.28);
+            box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
+        }
+
+        main {
+            flex-grow: 1;
+            padding: 104px 5% 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 920px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* FLEX NEON MODULE PANEL */
+        .neon-panel {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-line);
+            border-radius: 12px;
+            backdrop-filter: blur(14px);
+            padding: 28px;
+            box-shadow: 0 0 22px rgba(0, 240, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .neon-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--cyan-glow), var(--neon-pink));
+        }
+
+        .neon-panel:hover {
+            border-color: var(--cyan-glow);
+            box-shadow: 0 0 26px rgba(0, 240, 255, 0.2);
+        }
+
+        .neon-panel.pink-panel::before {
+            background: linear-gradient(90deg, var(--neon-pink), var(--orange-alert));
+        }
+
+        .panel-header {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            font-weight: 800;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* TELEMETRY & ACK BAR */
+        .telemetry-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .telem-chip {
+            flex: 1 1 160px;
+            background: rgba(2, 6, 23, 0.72);
+            border: 1px solid var(--border-line);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+        }
+
+        .telem-label {
+            color: var(--text-muted);
+            display: block;
+            font-size: 0.65rem;
+            margin-bottom: 3px;
+        }
+
+        .telem-val {
+            color: var(--cyan-glow);
+            font-weight: 700;
+        }
+
+        /* GUARDRAIL & RESTORE BAR */
+        .guardrail-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            background: rgba(2, 6, 23, 0.65);
+            border: 1px solid var(--border-line);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 22px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.74rem;
+        }
+
+        .guard-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn-guard-toggle {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.74rem;
+            font-weight: 700;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-guard-toggle.armed {
+            background: rgba(239, 68, 68, 0.18);
+            border-color: var(--danger);
+            color: var(--danger);
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-restore {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.74rem;
+            font-weight: 700;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-restore:hover {
+            background: var(--success);
+            color: #02050E;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .btn-ctrl {
+            flex: 1;
+            min-width: 84px;
+            padding: 11px 8px;
+            background: rgba(0, 240, 255, 0.04);
+            border: 1px solid var(--cyan-glow);
+            color: var(--cyan-glow);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.78rem;
+            font-weight: 700;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn-ctrl:hover {
+            background: var(--cyan-glow);
+            color: #02050E;
+            box-shadow: 0 0 14px var(--shadow-color);
+        }
+
+        .btn-danger {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: #FFF;
+            box-shadow: 0 0 14px rgba(239, 68, 68, 0.45);
+        }
+
+        .btn-warning {
+            border-color: var(--warning);
+            color: var(--warning);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .btn-warning:hover {
+            background: var(--warning);
+            color: #02050E;
+            box-shadow: 0 0 14px rgba(245, 158, 11, 0.45);
+        }
+
+        .btn-full {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .sub-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.82rem;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .terminal-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .btn-clear-term {
+            background: transparent;
+            border: 1px solid var(--border-line);
+            color: var(--text-muted);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.68rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-clear-term:hover {
+            border-color: var(--cyan-glow);
+            color: var(--cyan-glow);
+        }
+
+        .terminal-box {
+            background: var(--input-bg);
+            border: 1px solid var(--border-line);
+            border-radius: 6px;
+            padding: 14px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--terminal-text);
+            height: 150px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-top: 6px;
+        }
+
+        .sos-input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .sos-input {
+            flex: 1;
+            min-width: 150px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-line);
+            padding: 11px 12px;
+            color: var(--text-main);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.82rem;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .sos-input:focus {
+            border-color: var(--cyan-glow);
+        }
+
+        #authLoader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-deep);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--cyan-glow);
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+        }
     </style>
 </head>
 <body>
 
+    <!-- CURSOR ANALYSIS HUD -->
+    <div class="cursor-hud" id="cursorHud">
+        <div class="cursor-reticle"></div>
+        <div class="cursor-readout" id="cursorReadout">CONTROLS // X:0 Y:0</div>
+    </div>
+
     <div id="authLoader">VERIFYING CREDENTIALS...</div>
+    <div class="ambient-bg"></div>
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
     <nav class="nav">
         <a href="services.html" class="return-base-btn">⟵ BACK</a>
-        <div class="brand-name">APP CONTROLS</div>
-        <div style="width: 80px;"></div> </nav>
+        <div class="brand-name">RAKSHA<span> SURAKSHA</span> // CONTROLS</div>
+        <div class="nav-right-group">
+            <button class="mini-top-btn" onclick="toggleTheme()" title="Toggle Theme">🌓</button>
+        </div>
+    </nav>
 
     <main>
         <div class="content-wrapper">
-            
-            <div class="module-panel">
-                <div class="panel-header">🎛️ HARDWARE OVERRIDE</div>
-                
-                <button class="btn-ctrl btn-danger btn-full" onclick="issueFirebaseCommand('LOCK_ACCESSIBILITY', '🔒 ACCESSIBILITY LOCK COMMAND PUSHED.')">🔒 INSTANT LOCK (Accessibility Override)</button>
+
+            <div class="neon-panel">
+                <div class="panel-header">
+                    <span>🎛️ HARDWARE OVERRIDE</span>
+                    <span id="ackBadge" style="font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--text-muted);">ACK: WAITING</span>
+                </div>
+
+                <!-- LIVE DEVICE TELEMETRY & ACK STRIP -->
+                <div class="telemetry-flex">
+                    <div class="telem-chip">
+                        <span class="telem-label">DEVICE LINK</span>
+                        <span class="telem-val" id="telemLink">AWAITING TELEMETRY</span>
+                    </div>
+                    <div class="telem-chip">
+                        <span class="telem-label">BATTERY / NET</span>
+                        <span class="telem-val" id="telemBatteryNet">--% • --</span>
+                    </div>
+                    <div class="telem-chip">
+                        <span class="telem-label">SCREEN STATE</span>
+                        <span class="telem-val" id="telemScreen">--</span>
+                    </div>
+                    <div class="telem-chip">
+                        <span class="telem-label">LAST ACK CMD</span>
+                        <span class="telem-val" id="telemLastCmd">NONE</span>
+                    </div>
+                </div>
+
+                <!-- SAFETY GUARDRAIL & RESTORE NORMAL PRESET -->
+                <div class="guardrail-bar">
+                    <div>
+                        <span id="guardStatusText" style="color: var(--warning); font-weight: 700;">
+                            🛡️ SAFE GUARD ON: High-risk &amp; dial actions ask confirmation
+                        </span>
+                    </div>
+                    <div class="guard-actions">
+                        <button id="btnGuardToggle" class="btn-guard-toggle" onclick="toggleHighRiskArm()">
+                            🔓 ARM HIGH-RISK
+                        </button>
+                        <button class="btn-restore" onclick="restoreNormalState()">
+                            ↺ RESTORE NORMAL
+                        </button>
+                    </div>
+                </div>
+
+                <button class="btn-ctrl btn-danger btn-full" onclick="guardedCommand('LOCK_ACCESSIBILITY', '🔒 ACCESSIBILITY LOCK COMMAND PUSHED.', 'Lock device screen immediately?')">
+                    🔒 INSTANT LOCK (Accessibility Override)
+                </button>
 
                 <div class="sub-label">Screen Timeout</div>
                 <div class="btn-row">
-                    <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_1S', 'Screen timeout 1s pushed.')">1 SEC</button>
+                    <button class="btn-ctrl" onclick="guardedCommand('TIMEOUT_1S', 'Screen timeout 1s pushed.', 'Set screen timeout to 1 second?', true)">1 SEC</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_10S', 'Screen timeout 10s pushed.')">10 SEC</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_1M', 'Screen timeout 1m pushed.')">1 MIN</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('TIMEOUT_5M', 'Screen timeout 5m pushed.')">5 MIN</button>
@@ -77,7 +620,7 @@
 
                 <div class="sub-label">Display Brightness</div>
                 <div class="btn-row">
-                    <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHTNESS_0', 'Brightness 0% pushed.')">0%</button>
+                    <button class="btn-ctrl" onclick="guardedCommand('BRIGHTNESS_0', 'Brightness 0% pushed.', 'Set display brightness to 0%?', true)">0%</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHTNESS_30', 'Brightness 30% pushed.')">30%</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHTNESS_50', 'Brightness 50% pushed.')">50%</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('BRIGHTNESS_80', 'Brightness 80% pushed.')">80%</button>
@@ -93,101 +636,323 @@
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('VOL_100', 'Volume 100% pushed.')">100%</button>
                 </div>
 
-                <div class="sub-label" style="color: var(--danger);">Anti-Theft Siren & Strobe</div>
+                <div class="sub-label" style="color: var(--danger);">Anti-Theft Siren &amp; Strobe</div>
                 <div class="btn-row">
-                    <button class="btn-ctrl btn-danger" onclick="issueFirebaseCommand('ALARM_ON', '🚨 ANTI-THEFT SIREN TRIGGERED.')">🚨 TRIGGER SIREN</button>
+                    <button class="btn-ctrl btn-danger" onclick="guardedCommand('ALARM_ON', '🚨 ANTI-THEFT SIREN TRIGGERED.', 'Trigger max-volume anti-theft siren?')">🚨 TRIGGER SIREN</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('ALARM_OFF', '🔇 ANTI-THEFT SIREN DISARMED.')">🔇 DISARM SIREN</button>
-                    <button class="btn-ctrl btn-warning" onclick="issueFirebaseCommand('FLASH_BLINK', '⚡ STROBE FLASH ENGAGED.')">⚡ STROBE FLASH</button>
+                    <button class="btn-ctrl btn-warning" onclick="guardedCommand('FLASH_BLINK', '⚡ STROBE FLASH ENGAGED.', 'Start strobe flashlight?')">⚡ STROBE FLASH</button>
                     <button class="btn-ctrl" onclick="issueFirebaseCommand('FLASH_OFF', '❌ STROBE FLASH DISABLED.')">❌ FLASH OFF</button>
                 </div>
 
+                <div class="terminal-header-row">
+                    <span>COMMAND DISPATCH LOG</span>
+                    <button class="btn-clear-term" onclick="clearTerminal()">CLEAR LOG</button>
+                </div>
                 <div class="terminal-box" id="termLog">
-                    <div>> SECURE FIREBASE UPLINK ESTABLISHED.</div>
-                    <div>> AWAITING AGENT COMMANDS...</div>
+                    <div>&gt; SECURE FIREBASE UPLINK ESTABLISHED.</div>
+                    <div>&gt; AWAITING AGENT COMMANDS...</div>
                 </div>
             </div>
 
-            <div class="module-panel">
-                <div class="panel-header" style="color: var(--danger);">🚨 EMERGENCY COMMUNICATIONS</div>
+            <div class="neon-panel pink-panel">
+                <div class="panel-header" style="color: var(--danger);">
+                    <span>🚨 EMERGENCY COMMUNICATIONS</span>
+                </div>
 
                 <div class="btn-row" id="emergencyGroup">
-                    <button class="btn-ctrl btn-danger" onclick="issueFirebaseCommand('CALL_NUM:112', 'FORCE DIALING: POLICE (112)')">POLICE (112)</button>
-                    <button class="btn-ctrl btn-danger" onclick="issueFirebaseCommand('CALL_NUM:108', 'FORCE DIALING: AMBULANCE (108)')">AMBULANCE (108)</button>
-                    <button class="btn-ctrl btn-danger" onclick="issueFirebaseCommand('CALL_NUM:101', 'FORCE DIALING: FIRE (101)')">FIRE (101)</button>
+                    <button class="btn-ctrl btn-danger" onclick="guardedCommand('CALL_NUM:112', 'FORCE DIALING: POLICE (112)', 'Force dial emergency number 112 (Police)?')">POLICE (112)</button>
+                    <button class="btn-ctrl btn-danger" onclick="guardedCommand('CALL_NUM:108', 'FORCE DIALING: AMBULANCE (108)', 'Force dial emergency number 108 (Ambulance)?')">AMBULANCE (108)</button>
+                    <button class="btn-ctrl btn-danger" onclick="guardedCommand('CALL_NUM:101', 'FORCE DIALING: FIRE (101)', 'Force dial emergency number 101 (Fire)?')">FIRE (101)</button>
                 </div>
 
-                <div class="sub-label" style="margin-top: 20px; color: var(--success);">Custom SOS Auto-Dialer</div>
+                <div class="sub-label" style="margin-top: 18px; color: var(--success);">Custom SOS Auto-Dialer</div>
                 <div class="sos-input-row">
-                    <input type="text" id="sosName" class="sos-input" placeholder="Name">
+                    <input type="text" id="sosName" class="sos-input" placeholder="Contact Label">
                     <input type="text" id="sosNum" class="sos-input" placeholder="Phone Number">
                 </div>
-                <button class="btn-ctrl btn-full" style="border-color: var(--success); color: var(--success);" onclick="addSOS()">+ STORE & DIAL</button>
+                <button class="btn-ctrl btn-full" style="border-color: var(--success); color: var(--success);" onclick="addSOS()">+ STORE &amp; DIAL</button>
             </div>
 
         </div>
     </main>
 
     <script>
-        const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
-        if (!firebase.apps.length) { firebase.initializeApp(fbCfg); }
+        function toggleTheme() {
+            const root = document.documentElement;
+            const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            root.setAttribute('data-theme', next);
+            localStorage.setItem('tactical_theme', next);
+        }
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('tactical_theme') || 'dark');
+
+        const fbCfg = {
+            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI",
+            authDomain: "sentinel-vault-fb4b7.firebaseapp.com",
+            projectId: "sentinel-vault-fb4b7",
+            storageBucket: "sentinel-vault-fb4b7.firebasestorage.app",
+            messagingSenderId: "192301825793",
+            appId: "1:192301825793:web:734530705f4084608fe500"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(fbCfg);
+        }
         const database = firebase.database();
         let currentUserId = null;
 
-        const terminal = document.getElementById('termLog');
-        
-        // 🚀 FIREBASE WRITER: PATH MATCHES JAVA PERFECTLY
-        function issueFirebaseCommand(cmdCode, logMessage) {
-            if(!currentUserId) { alert("Agent connection lost."); return; }
+        /* ========================================================
+           FEATURE #3: SAFETY GUARDRAIL & RESTORE NORMAL STATE
+           ======================================================== */
+        let highRiskArmed = false;
 
-            // JAVA APP LISTENS HERE: "users/" + userUid + "/CurrentCommand"
+        function toggleHighRiskArm() {
+            highRiskArmed = !highRiskArmed;
+            const btn = document.getElementById('btnGuardToggle');
+            const txt = document.getElementById('guardStatusText');
+            if (highRiskArmed) {
+                btn.classList.add('armed');
+                btn.textContent = '🔒 DISARM HIGH-RISK';
+                txt.style.color = 'var(--danger)';
+                txt.textContent = '⚠️ HIGH-RISK ARMED: Critical & dial commands run immediately';
+            } else {
+                btn.classList.remove('armed');
+                btn.textContent = '🔓 ARM HIGH-RISK';
+                txt.style.color = 'var(--warning)';
+                txt.textContent = '🛡️ SAFE GUARD ON: High-risk & dial actions ask confirmation';
+            }
+        }
+
+        function guardedCommand(cmdCode, logMessage, promptText, isDisruptive = false) {
+            if (!highRiskArmed && (promptText || isDisruptive)) {
+                const ok = window.confirm(promptText || `Confirm command: ${cmdCode}?`);
+                if (!ok) {
+                    appendLog(`Cancelled ${cmdCode} via Safe Guard.`);
+                    return;
+                }
+            }
+            issueFirebaseCommand(cmdCode, logMessage);
+        }
+
+        function restoreNormalState() {
+            const preset = [
+                { cmd: 'ALARM_OFF', msg: 'Restore: Siren off' },
+                { cmd: 'FLASH_OFF', msg: 'Restore: Flash off' },
+                { cmd: 'BRIGHTNESS_80', msg: 'Restore: Brightness 80%' },
+                { cmd: 'VOL_50', msg: 'Restore: Volume 50%' },
+                { cmd: 'TIMEOUT_1M', msg: 'Restore: Timeout 1m' }
+            ];
+            appendLog('↺ Executing Restore Normal preset sequence...');
+            preset.forEach((item, idx) => {
+                setTimeout(() => {
+                    issueFirebaseCommand(item.cmd, item.msg);
+                }, idx * 250);
+            });
+        }
+
+        /* ========================================================
+           FIREBASE COMMAND WRITER & TERMINAL LOG
+           ======================================================== */
+        const terminal = document.getElementById('termLog');
+
+        function appendLog(text, isError = false) {
+            const div = document.createElement('div');
+            if (isError) div.style.color = 'var(--danger)';
+            div.textContent = `> ${text}`;
+            terminal.appendChild(div);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function clearTerminal() {
+            terminal.innerHTML = '<div>&gt; LOG CLEARED. AWAITING AGENT COMMANDS...</div>';
+        }
+
+        function issueFirebaseCommand(cmdCode, logMessage) {
+            if (!currentUserId) {
+                alert("Agent connection lost.");
+                return;
+            }
+
             database.ref('users/' + currentUserId + '/CurrentCommand').set({
                 command: cmdCode,
                 timestamp: Date.now()
             }).then(() => {
-                const div = document.createElement('div');
-                div.textContent = `> ${logMessage}`;
-                terminal.appendChild(div);
-                terminal.scrollTop = terminal.scrollHeight;
+                appendLog(logMessage);
             }).catch(err => {
-                const div = document.createElement('div');
-                div.style.color = "red";
-                div.textContent = "> ERROR: " + err.message;
-                terminal.appendChild(div);
+                appendLog("ERROR: " + err.message, true);
             });
         }
 
-        // SOS UI Helper
         function addSOS() {
-            const num = document.getElementById('sosNum').value;
-            const name = document.getElementById('sosName').value;
-            if(!num) return;
-            issueFirebaseCommand('CALL_NUM:' + num, 'FORCE DIALING: ' + name);
+            const num = document.getElementById('sosNum').value.trim();
+            const name = document.getElementById('sosName').value.trim() || 'CUSTOM SOS';
+            if (!num) return;
+            guardedCommand(
+                'CALL_NUM:' + num,
+                `FORCE DIALING: ${name} (${num})`,
+                `Force dial ${name} (${num})?`
+            );
             document.getElementById('sosNum').value = '';
             document.getElementById('sosName').value = '';
         }
 
-        firebase.auth().onAuthStateChanged(user => { 
-            if (!user) window.location.href = 'index.html'; 
-            else {
+        /* ========================================================
+           FEATURE #2: LIVE DEVICE STATUS & ACK LISTENER
+           ======================================================== */
+        let latestStatusData = null;
+
+        function renderDeviceTelemetry() {
+            const linkEl = document.getElementById('telemLink');
+            const batEl = document.getElementById('telemBatteryNet');
+            const scrEl = document.getElementById('telemScreen');
+            const cmdEl = document.getElementById('telemLastCmd');
+            const badgeEl = document.getElementById('ackBadge');
+
+            if (!latestStatusData) {
+                linkEl.textContent = 'AWAITING TELEMETRY';
+                linkEl.style.color = 'var(--text-muted)';
+                return;
+            }
+
+            const lastSeen = latestStatusData.lastAckTime || latestStatusData.timestamp || 0;
+            const ageSec = lastSeen ? Math.max(0, Math.floor((Date.now() - lastSeen) / 1000)) : null;
+            const isRecent = ageSec !== null && ageSec <= 120;
+
+            linkEl.textContent = ageSec !== null
+                ? (isRecent ? `ONLINE (${ageSec}s ago)` : `IDLE (${ageSec}s ago)`)
+                : 'CONNECTED';
+            linkEl.style.color = isRecent ? 'var(--success)' : 'var(--warning)';
+
+            const pct = latestStatusData.batteryPct !== undefined ? `${latestStatusData.batteryPct}%` : '--%';
+            const net = latestStatusData.network || 'UNKNOWN';
+            batEl.textContent = `${pct} • ${net}`;
+
+            scrEl.textContent = latestStatusData.screenLocked === true
+                ? 'LOCKED'
+                : (latestStatusData.screenLocked === false ? 'UNLOCKED' : 'ACTIVE');
+
+            const ackCmd = latestStatusData.lastAckCommand || 'READY';
+            cmdEl.textContent = ackCmd;
+            badgeEl.textContent = `ACK: ${ackCmd}`;
+            badgeEl.style.color = 'var(--success)';
+        }
+
+        setInterval(renderDeviceTelemetry, 5000);
+
+        function attachStatusListener(uid) {
+            database.ref('users/' + uid + '/DeviceStatus').on('value', (snap) => {
+                latestStatusData = snap.val();
+                renderDeviceTelemetry();
+            });
+        }
+
+        firebase.auth().onAuthStateChanged(user => {
+            if (!user) {
+                window.location.href = 'index.html';
+            } else {
                 currentUserId = user.uid;
                 document.getElementById('authLoader').style.display = 'none';
+                attachStatusListener(user.uid);
             }
         });
 
-        // Theme Background Setup
-        document.documentElement.setAttribute('data-theme', localStorage.getItem('tactical_theme') || 'dark');
-        const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d'); canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let particles = []; for (let i = 0; i < 65; i++) particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5 });
-        function animateCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); const rgbLine = document.documentElement.getAttribute('data-theme') === 'light' ? '29, 78, 216' : '0, 229, 255';
-            for (let i = 0; i < particles.length; i++) {
-                let p = particles[i]; p.x += p.vx; p.y += p.vy; if (p.x < 0 || p.x > canvas.width) p.vx *= -1; if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                for (let j = i + 1; j < particles.length; j++) {
-                    let dist = Math.sqrt((p.x - particles[j].x)**2 + (p.y - particles[j].y)**2);
-                    if (dist < 140) { ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(particles[j].x, particles[j].y); ctx.strokeStyle = `rgba(${rgbLine}, ${0.2 - dist/700})`; ctx.lineWidth = 0.5; ctx.stroke(); }
+        /* ========================================================
+           CURSOR ANALYSIS TRACKER & BACKGROUND ANIMATION
+           ======================================================== */
+        const cursorHud = document.getElementById('cursorHud');
+        const cursorReadout = document.getElementById('cursorReadout');
+        let pointerX = window.innerWidth / 2;
+        let pointerY = window.innerHeight / 2;
+        let pointerActive = false;
+
+        window.addEventListener('pointermove', (e) => {
+            pointerX = e.clientX;
+            pointerY = e.clientY;
+            pointerActive = true;
+
+            if (cursorHud) {
+                cursorHud.style.left = pointerX + 'px';
+                cursorHud.style.top = pointerY + 'px';
+                const btn = e.target.closest('button');
+                const label = btn ? btn.textContent.trim().slice(0, 16) : 'CONTROLS';
+                cursorReadout.textContent = `${label} // ${Math.round(pointerX)},${Math.round(pointerY)}`;
+            }
+        });
+
+        const canvas = document.getElementById('interactiveCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const NODE_COUNT = 38;
+        const nodes = [];
+        for (let i = 0; i < NODE_COUNT; i++) {
+            nodes.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                vx: (Math.random() - 0.5) * 0.55,
+                vy: (Math.random() - 0.5) * 0.55
+            });
+        }
+
+        function animateCanvas(now) {
+            ctx.clearRect(0, 0, width, height);
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const primaryRgb = isLight ? '2, 132, 199' : '0, 240, 255';
+            const accentRgb = isLight ? '219, 39, 119' : '255, 42, 133';
+
+            ctx.strokeStyle = `rgba(${primaryRgb}, 0.08)`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let x = 0; x <= width; x += 40) {
+                const y = height * 0.5 + Math.sin(x * 0.008 + (now || 0) * 0.0015) * 32;
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            for (let i = 0; i < NODE_COUNT; i++) {
+                const p = nodes[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0 || p.x > width) p.vx *= -1;
+                if (p.y < 0 || p.y > height) p.vy *= -1;
+
+                ctx.fillStyle = `rgba(${primaryRgb}, 0.55)`;
+                ctx.fillRect(p.x - 1, p.y - 1, 2.5, 2.5);
+
+                if (pointerActive) {
+                    const dist = Math.hypot(pointerX - p.x, pointerY - p.y);
+                    if (dist < 165) {
+                        ctx.strokeStyle = `rgba(${accentRgb}, ${0.42 * (1 - dist / 165)})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(pointerX, pointerY);
+                        ctx.stroke();
+                    }
                 }
-            } requestAnimationFrame(animateCanvas);
-        } animateCanvas(); window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+                for (let j = i + 1; j < NODE_COUNT; j++) {
+                    const p2 = nodes[j];
+                    const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                    if (dist < 115) {
+                        ctx.strokeStyle = `rgba(${primaryRgb}, ${0.14 - dist / 900})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animateCanvas);
+        }
+        requestAnimationFrame(animateCanvas);
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
     </script>
 </body>
 </html>
