@@ -3,24 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha Suraksha | Animated Weather Core</title>
+    <title>Raksha Suraksha | Cinematic Weather Core</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-top: #16284d;
-            --bg-mid: #0c1830;
-            --bg-bot: #050b17;
-            --bg-card: rgba(20, 38, 74, 0.68);
-            --bg-card-hover: rgba(30, 56, 108, 0.78);
+            --bg-card: rgba(15, 29, 58, 0.58);
+            --bg-card-hover: rgba(24, 46, 90, 0.72);
             --accent: #38BDF8;
             --accent-glow: rgba(56, 189, 248, 0.35);
             --mint: #34D399;
             --amber: #FBBF24;
             --text-main: #F8FAFC;
-            --text-muted: #94A3B8;
-            --border-line: rgba(148, 163, 184, 0.18);
+            --text-muted: #CBD5E1;
+            --border-line: rgba(255, 255, 255, 0.16);
         }
 
         * {
@@ -32,16 +29,16 @@
 
         body {
             min-height: 100vh;
-            background: radial-gradient(circle at 50% 0%, #24427a 0%, var(--bg-mid) 48%, var(--bg-bot) 100%);
+            background-color: #060d1c;
             color: var(--text-main);
             display: flex;
             flex-direction: column;
-            padding-bottom: 42px;
+            padding-bottom: 48px;
             overflow-x: hidden;
             position: relative;
         }
 
-        /* ANIMATED ATMOSPHERIC BACKGROUND CANVAS */
+        /* FULL-SCREEN CINEMATIC ENVIRONMENT CANVAS */
         #skyCanvas {
             position: fixed;
             inset: 0;
@@ -59,7 +56,7 @@
             min-height: 100vh;
         }
 
-        /* TOP BAR */
+        /* TOP BAR WITH BACK BUTTON */
         .top-bar {
             position: sticky;
             top: 0;
@@ -69,13 +66,13 @@
             justify-content: space-between;
             gap: 8px;
             padding: 12px 4%;
-            background: rgba(7, 15, 31, 0.78);
+            background: rgba(6, 13, 28, 0.52);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border-line);
         }
 
         .icon-btn {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.1);
             border: 1px solid var(--border-line);
             color: var(--text-main);
             border-radius: 999px;
@@ -84,18 +81,26 @@
             font-size: 0.72rem;
             font-weight: 700;
             cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
             transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .icon-btn:hover {
             transform: translateY(-1px);
-            background: rgba(56, 189, 248, 0.2);
+            background: rgba(56, 189, 248, 0.22);
             border-color: var(--accent);
             box-shadow: 0 0 14px var(--accent-glow);
         }
 
         .icon-btn:active {
             transform: scale(0.96);
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
         }
 
         .loc-header {
@@ -105,16 +110,17 @@
         }
 
         .loc-title {
-            font-size: 1.08rem;
+            font-size: 1.06rem;
             font-weight: 700;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
         }
 
         .loc-sub {
             font-family: 'Space Mono', monospace;
-            font-size: 0.66rem;
+            font-size: 0.64rem;
             color: var(--text-muted);
             margin-top: 2px;
         }
@@ -162,7 +168,7 @@
             font-size: 3.1rem;
             display: inline-block;
             animation: floatSlow 3.6s ease-in-out infinite;
-            filter: drop-shadow(0 8px 18px rgba(56, 189, 248, 0.28));
+            filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.45));
             margin-bottom: 4px;
         }
 
@@ -171,7 +177,7 @@
             font-weight: 300;
             line-height: 1;
             letter-spacing: -2px;
-            text-shadow: 0 6px 28px rgba(56, 189, 248, 0.22);
+            text-shadow: 0 6px 28px rgba(0, 0, 0, 0.4);
         }
 
         .temp-hero sup {
@@ -184,8 +190,9 @@
         .condition-row {
             margin-top: 10px;
             font-size: 1.05rem;
-            color: #E2E8F0;
+            color: #F1F5F9;
             font-weight: 500;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
         }
 
         .aqi-pill {
@@ -195,11 +202,12 @@
             margin-top: 12px;
             padding: 6px 15px;
             border-radius: 999px;
-            background: rgba(52, 211, 153, 0.14);
-            border: 1px solid rgba(52, 211, 153, 0.35);
+            background: rgba(16, 185, 129, 0.22);
+            border: 1px solid rgba(52, 211, 153, 0.42);
             color: #A7F3D0;
             font-size: 0.84rem;
             font-weight: 600;
+            backdrop-filter: blur(8px);
             animation: pulseGlow 2.8s infinite;
         }
 
@@ -213,7 +221,7 @@
         }
 
         .pill-btn {
-            background: rgba(255, 255, 255, 0.09);
+            background: rgba(15, 29, 58, 0.56);
             border: 1px solid var(--border-line);
             color: var(--text-main);
             border-radius: 999px;
@@ -221,12 +229,13 @@
             font-size: 0.82rem;
             font-weight: 600;
             cursor: pointer;
+            backdrop-filter: blur(10px);
             transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
         }
 
         .pill-btn:hover {
             transform: translateY(-2px);
-            background: rgba(56, 189, 248, 0.2);
+            background: rgba(56, 189, 248, 0.22);
             border-color: var(--accent);
         }
 
@@ -234,13 +243,14 @@
             transform: scale(0.96);
         }
 
-        /* CARDS */
+        /* GLASS CARDS */
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border-line);
             border-radius: 20px;
             padding: 16px;
             backdrop-filter: blur(14px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.24);
             transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
             animation: cardEntrance 0.7s ease both;
         }
@@ -257,7 +267,7 @@
             margin-bottom: 14px;
             font-size: 0.88rem;
             font-weight: 600;
-            color: #CBD5E1;
+            color: #E2E8F0;
         }
 
         /* 24-HOUR FORECAST */
@@ -273,7 +283,7 @@
             min-width: 72px;
             padding: 10px 8px;
             border-radius: 14px;
-            background: rgba(15, 23, 42, 0.32);
+            background: rgba(8, 16, 34, 0.34);
             border: 1px solid transparent;
             display: flex;
             flex-direction: column;
@@ -286,7 +296,7 @@
         .hour-item:hover {
             transform: translateY(-3px);
             border-color: rgba(56, 189, 248, 0.35);
-            background: rgba(56, 189, 248, 0.1);
+            background: rgba(56, 189, 248, 0.12);
         }
 
         .hour-temp {
@@ -354,12 +364,12 @@
             width: 76px;
             height: 76px;
             border-radius: 50%;
-            border: 1.5px solid rgba(56, 189, 248, 0.32);
+            border: 1.5px solid rgba(56, 189, 248, 0.35);
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, rgba(15, 23, 42, 0.65) 100%);
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.14) 0%, rgba(8, 16, 34, 0.65) 100%);
             flex-shrink: 0;
         }
 
@@ -402,7 +412,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             font-size: 0.9rem;
         }
 
@@ -412,7 +422,7 @@
         }
 
         .detail-label {
-            color: #CBD5E1;
+            color: #E2E8F0;
         }
 
         .detail-val {
@@ -437,7 +447,7 @@
             justify-content: space-between;
             padding: 10px 12px;
             border-radius: 14px;
-            background: rgba(30, 52, 92, 0.55);
+            background: rgba(15, 29, 58, 0.55);
             font-size: 0.88rem;
             transition: transform 0.2s ease;
         }
@@ -455,8 +465,9 @@
             text-align: center;
             font-family: 'Space Mono', monospace;
             font-size: 0.72rem;
-            color: #CBD5E1;
-            background: rgba(15, 23, 42, 0.45);
+            color: #E2E8F0;
+            background: rgba(10, 20, 40, 0.56);
+            backdrop-filter: blur(10px);
             border: 1px solid var(--border-line);
             border-radius: 12px;
             padding: 10px 12px;
@@ -480,12 +491,15 @@
 
     <div class="content-layer">
         <div class="top-bar">
-            <button class="icon-btn" onclick="syncWeather(true)">⟳ GPS SYNC</button>
+            <button class="icon-btn" onclick="goBack()">← BACK</button>
             <div class="loc-header">
                 <div class="loc-title" id="locationName">Syncing Location...</div>
                 <div class="loc-sub" id="coordReadout">LAT --.---- | LON --.----</div>
             </div>
-            <button class="icon-btn" onclick="toggleFiveDay()">5-DAY</button>
+            <div class="top-actions">
+                <button class="icon-btn" onclick="syncWeather(true)">⟳</button>
+                <button class="icon-btn" onclick="toggleFiveDay()">5D</button>
+            </div>
         </div>
 
         <div class="container">
@@ -545,7 +559,7 @@
                         </div>
                         <div class="sun-svg-wrap">
                             <svg viewBox="0 0 200 56" width="100%" height="44">
-                                <path d="M 14 48 A 86 42 0 0 1 186 48" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="2" stroke-dasharray="4 4" />
+                                <path d="M 14 48 A 86 42 0 0 1 186 48" fill="none" stroke="rgba(255,255,255,0.24)" stroke-width="2" stroke-dasharray="4 4" />
                                 <path id="sunProgressPath" d="M 14 48 A 86 42 0 0 1 186 48" fill="none" stroke="#38BDF8" stroke-width="2.5" stroke-dasharray="220" stroke-dashoffset="220" />
                                 <circle id="sunDot" cx="14" cy="48" r="5.5" fill="#FBBF24" />
                             </svg>
@@ -582,75 +596,217 @@
             </div>
 
             <div class="status-note" id="statusNote">
-                Initializing weather connection...
+                Initializing cinematic weather feed...
                 <button class="retry-inline" onclick="syncWeather(true)">Retry</button>
             </div>
         </div>
     </div>
 
     <script>
-        /* ANIMATED ATMOSPHERIC PARTICLES & DRIFTING CLOUDS */
+        function goBack() {
+            if (window.history.length > 1 && document.referrer) {
+                window.history.back();
+            } else {
+                window.location.href = "services.html";
+            }
+        }
+
+        /* ============================================================
+           CINEMATIC SKY, CLOUDS, STARS, RAIN/MIST & HORIZON ENGINE
+        ============================================================ */
         const skyCanvas = document.getElementById("skyCanvas");
         const sctx = skyCanvas.getContext("2d");
         let sw = (skyCanvas.width = window.innerWidth);
         let sh = (skyCanvas.height = window.innerHeight);
-        let isRainyMode = false;
 
-        const particles = Array.from({ length: 42 }, () => ({
+        let envWeatherMode = "cloudy"; // clear | cloudy | rain | fog
+        let isNightSky = true;
+        let windDriftFactor = 1.0;
+
+        const stars = Array.from({ length: 75 }, () => ({
+            x: Math.random() * sw,
+            y: Math.random() * sh * 0.72,
+            r: Math.random() * 1.5 + 0.4,
+            phase: Math.random() * Math.PI * 2,
+            speed: Math.random() * 0.02 + 0.01
+        }));
+
+        const clouds = Array.from({ length: 7 }, (_, idx) => ({
+            x: Math.random() * sw,
+            y: sh * (0.1 + (idx % 4) * 0.14),
+            scale: Math.random() * 0.7 + 0.75,
+            speed: Math.random() * 0.25 + 0.15,
+            opacity: Math.random() * 0.14 + 0.08
+        }));
+
+        const particles = Array.from({ length: 65 }, () => ({
             x: Math.random() * sw,
             y: Math.random() * sh,
-            r: Math.random() * 2.2 + 0.8,
-            vx: (Math.random() - 0.3) * 0.45,
-            vy: Math.random() * 0.35 + 0.15,
+            r: Math.random() * 2.2 + 0.7,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: Math.random() * 0.4 + 0.15,
             alpha: Math.random() * 0.45 + 0.12
         }));
 
-        function renderSky() {
+        function drawCloudCluster(x, y, scale, alpha, darkTint) {
+            sctx.save();
+            sctx.translate(x, y);
+            sctx.scale(scale, scale);
+            const fill = darkTint
+                ? `rgba(148, 176, 214, ${alpha})`
+                : `rgba(255, 255, 255, ${alpha * 1.35})`;
+            sctx.fillStyle = fill;
+            sctx.beginPath();
+            sctx.arc(0, 0, 34, 0, Math.PI * 2);
+            sctx.arc(28, -10, 42, 0, Math.PI * 2);
+            sctx.arc(64, -4, 36, 0, Math.PI * 2);
+            sctx.arc(92, 6, 26, 0, Math.PI * 2);
+            sctx.arc(-26, 8, 24, 0, Math.PI * 2);
+            sctx.fill();
+            sctx.restore();
+        }
+
+        function drawHorizonHills(timeSec) {
+            // Back ridge
+            sctx.fillStyle = isNightSky ? "rgba(8, 17, 36, 0.72)" : "rgba(22, 58, 96, 0.34)";
+            sctx.beginPath();
+            sctx.moveTo(0, sh);
+            for (let x = 0; x <= sw + 30; x += 30) {
+                const y = sh - 92 - Math.sin(x * 0.0045 + 0.6) * 26 - Math.cos(x * 0.011) * 12;
+                sctx.lineTo(x, y);
+            }
+            sctx.lineTo(sw, sh);
+            sctx.closePath();
+            sctx.fill();
+
+            // Front ridge
+            sctx.fillStyle = isNightSky ? "rgba(4, 10, 22, 0.9)" : "rgba(15, 42, 72, 0.52)";
+            sctx.beginPath();
+            sctx.moveTo(0, sh);
+            for (let x = 0; x <= sw + 24; x += 24) {
+                const sway = Math.sin(timeSec * 0.4 + x * 0.005) * 2;
+                const y = sh - 54 - Math.cos(x * 0.0075 - 1.2) * 18 + sway;
+                sctx.lineTo(x, y);
+            }
+            sctx.lineTo(sw, sh);
+            sctx.closePath();
+            sctx.fill();
+        }
+
+        function renderCinemaSky(now) {
+            const t = (now || 0) * 0.001;
             sctx.clearRect(0, 0, sw, sh);
-            for (const p of particles) {
-                p.x += isRainyMode ? p.vx - 0.8 : p.vx;
-                p.y += isRainyMode ? p.vy + 4.2 : p.vy;
 
-                if (p.y > sh) {
-                    p.y = -10;
-                    p.x = Math.random() * sw;
+            // 1. Dynamic Sky Gradient
+            const skyGrad = sctx.createLinearGradient(0, 0, 0, sh);
+            if (isNightSky) {
+                skyGrad.addColorStop(0, "#050b1a");
+                skyGrad.addColorStop(0.52, "#0d1f3d");
+                skyGrad.addColorStop(1, "#13294b");
+            } else {
+                skyGrad.addColorStop(0, "#1d4ed8");
+                skyGrad.addColorStop(0.55, "#38bdf8");
+                skyGrad.addColorStop(1, "#bae6fd");
+            }
+            sctx.fillStyle = skyGrad;
+            sctx.fillRect(0, 0, sw, sh);
+
+            // 2. Celestial Glow (Moon / Sun)
+            const orbX = sw * 0.78;
+            const orbY = sh * 0.16;
+            const glowGrad = sctx.createRadialGradient(orbX, orbY, 8, orbX, orbY, 150);
+            if (isNightSky) {
+                glowGrad.addColorStop(0, "rgba(226, 232, 240, 0.24)");
+                glowGrad.addColorStop(1, "rgba(226, 232, 240, 0)");
+            } else {
+                glowGrad.addColorStop(0, "rgba(253, 224, 71, 0.45)");
+                glowGrad.addColorStop(1, "rgba(253, 224, 71, 0)");
+            }
+            sctx.fillStyle = glowGrad;
+            sctx.beginPath();
+            sctx.arc(orbX, orbY, 150, 0, Math.PI * 2);
+            sctx.fill();
+
+            // 3. Stars at Night
+            if (isNightSky && envWeatherMode !== "rain") {
+                for (const st of stars) {
+                    st.phase += st.speed;
+                    const alpha = 0.25 + 0.55 * (0.5 + 0.5 * Math.sin(st.phase));
+                    sctx.fillStyle = `rgba(248, 250, 252, ${alpha})`;
+                    sctx.beginPath();
+                    sctx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
+                    sctx.fill();
                 }
-                if (p.x < -10) p.x = sw + 10;
-                if (p.x > sw + 10) p.x = -10;
+            }
 
-                if (isRainyMode) {
-                    sctx.strokeStyle = `rgba(125, 211, 252, ${p.alpha})`;
+            // 4. Drifting Clouds
+            for (const cl of clouds) {
+                cl.x += cl.speed * windDriftFactor;
+                if (cl.x > sw + 140) {
+                    cl.x = -140;
+                }
+                const cloudAlpha = envWeatherMode === "clear" ? cl.opacity * 0.45 : cl.opacity * 1.25;
+                drawCloudCluster(cl.x, cl.y, cl.scale, cloudAlpha, isNightSky);
+            }
+
+            // 5. Weather Particles (Rain / Mist / Ambient Dust)
+            for (const p of particles) {
+                if (envWeatherMode === "rain") {
+                    p.x -= 1.3 * windDriftFactor;
+                    p.y += 7.5;
+                    if (p.y > sh) { p.y = -15; p.x = Math.random() * (sw + 120); }
+                    if (p.x < -20) p.x = sw + 20;
+
+                    sctx.strokeStyle = `rgba(125, 211, 252, ${p.alpha + 0.15})`;
                     sctx.lineWidth = 1.2;
                     sctx.beginPath();
                     sctx.moveTo(p.x, p.y);
-                    sctx.lineTo(p.x - 2, p.y + 10);
+                    sctx.lineTo(p.x - 3, p.y + 13);
                     sctx.stroke();
+                } else if (envWeatherMode === "fog") {
+                    p.x += 0.6 * windDriftFactor;
+                    p.y += Math.sin(t + p.x * 0.01) * 0.2;
+                    if (p.x > sw + 40) p.x = -40;
+                    sctx.fillStyle = `rgba(203, 213, 225, ${p.alpha * 0.45})`;
+                    sctx.beginPath();
+                    sctx.arc(p.x, p.y, p.r * 5, 0, Math.PI * 2);
+                    sctx.fill();
                 } else {
-                    sctx.fillStyle = `rgba(186, 230, 253, ${p.alpha})`;
+                    p.x += p.vx * windDriftFactor;
+                    p.y += p.vy;
+                    if (p.y > sh) { p.y = -10; p.x = Math.random() * sw; }
+                    if (p.x < 0) p.x = sw;
+                    if (p.x > sw) p.x = 0;
+                    sctx.fillStyle = `rgba(186, 230, 253, ${p.alpha * 0.65})`;
                     sctx.beginPath();
                     sctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                     sctx.fill();
                 }
             }
-            requestAnimationFrame(renderSky);
+
+            // 6. Distant Horizon Silhouette
+            drawHorizonHills(t);
+
+            requestAnimationFrame(renderCinemaSky);
         }
-        renderSky();
+        requestAnimationFrame(renderCinemaSky);
 
         window.addEventListener("resize", () => {
             sw = skyCanvas.width = window.innerWidth;
             sh = skyCanvas.height = window.innerHeight;
         });
 
+        /* ============================================================
+           WEATHER & DEVICE LOCATION LOGIC
+        ============================================================ */
         function codeToInfo(code) {
-            if (code === 0) return { label: "Clear", icon: "☀️", rain: false };
-            if ([1, 2].includes(code)) return { label: "Partly Cloudy", icon: "⛅", rain: false };
-            if (code === 3) return { label: "Cloudy", icon: "☁️", rain: false };
-            if ([45, 48].includes(code)) return { label: "Fog", icon: "🌫️", rain: false };
-            if ([51, 53, 55, 56, 57].includes(code)) return { label: "Drizzle", icon: "🌦️", rain: true };
-            if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return { label: "Rain", icon: "🌧️", rain: true };
-            if ([71, 73, 75, 77, 85, 86].includes(code)) return { label: "Snow", icon: "❄️", rain: false };
-            if ([95, 96, 99].includes(code)) return { label: "Thunderstorm", icon: "⛈️", rain: true };
-            return { label: "Cloudy", icon: "☁️", rain: false };
+            if (code === 0) return { label: "Clear", icon: "☀️", mode: "clear" };
+            if ([1, 2, 3].includes(code)) return { label: code === 3 ? "Cloudy" : "Partly Cloudy", icon: code === 3 ? "☁️" : "⛅", mode: "cloudy" };
+            if ([45, 48].includes(code)) return { label: "Fog", icon: "🌫️", mode: "fog" };
+            if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99].includes(code)) {
+                return { label: code >= 95 ? "Thunderstorm" : "Rain", icon: code >= 95 ? "⛈️" : "🌧️", mode: "rain" };
+            }
+            return { label: "Cloudy", icon: "☁️", mode: "cloudy" };
         }
 
         function degToCompass(deg) {
@@ -695,28 +851,29 @@
             requestAnimationFrame(step);
         }
 
-        function updateSunArc(sunriseIso, sunsetIso) {
+        function updateSunAndSkyPhase(sunriseIso, sunsetIso) {
             if (!sunriseIso || !sunsetIso) return;
             const sr = new Date(sunriseIso).getTime();
             const ss = new Date(sunsetIso).getTime();
             const now = Date.now();
-            if (ss <= sr) return;
+            isNightSky = now < sr || now > ss;
 
-            const ratio = Math.max(0, Math.min(1, (now - sr) / (ss - sr)));
-            const angle = Math.PI * (1 - ratio);
-            const cx = 100 + 86 * Math.cos(angle);
-            const cy = 48 - 42 * Math.sin(angle);
+            if (ss > sr) {
+                const ratio = Math.max(0, Math.min(1, (now - sr) / (ss - sr)));
+                const angle = Math.PI * (1 - ratio);
+                const cx = 100 + 86 * Math.cos(angle);
+                const cy = 48 - 42 * Math.sin(angle);
 
-            const dot = document.getElementById("sunDot");
-            dot.setAttribute("cx", cx.toFixed(1));
-            dot.setAttribute("cy", cy.toFixed(1));
+                const dot = document.getElementById("sunDot");
+                dot.setAttribute("cx", cx.toFixed(1));
+                dot.setAttribute("cy", cy.toFixed(1));
 
-            const path = document.getElementById("sunProgressPath");
-            const totalLen = 220;
-            path.style.strokeDashoffset = (totalLen * (1 - ratio)).toFixed(1);
+                const path = document.getElementById("sunProgressPath");
+                path.style.strokeDashoffset = (220 * (1 - ratio)).toFixed(1);
 
-            const mins = Math.round((ss - sr) / 60000);
-            document.getElementById("daylightDuration").textContent = `${Math.floor(mins / 60)}h ${mins % 60}m`;
+                const mins = Math.round((ss - sr) / 60000);
+                document.getElementById("daylightDuration").textContent = `${Math.floor(mins / 60)}h ${mins % 60}m`;
+            }
         }
 
         async function reverseGeocode(lat, lon) {
@@ -784,14 +941,9 @@
                 fetch(aqiUrl, { cache: "no-store" }).catch(() => null)
             ]);
 
-            if (!wRes.ok) {
-                throw new Error(`Open-Meteo HTTP ${wRes.status}`);
-            }
-
+            if (!wRes.ok) throw new Error(`Open-Meteo HTTP ${wRes.status}`);
             const wData = await wRes.json();
-            if (!wData.current) {
-                throw new Error("Empty weather payload");
-            }
+            if (!wData.current) throw new Error("Empty weather payload");
 
             let aqiVal = "--";
             if (aRes && aRes.ok) {
@@ -804,7 +956,9 @@
             const daily = wData.daily || {};
             const hourly = wData.hourly || {};
             const info = codeToInfo(cur.weather_code);
-            isRainyMode = info.rain;
+
+            envWeatherMode = info.mode;
+            windDriftFactor = Math.max(0.5, Math.min(2.6, (Number(cur.wind_speed_10m) || 10) / 10));
 
             const maxT = daily.temperature_2m_max && daily.temperature_2m_max[0] != null ? Math.round(daily.temperature_2m_max[0]) : "--";
             const minT = daily.temperature_2m_min && daily.temperature_2m_min[0] != null ? Math.round(daily.temperature_2m_min[0]) : "--";
@@ -824,7 +978,7 @@
             if (daily.sunrise && daily.sunset) {
                 document.getElementById("sunriseTime").textContent = formatClock(daily.sunrise[0]);
                 document.getElementById("sunsetTime").textContent = formatClock(daily.sunset[0]);
-                updateSunArc(daily.sunrise[0], daily.sunset[0]);
+                updateSunAndSkyPhase(daily.sunrise[0], daily.sunset[0]);
             }
 
             animateNumber(document.getElementById("valHumidity"), cur.relative_humidity_2m, "%");
@@ -889,13 +1043,13 @@
                 const coords = await getBrowserCoords(5000);
                 const place = await reverseGeocode(coords.lat, coords.lon);
                 await fetchOpenMeteo(coords.lat, coords.lon, place, coords.mode);
-            } catch (gpsErr) {
+            } catch (_) {
                 setStatus("GPS slow/denied — checking network location for weather API...");
                 try {
                     const ipLoc = await fetchIpLocationFallback();
                     await fetchOpenMeteo(ipLoc.lat, ipLoc.lon, ipLoc.place, "NET-LOC");
                 } catch (netErr) {
-                    setStatus(`API connection failed (${netErr.message}). Check internet/data speed and retry.`, true);
+                    setStatus(`API connection failed (${netErr.message}). Check network and retry.`, true);
                 }
             }
         }
