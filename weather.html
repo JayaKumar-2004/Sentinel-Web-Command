@@ -3,26 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raksha Suraksha | Weather Core Intel</title>
+    <title>Raksha Suraksha | Device Location Weather Intel</title>
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-deep: #030a06;
-            --bg-panel: rgba(5, 18, 11, 0.88);
-            --bg-card: rgba(8, 26, 16, 0.75);
+            --bg-deep: #071124;
+            --bg-panel: rgba(11, 23, 46, 0.9);
+            --bg-card: rgba(24, 43, 79, 0.72);
+            --bg-card-soft: rgba(33, 56, 99, 0.58);
+            --accent: #38BDF8;
             --neon-green: #00E676;
-            --neon-cyan: #00F0FF;
-            --alert-pink: #FF2A85;
-            --alert-orange: #FF6B35;
-            --text-main: #F1F8F4;
-            --text-muted: #6B8B77;
-            --border-line: rgba(0, 230, 118, 0.25);
-            --border-glow: rgba(0, 230, 118, 0.4);
-            --input-bg: rgba(2, 10, 5, 0.9);
-            --terminal-text: #00E676;
+            --warning: #FBBF24;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-line: rgba(148, 163, 184, 0.18);
         }
 
         * {
@@ -34,667 +30,618 @@
 
         body {
             min-height: 100vh;
-            background-color: var(--bg-deep);
+            background: linear-gradient(180deg, #1E335C 0%, #0E1B33 55%, #070E1C 100%);
             color: var(--text-main);
-            overflow-x: hidden;
             display: flex;
             flex-direction: column;
-            position: relative;
+            padding-bottom: 36px;
         }
 
-        /* TACTICAL BACKGROUND GRID */
-        .grid-backdrop {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            pointer-events: none;
-            background-image: 
-                linear-gradient(var(--border-line) 1px, transparent 1px),
-                linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
-            background-size: 42px 42px;
-            opacity: 0.15;
-        }
-
-        .ambient-glow {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            pointer-events: none;
-            background: radial-gradient(circle at 50% 15%, rgba(0, 230, 118, 0.08) 0%, transparent 65%);
-        }
-
-        /* NAVIGATION BAR */
-        nav.navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 5%;
-            background: var(--bg-panel);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-line);
+        /* TOP BAR */
+        .top-bar {
             position: sticky;
             top: 0;
-            z-index: 100;
-        }
-
-        .brand-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-        }
-
-        .brand-logo svg {
-            width: 26px;
-            height: 26px;
-            fill: var(--neon-green);
-            filter: drop-shadow(0 0 6px var(--neon-green));
-        }
-
-        .brand-text {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 800;
-            font-size: 1.15rem;
-            color: var(--text-main);
-            letter-spacing: 1.5px;
-        }
-
-        .brand-text span {
-            color: var(--neon-green);
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            font-family: 'Space Mono', monospace;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.78rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            transition: 0.2s;
-        }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: var(--neon-green);
-            text-shadow: 0 0 8px var(--border-glow);
-        }
-
-        .badge-agent {
-            background: rgba(0, 230, 118, 0.1);
-            border: 1px solid var(--neon-green);
-            color: var(--neon-green);
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.7rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .badge-agent::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            background: var(--neon-green);
-            border-radius: 50%;
-            box-shadow: 0 0 6px var(--neon-green);
-            animation: blink 1.4s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        /* MAIN CONTENT */
-        main {
-            flex-grow: 1;
-            padding: 24px 5% 50px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-
-        .content-frame {
-            width: 100%;
-            max-width: 900px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .header-subbar {
+            z-index: 50;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
-            padding-bottom: 6px;
+            padding: 14px 5%;
+            background: rgba(10, 20, 40, 0.88);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border-line);
         }
 
-        .btn-back {
-            background: rgba(0, 230, 118, 0.08);
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.08);
             border: 1px solid var(--border-line);
-            color: var(--neon-green);
-            padding: 6px 14px;
-            border-radius: 4px;
+            color: var(--text-main);
+            border-radius: 999px;
+            padding: 8px 14px;
             font-family: 'Space Mono', monospace;
             font-size: 0.75rem;
             font-weight: 700;
+            cursor: pointer;
             text-decoration: none;
             transition: 0.2s;
-            text-transform: uppercase;
         }
 
-        .btn-back:hover {
-            background: var(--neon-green);
-            color: #020a05;
+        .icon-btn:hover {
+            background: rgba(56, 189, 248, 0.18);
+            border-color: var(--accent);
         }
 
-        .page-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(1.2rem, 3.5vw, 1.6rem);
-            font-weight: 900;
-            letter-spacing: 2px;
-            color: var(--text-main);
+        .loc-header {
             text-align: center;
-            flex-grow: 1;
         }
 
-        /* ATMOSPHERIC SCANNER PANEL */
-        .scanner-panel {
-            background: var(--bg-card);
-            border: 1.5px solid var(--border-line);
-            border-radius: 8px;
-            padding: 22px;
-            backdrop-filter: blur(14px);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 25px rgba(0, 230, 118, 0.08);
+        .loc-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
         }
 
-        .scanner-panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan), var(--alert-pink));
-        }
-
-        .panel-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .panel-header h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: var(--neon-green);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .panel-subtitle {
+        .loc-sub {
             font-family: 'Space Mono', monospace;
-            font-size: 0.72rem;
+            font-size: 0.68rem;
             color: var(--text-muted);
-            line-height: 1.45;
-            margin-bottom: 18px;
+            margin-top: 2px;
         }
 
-        /* CONTROLS ROW */
-        .controls-row {
+        /* MAIN CONTAINER */
+        .container {
+            width: 100%;
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 20px 16px 0;
             display: flex;
-            gap: 12px;
-            margin-bottom: 18px;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* HERO CURRENT WEATHER */
+        .hero-weather {
+            text-align: center;
+            padding: 22px 12px 10px;
+        }
+
+        .temp-hero {
+            font-size: clamp(4rem, 15vw, 5.5rem);
+            font-weight: 300;
+            line-height: 1;
+            letter-spacing: -2px;
+        }
+
+        .temp-hero sup {
+            font-size: 1.8rem;
+            font-weight: 400;
+            vertical-align: top;
+            margin-left: 4px;
+        }
+
+        .condition-row {
+            margin-top: 10px;
+            font-size: 1.05rem;
+            color: #E2E8F0;
+            font-weight: 500;
+        }
+
+        .aqi-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* ACTION STRIP */
+        .action-strip {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
             flex-wrap: wrap;
         }
 
-        .btn-refresh {
-            flex: 1 1 240px;
-            background: var(--neon-green);
-            border: none;
-            color: #020a05;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 800;
-            font-size: 0.85rem;
-            padding: 12px 18px;
-            border-radius: 4px;
-            cursor: pointer;
-            letter-spacing: 1px;
-            transition: 0.2s;
-            text-align: center;
-            box-shadow: 0 0 14px rgba(0, 230, 118, 0.4);
-        }
-
-        .btn-refresh:hover {
-            background: #47ff9d;
-            box-shadow: 0 0 20px rgba(0, 230, 118, 0.7);
-        }
-
-        .btn-preset {
-            background: transparent;
+        .pill-btn {
+            background: rgba(255, 255, 255, 0.1);
             border: 1px solid var(--border-line);
-            color: var(--neon-green);
-            font-family: 'Space Mono', monospace;
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 12px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            letter-spacing: 0.5px;
-            transition: 0.2s;
-            white-space: nowrap;
-        }
-
-        .btn-preset:hover {
-            border-color: var(--neon-green);
-            background: rgba(0, 230, 118, 0.08);
-        }
-
-        /* SECTOR DISPLAY CARD */
-        .sector-box {
-            border: 1px solid var(--border-line);
-            background: rgba(3, 12, 7, 0.75);
-            border-radius: 6px;
-            padding: 14px 16px;
-            text-align: center;
-            margin-bottom: 18px;
-        }
-
-        .sector-label {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.65rem;
-            letter-spacing: 2px;
-            color: var(--neon-green);
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
-        .sector-name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(1.1rem, 3.2vw, 1.45rem);
-            font-weight: 800;
-            letter-spacing: 2px;
             color: var(--text-main);
-            text-transform: uppercase;
+            border-radius: 999px;
+            padding: 10px 18px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
         }
 
-        /* METRICS QUAD GRID */
-        .metrics-grid {
+        .pill-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--accent);
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-line);
+            border-radius: 20px;
+            padding: 16px;
+            backdrop-filter: blur(12px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #CBD5E1;
+        }
+
+        /* 24-HOUR FORECAST */
+        .hourly-scroll {
+            display: flex;
+            gap: 18px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            scrollbar-width: thin;
+        }
+
+        .hour-item {
+            min-width: 68px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+        }
+
+        .hour-temp {
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        .hour-icon {
+            font-size: 1.35rem;
+        }
+
+        .hour-wind {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .hour-time {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        /* TWO-COLUMN GRID */
+        .two-col {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 18px;
+            grid-template-columns: 1fr 1.25fr;
+            gap: 14px;
         }
 
-        @media (max-width: 680px) {
-            .metrics-grid {
-                grid-template-columns: repeat(2, 1fr);
+        @media (max-width: 560px) {
+            .two-col {
+                grid-template-columns: 1fr;
             }
         }
 
-        .metric-card {
-            background: rgba(3, 12, 7, 0.85);
-            border: 1px solid var(--border-line);
-            border-radius: 6px;
-            padding: 12px 10px;
-            text-align: center;
-        }
-
-        .metric-title {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.64rem;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
-
-        .metric-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(0.95rem, 2.2vw, 1.25rem);
-            font-weight: 800;
-            color: var(--neon-green);
-            letter-spacing: 0.5px;
-        }
-
-        /* TERMINAL LOG CONSOLE */
-        .terminal-log {
-            background: #020603;
-            border: 1px solid rgba(0, 230, 118, 0.3);
-            border-radius: 4px;
-            padding: 10px 14px;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.72rem;
-            line-height: 1.5;
-            color: var(--terminal-text);
-            min-height: 48px;
-            word-break: break-all;
-            white-space: pre-wrap;
-        }
-
-        .terminal-log span.tag {
-            color: var(--neon-cyan);
-        }
-
-        /* RADAR SCANNER CONTAINER */
-        .radar-wrapper {
-            width: 100%;
+        .left-stack {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* WIND BOX */
+        .wind-box {
+            display: flex;
             align-items: center;
-            padding: 20px 0 10px;
+            justify-content: space-between;
+            gap: 10px;
         }
 
-        #radarCanvas {
-            max-width: 380px;
-            width: 100%;
-            height: auto;
-            aspect-ratio: 1 / 1;
-            filter: drop-shadow(0 0 14px rgba(0, 230, 118, 0.25));
+        .wind-dir {
+            font-size: 0.92rem;
+            font-weight: 600;
+            margin-bottom: 4px;
         }
 
-        /* FOOTER */
-        footer {
-            border-top: 1px solid var(--border-line);
-            background: var(--bg-panel);
-            padding: 16px 5%;
+        .wind-spd {
+            font-size: 1.05rem;
+            font-weight: 700;
             font-family: 'Space Mono', monospace;
-            font-size: 0.72rem;
+        }
+
+        .compass {
+            width: 74px;
+            height: 74px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 255, 255, 0.22);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.45);
+            flex-shrink: 0;
+        }
+
+        .compass span.dir-n { position: absolute; top: 4px; font-size: 0.65rem; color: var(--text-muted); }
+        .compass span.dir-s { position: absolute; bottom: 4px; font-size: 0.65rem; color: var(--text-muted); }
+        .compass span.dir-w { position: absolute; left: 6px; font-size: 0.65rem; color: var(--text-muted); }
+        .compass span.dir-e { position: absolute; right: 6px; font-size: 0.65rem; color: var(--text-muted); }
+
+        .compass-arrow {
+            font-size: 1.2rem;
+            color: var(--accent);
+            transition: transform 0.4s ease;
+        }
+
+        /* SUNRISE / SUNSET */
+        .sun-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-family: 'Space Mono', monospace;
+            margin-bottom: 8px;
+        }
+
+        .sun-arc-wrap {
+            position: relative;
+            height: 44px;
+            border-top: 1.5px dashed rgba(255, 255, 255, 0.25);
+            border-radius: 100px 100px 0 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-top: 8px;
+            font-size: 0.75rem;
             color: var(--text-muted);
+        }
+
+        /* DETAILS LIST */
+        .detail-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: auto;
+            padding: 11px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.92rem;
         }
 
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
+        .detail-row:last-child {
+            border-bottom: none;
+            padding-bottom: 2px;
+        }
+
+        .detail-label {
+            color: #CBD5E1;
+        }
+
+        .detail-val {
+            font-weight: 600;
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* 5-DAY FORECAST */
+        .forecast-list {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .forecast-list.open {
+            display: flex;
+        }
+
+        .day-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border-radius: 14px;
+            background: var(--bg-card-soft);
+            font-size: 0.9rem;
+        }
+
+        .day-temps {
+            font-family: 'Space Mono', monospace;
+            font-weight: 600;
+        }
+
+        .status-note {
+            text-align: center;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            padding: 6px 10px;
         }
     </style>
 </head>
 <body>
 
-    <div class="grid-backdrop"></div>
-    <div class="ambient-glow"></div>
-
-    <!-- TACTICAL NAVBAR -->
-    <nav class="navbar">
-        <a href="services.html" class="brand-logo">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 2L3 6V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V6L12 2Z"/>
-            </svg>
-            <div class="brand-text">RAKSHA <span>SURAKSHA</span></div>
-        </a>
-
-        <ul class="nav-links">
-            <li><a href="index.html">HOME</a></li>
-            <li><a href="services.html" class="active">SERVICES</a></li>
-            <li><a href="about.html">ABOUT</a></li>
-            <li><a href="faqs.html">FAQS</a></li>
-            <li><a href="downloads.html">DOWNLOADS</a></li>
-        </ul>
-
-        <div class="badge-agent">AGENT SENTINEL</div>
-    </nav>
-
-    <!-- MAIN BODY -->
-    <main>
-        <div class="content-frame">
-            
-            <div class="header-subbar">
-                <a href="services.html" class="btn-back">← Back</a>
-                <h1 class="page-title">WEATHER CORE INTEL</h1>
-                <div style="width: 70px;"></div> <!-- Spacer for optical centering -->
-            </div>
-
-            <!-- ATMOSPHERIC SCANNER CONTAINER -->
-            <div class="scanner-panel">
-                <div class="panel-header">
-                    <h2>📡 ATMOSPHERIC SCANNER</h2>
-                </div>
-                <p class="panel-subtitle">
-                    Fetch live environmental telemetry via GPS + reverse geocoding + Open-Meteo for outdoor asset routing, or scan the default Nelamangala sector.
-                </p>
-
-                <!-- INTERACTION BUTTONS -->
-                <div class="controls-row">
-                    <button class="btn-refresh" id="btnRefresh" onclick="fetchLiveTelemetry()">REFRESH DATA</button>
-                    <button class="btn-preset" id="btnPreset" onclick="loadSectorPreset(13.0947, 77.3947, 'NELAMANGALA')">📍 NELAMANGALA PRESET</button>
-                </div>
-
-                <!-- SECTOR NAME -->
-                <div class="sector-box">
-                    <div class="sector-label">CURRENT SECTOR</div>
-                    <div class="sector-name" id="sectorDisplay">NELAMANGALA</div>
-                </div>
-
-                <!-- 4 TELEMETRY DATA BOXES -->
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-title">TEMPERATURE</div>
-                        <div class="metric-value" id="valTemp">--.- °C</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-title">WIND SPEED</div>
-                        <div class="metric-value" id="valWind">--.- km/h</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-title">LATITUDE</div>
-                        <div class="metric-value" id="valLat">13.0947</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-title">LONGITUDE</div>
-                        <div class="metric-value" id="valLng">77.3947</div>
-                    </div>
-                </div>
-
-                <!-- TERMINAL LOG FEED -->
-                <div class="terminal-log" id="terminalLog">> INITIALIZING RADAR TELEMETRY MATRIX...</div>
-            </div>
-
-            <!-- LIVE CANVAS RADAR DISPLAY -->
-            <div class="radar-wrapper">
-                <canvas id="radarCanvas" width="380" height="380"></canvas>
-            </div>
-
+    <div class="top-bar">
+        <button class="icon-btn" onclick="detectDeviceLocation()">⟳ GPS SYNC</button>
+        <div class="loc-header">
+            <div class="loc-title" id="locationName">Locating Device...</div>
+            <div class="loc-sub" id="coordReadout">LAT --.---- | LON --.----</div>
         </div>
-    </main>
+        <button class="icon-btn" onclick="toggleFiveDay()">5-DAY</button>
+    </div>
 
-    <!-- FOOTER -->
-    <footer>
-        <div>© 2026 RAKSHA SURAKSHA TACTICAL OS</div>
-        <div>ATMOSPHERIC SCANNER ACTIVE // SECTOR 13.0947° N, 77.3947° E</div>
-    </footer>
+    <div class="container">
+        <div class="hero-weather">
+            <div class="temp-hero" id="currentTemp">--<sup>°C</sup></div>
+            <div class="condition-row" id="currentCondition">Fetching live telemetry...</div>
+            <div class="aqi-pill" id="aqiBadge">🍃 AQI --</div>
+        </div>
 
-    <!-- LOGIC SCRIPT -->
+        <div class="action-strip">
+            <button class="pill-btn" onclick="toggleFiveDay()" id="btnFiveDayToggle">5-day forecast</button>
+            <button class="pill-btn" onclick="detectDeviceLocation()">📍 Refresh Device Location</button>
+        </div>
+
+        <!-- 5-DAY FORECAST COLLAPSIBLE -->
+        <div class="card forecast-list" id="fiveDayCard">
+            <div class="card-header">
+                <span>5-Day Forecast</span>
+                <span style="font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--text-muted);">LIVE DEVICE ZONE</span>
+            </div>
+            <div id="fiveDayRows"></div>
+        </div>
+
+        <!-- 24-HOUR FORECAST -->
+        <div class="card">
+            <div class="card-header">
+                <span>🕒 24-hour forecast</span>
+                <span id="updatedAtLabel" style="font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--text-muted);">--:--</span>
+            </div>
+            <div class="hourly-scroll" id="hourlyRow"></div>
+        </div>
+
+        <!-- WIND + SUN + METRICS -->
+        <div class="two-col">
+            <div class="left-stack">
+                <div class="card">
+                    <div class="wind-box">
+                        <div>
+                            <div class="wind-dir" id="windDirLabel">--</div>
+                            <div class="wind-spd" id="windSpeedLabel">-- km/h</div>
+                        </div>
+                        <div class="compass">
+                            <span class="dir-n">N</span>
+                            <span class="dir-s">S</span>
+                            <span class="dir-w">W</span>
+                            <span class="dir-e">E</span>
+                            <div class="compass-arrow" id="windArrow">➤</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="sun-row">
+                        <div>🌅 <span id="sunriseTime">--:--</span><br><small style="color:var(--text-muted)">Sunrise</small></div>
+                        <div style="text-align:right;">🌇 <span id="sunsetTime">--:--</span><br><small style="color:var(--text-muted)">Sunset</small></div>
+                    </div>
+                    <div class="sun-arc-wrap">
+                        <span>Daylight Arc</span>
+                        <span id="daylightDuration">--h --m</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="detail-row">
+                    <span class="detail-label">Humidity</span>
+                    <span class="detail-val" id="valHumidity">--%</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Real feel</span>
+                    <span class="detail-val" id="valFeelsLike">--°</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">UV</span>
+                    <span class="detail-val" id="valUv">--</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Pressure</span>
+                    <span class="detail-val" id="valPressure">----mbar</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Chance of rain</span>
+                    <span class="detail-val" id="valRainProb">--%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-note" id="statusNote">Waiting for device GPS permission...</div>
+    </div>
+
     <script>
-        // DEFAULT TELEMETRY COORDS (Nelamangala Sector)
-        let activeLat = 13.0947;
-        let activeLng = 77.3947;
-        let activeSector = "NELAMANGALA";
-
-        const logBox = document.getElementById('terminalLog');
-
-        function appendLog(text) {
-            logBox.innerText = `> ${text}`;
+        function codeToInfo(code) {
+            if (code === 0) return { label: "Clear", icon: "☀️" };
+            if ([1, 2].includes(code)) return { label: "Partly Cloudy", icon: "⛅" };
+            if (code === 3) return { label: "Cloudy", icon: "☁️" };
+            if ([45, 48].includes(code)) return { label: "Fog", icon: "🌫️" };
+            if ([51, 53, 55, 56, 57].includes(code)) return { label: "Drizzle", icon: "🌦️" };
+            if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return { label: "Rain", icon: "🌧️" };
+            if ([71, 73, 75, 77, 85, 86].includes(code)) return { label: "Snow", icon: "❄️" };
+            if ([95, 96, 99].includes(code)) return { label: "Thunderstorm", icon: "⛈️" };
+            return { label: "Cloudy", icon: "☁️" };
         }
 
-        // FETCH REAL WEATHER VIA OPEN-METEO API
-        async function fetchWeather(lat, lon, sectorName) {
-            appendLog(`TARGET LOCKED: LAT ${lat.toFixed(4)}, LON ${lon.toFixed(4)} > FETCHING WEATHER TELEMETRY...`);
+        function degToCompass(deg) {
+            if (deg == null || Number.isNaN(deg)) return "--";
+            const dirs = ["North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West"];
+            return dirs[Math.round(deg / 45) % 8];
+        }
+
+        function formatClock(isoStr) {
+            if (!isoStr) return "--:--";
+            const d = new Date(isoStr);
+            return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+        }
+
+        function toggleFiveDay() {
+            const card = document.getElementById("fiveDayCard");
+            card.classList.toggle("open");
+        }
+
+        async function reverseGeocode(lat, lon) {
+            try {
+                const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14`;
+                const res = await fetch(url, { headers: { "Accept": "application/json" } });
+                if (!res.ok) throw new Error("Geocode failed");
+                const data = await res.json();
+                const addr = data.address || {};
+                return addr.suburb || addr.neighbourhood || addr.town || addr.city || addr.county || "Current Location";
+            } catch (_) {
+                return `${lat.toFixed(2)}°, ${lon.toFixed(2)}°`;
+            }
+        }
+
+        async function fetchWeatherForCoords(lat, lon, placeLabel) {
+            const statusNote = document.getElementById("statusNote");
+            statusNote.textContent = `Fetching live weather for ${placeLabel}...`;
+
+            document.getElementById("locationName").textContent = placeLabel;
+            document.getElementById("coordReadout").textContent = `LAT ${lat.toFixed(4)} | LON ${lon.toFixed(4)}`;
 
             try {
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto`;
-                const res = await fetch(url);
-                if (!res.ok) throw new Error("HTTP error " + res.status);
-                
-                const data = await res.json();
-                const temp = data.current.temperature_2m;
-                const wind = data.current.wind_speed_10m;
+                const weatherUrl =
+                    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+                    `&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,weather_code,surface_pressure,wind_speed_10m,wind_direction_10m,uv_index` +
+                    `&hourly=temperature_2m,weather_code,wind_speed_10m,precipitation_probability` +
+                    `&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max` +
+                    `&timezone=auto&forecast_days=5`;
 
-                document.getElementById('valTemp').innerText = `${temp.toFixed(1)} °C`;
-                document.getElementById('valWind').innerText = `${wind.toFixed(1)} km/h`;
-                document.getElementById('valLat').innerText = lat.toFixed(4);
-                document.getElementById('valLng').innerText = lon.toFixed(4);
-                document.getElementById('sectorDisplay').innerText = sectorName;
+                const aqiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi,european_aqi`;
 
-                appendLog(`TARGET LOCKED: LAT ${lat.toFixed(4)}, LON ${lon.toFixed(4)} > FETCHING WEATHER TELEMETRY... > SECTOR: ${sectorName} > DATA ACQUIRED. > STATUS: CLEAR FOR ROUTING.`);
-                generateRadarBlips();
+                const [wRes, aRes] = await Promise.all([fetch(weatherUrl), fetch(aqiUrl).catch(() => null)]);
+                if (!wRes.ok) throw new Error("Weather HTTP " + wRes.status);
+                const wData = await wRes.json();
+
+                let aqiValue = "--";
+                if (aRes && aRes.ok) {
+                    const aData = await aRes.json();
+                    const rawAqi = aData.current && (aData.current.us_aqi ?? aData.current.european_aqi);
+                    if (rawAqi != null) aqiValue = Math.round(rawAqi);
+                }
+
+                const cur = wData.current;
+                const daily = wData.daily;
+                const hourly = wData.hourly;
+                const info = codeToInfo(cur.weather_code);
+
+                const todayMax = daily && daily.temperature_2m_max ? Math.round(daily.temperature_2m_max[0]) : "--";
+                const todayMin = daily && daily.temperature_2m_min ? Math.round(daily.temperature_2m_min[0]) : "--";
+
+                document.getElementById("currentTemp").innerHTML = `${Math.round(cur.temperature_2m)}<sup>°C</sup>`;
+                document.getElementById("currentCondition").textContent = `${info.label}  ${todayMax}°/${todayMin}°`;
+                document.getElementById("aqiBadge").textContent = `🍃 AQI ${aqiValue}`;
+
+                document.getElementById("windDirLabel").textContent = degToCompass(cur.wind_direction_10m);
+                document.getElementById("windSpeedLabel").textContent = `${Number(cur.wind_speed_10m).toFixed(1)} km/h`;
+                document.getElementById("windArrow").style.transform = `rotate(${(cur.wind_direction_10m || 0) - 90}deg)`;
+
+                if (daily && daily.sunrise && daily.sunset) {
+                    document.getElementById("sunriseTime").textContent = formatClock(daily.sunrise[0]);
+                    document.getElementById("sunsetTime").textContent = formatClock(daily.sunset[0]);
+
+                    const sr = new Date(daily.sunrise[0]).getTime();
+                    const ss = new Date(daily.sunset[0]).getTime();
+                    if (ss > sr) {
+                        const mins = Math.round((ss - sr) / 60000);
+                        document.getElementById("daylightDuration").textContent = `${Math.floor(mins / 60)}h ${mins % 60}m`;
+                    }
+                }
+
+                document.getElementById("valHumidity").textContent = `${Math.round(cur.relative_humidity_2m)}%`;
+                document.getElementById("valFeelsLike").textContent = `${Math.round(cur.apparent_temperature)}°`;
+                document.getElementById("valUv").textContent = cur.uv_index != null ? Math.round(cur.uv_index) : "0";
+                document.getElementById("valPressure").textContent = `${Math.round(cur.surface_pressure)}mbar`;
+
+                const rainProb = cur.precipitation_probability ?? (daily && daily.precipitation_probability_max ? daily.precipitation_probability_max[0] : 0);
+                document.getElementById("valRainProb").textContent = `${Math.round(rainProb)}%`;
+                document.getElementById("updatedAtLabel").textContent = `Sync ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+
+                // Render next 8 hours starting from current hour
+                const hourlyRow = document.getElementById("hourlyRow");
+                hourlyRow.innerHTML = "";
+                if (hourly && hourly.time) {
+                    const nowMs = Date.now();
+                    let startIdx = hourly.time.findIndex(t => new Date(t).getTime() >= nowMs - 3600000);
+                    if (startIdx < 0) startIdx = 0;
+
+                    for (let i = startIdx; i < Math.min(startIdx + 8, hourly.time.length); i++) {
+                        const hInfo = codeToInfo(hourly.weather_code[i]);
+                        const label = i === startIdx ? "Now" : formatClock(hourly.time[i]);
+                        const item = document.createElement("div");
+                        item.className = "hour-item";
+                        item.innerHTML = `
+                            <div class="hour-temp">${Math.round(hourly.temperature_2m[i])}°</div>
+                            <div class="hour-icon">${hInfo.icon}</div>
+                            <div class="hour-wind">${Number(hourly.wind_speed_10m[i]).toFixed(1)}km/h</div>
+                            <div class="hour-time">${label}</div>
+                        `;
+                        hourlyRow.appendChild(item);
+                    }
+                }
+
+                // Render 5-day forecast
+                const fiveDayRows = document.getElementById("fiveDayRows");
+                fiveDayRows.innerHTML = "";
+                if (daily && daily.time) {
+                    for (let d = 0; d < daily.time.length; d++) {
+                        const dInfo = codeToInfo(daily.weather_code[d]);
+                        const dateObj = new Date(daily.time[d] + "T12:00:00");
+                        const dayLabel = d === 0 ? "Today" : d === 1 ? "Tomorrow" : dateObj.toLocaleDateString([], { weekday: "short" });
+                        const row = document.createElement("div");
+                        row.className = "day-row";
+                        row.innerHTML = `
+                            <span>${dInfo.icon} <strong>${dayLabel}</strong> · ${dInfo.label}</span>
+                            <span class="day-temps">${Math.round(daily.temperature_2m_max[d])}° / ${Math.round(daily.temperature_2m_min[d])}°</span>
+                        `;
+                        fiveDayRows.appendChild(row);
+                    }
+                }
+
+                statusNote.textContent = `Live weather synced for ${placeLabel} (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
             } catch (err) {
-                appendLog(`ERR: SATELLITE LINK DROPPED [${err.message}]. FALLING BACK TO PASSIVE ESTIMATION.`);
-                document.getElementById('valTemp').innerText = "21.1 °C";
-                document.getElementById('valWind').innerText = "9.7 km/h";
+                statusNote.textContent = `Unable to fetch live weather (${err.message}). Check network and retry.`;
             }
         }
 
-        // LOAD PRESET
-        function loadSectorPreset(lat, lon, name) {
-            activeLat = lat;
-            activeLng = lon;
-            activeSector = name;
-            fetchWeather(activeLat, activeLng, activeSector);
-        }
-
-        // LIVE GEOLOCATION AUTO-DISCOVERY
-        function fetchLiveTelemetry() {
-            if ("geolocation" in navigator) {
-                appendLog("REQUESTING HARDWARE GPS SENSOR COORDS...");
-                navigator.geolocation.getCurrentPosition(
-                    async (position) => {
-                        activeLat = position.coords.latitude;
-                        activeLng = position.coords.longitude;
-
-                        // Reverse Geocode via BigDataCloud or OpenStreetMap Nominatim
-                        let detectedSector = "LOCAL ASSET";
-                        try {
-                            const geoUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${activeLat}&lon=${activeLng}&zoom=14`;
-                            const geoRes = await fetch(geoUrl);
-                            if (geoRes.ok) {
-                                const geoData = await geoRes.json();
-                                detectedSector = (geoData.address.suburb || geoData.address.town || geoData.address.city || "LOCAL ASSET").toUpperCase();
-                            }
-                        } catch (e) {
-                            detectedSector = "DETECTED SECTOR";
-                        }
-
-                        fetchWeather(activeLat, activeLng, detectedSector);
-                    },
-                    (error) => {
-                        appendLog(`GPS SENSOR BLOCKED OR TIMED OUT (${error.message}). DEFAULTING TO PRESET.`);
-                        loadSectorPreset(13.0947, 77.3947, 'NELAMANGALA');
-                    },
-                    { enableHighAccuracy: true, timeout: 8000 }
-                );
-            } else {
-                appendLog("DEVICE LACKS GEOLOCATION CAPABILITY. ACCESSING PRESET.");
-                loadSectorPreset(13.0947, 77.3947, 'NELAMANGALA');
-            }
-        }
-
-        /* ============================================================
-           CANVAS RADAR SCANNER ENGINE
-        ============================================================ */
-        const canvas = document.getElementById('radarCanvas');
-        const ctx = canvas.getContext('2d');
-        const cx = canvas.width / 2;
-        const cy = canvas.height / 2;
-        const radius = 160;
-        let angle = 0;
-        let radarBlips = [];
-
-        function generateRadarBlips() {
-            radarBlips = [];
-            // Generate 12 tactical blip targets around center
-            for (let i = 0; i < 12; i++) {
-                const r = Math.random() * (radius - 20) + 10;
-                const theta = Math.random() * Math.PI * 2;
-                radarBlips.push({
-                    x: cx + r * Math.cos(theta),
-                    y: cy + r * Math.sin(theta),
-                    size: Math.random() > 0.5 ? 2.5 : 1.5,
-                    alpha: Math.random() * 0.7 + 0.3
-                });
-            }
-        }
-
-        function drawRadar() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Concentric Range Rings
-            ctx.strokeStyle = "rgba(0, 230, 118, 0.18)";
-            ctx.lineWidth = 1;
-            for (let r = 40; r <= radius; r += 40) {
-                ctx.beginPath();
-                ctx.arc(cx, cy, r, 0, Math.PI * 2);
-                ctx.stroke();
+        function detectDeviceLocation() {
+            const statusNote = document.getElementById("statusNote");
+            if (!("geolocation" in navigator)) {
+                statusNote.textContent = "Geolocation is not supported on this browser/device.";
+                return;
             }
 
-            // Crosshairs
-            ctx.beginPath();
-            ctx.moveTo(cx - radius, cy);
-            ctx.lineTo(cx + radius, cy);
-            ctx.moveTo(cx, cy - radius);
-            ctx.lineTo(cx, cy + radius);
-            ctx.stroke();
-
-            // Tactical Targets / Blips
-            for (let b of radarBlips) {
-                ctx.fillStyle = `rgba(0, 230, 118, ${b.alpha})`;
-                ctx.fillRect(b.x - b.size, b.y - b.size, b.size * 2, b.size * 2);
-            }
-
-            // Radar Sweep Gradient Arc
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(cx, cy);
-            ctx.arc(cx, cy, radius, angle, angle + 0.55);
-            ctx.closePath();
-
-            const sweepGradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-            sweepGradient.addColorStop(0, "rgba(0, 230, 118, 0.3)");
-            sweepGradient.addColorStop(1, "rgba(0, 230, 118, 0.0)");
-            ctx.fillStyle = sweepGradient;
-            ctx.fill();
-
-            // Leading Sweep Beam
-            ctx.beginPath();
-            ctx.moveTo(cx, cy);
-            ctx.lineTo(cx + radius * Math.cos(angle + 0.55), cy + radius * Math.sin(angle + 0.55));
-            ctx.strokeStyle = "rgba(0, 230, 118, 0.85)";
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-            ctx.restore();
-
-            angle += 0.025;
-            if (angle > Math.PI * 2) angle = 0;
-
-            requestAnimationFrame(drawRadar);
+            statusNote.textContent = "Requesting device GPS coordinates...";
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    const place = await reverseGeocode(lat, lon);
+                    fetchWeatherForCoords(lat, lon, place);
+                },
+                (err) => {
+                    statusNote.textContent = `Location permission/GPS error (${err.message}). Enable Location/GPS and tap GPS SYNC.`;
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
         }
 
-        // INIT ON BOOT
-        generateRadarBlips();
-        drawRadar();
-        fetchWeather(activeLat, activeLng, activeSector);
+        detectDeviceLocation();
     </script>
 </body>
 </html>
