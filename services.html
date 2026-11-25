@@ -13,15 +13,15 @@
     <style>
         :root[data-theme="dark"] {
             --bg-deep: #030712;
-            --bg-panel: rgba(8, 15, 30, 0.86);
-            --bg-card: rgba(10, 18, 36, 0.78);
+            --bg-panel: rgba(8, 15, 30, 0.88);
+            --bg-card: rgba(11, 20, 38, 0.82);
             --cyan-glow: #00F0FF;
             --neon-pink: #FF2A85;
             --orange-alert: #FF6B35;
             --text-main: #F8FAFC;
             --text-muted: #94A3B8;
-            --border-line: rgba(0, 240, 255, 0.22);
-            --shadow-color: rgba(0, 240, 255, 0.35);
+            --border-line: rgba(0, 240, 255, 0.2);
+            --shadow-color: rgba(0, 240, 255, 0.32);
             --danger: #EF4444;
             --danger-bg: rgba(239, 68, 68, 0.12);
             --success: #10B981;
@@ -30,8 +30,8 @@
 
         :root[data-theme="light"] {
             --bg-deep: #F1F5F9;
-            --bg-panel: rgba(255, 255, 255, 0.94);
-            --bg-card: rgba(255, 255, 255, 0.88);
+            --bg-panel: rgba(255, 255, 255, 0.95);
+            --bg-card: rgba(255, 255, 255, 0.9);
             --cyan-glow: #0284C7;
             --neon-pink: #DB2777;
             --orange-alert: #EA580C;
@@ -45,582 +45,97 @@
             --ambient-light: radial-gradient(circle at 50% 15%, rgba(2, 132, 199, 0.08) 0%, transparent 65%);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-            scroll-behavior: smooth;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        body { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; transition: background-color 0.3s ease; }
 
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            overflow-x: hidden;
-            transition: background-color 0.3s ease;
-        }
+        .cursor-hud { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 2500; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 8px; opacity: 0; transition: opacity 0.2s ease; }
+        body:hover .cursor-hud { opacity: 1; }
+        .cursor-reticle { width: 26px; height: 26px; border: 1.5px solid var(--cyan-glow); border-radius: 50%; box-shadow: 0 0 12px var(--shadow-color); position: relative; }
+        .cursor-reticle::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: var(--orange-alert); border-radius: 50%; transform: translate(-50%, -50%); }
+        .cursor-readout { background: rgba(3, 7, 18, 0.9); border: 1px solid var(--border-line); color: var(--cyan-glow); font-family: 'Space Mono', monospace; font-size: 0.65rem; padding: 3px 7px; border-radius: 4px; white-space: nowrap; }
+        @media (pointer: coarse) { .cursor-hud { display: none; } }
 
-        /* ========================================================
-           CURSOR ANALYSIS OVERLAY
-           ======================================================== */
-        .cursor-hud {
-            position: fixed;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 2500;
-            transform: translate(-50%, -50%);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
+        .ambient-bg { position: fixed; inset: 0; z-index: -4; background: var(--ambient-light); pointer-events: none; }
+        #interactiveCanvas { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
+        .grid-overlay { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-image: linear-gradient(var(--border-line) 1px, transparent 1px), linear-gradient(90deg, var(--border-line) 1px, transparent 1px); background-size: 56px 56px; opacity: 0.24; animation: gridDrift 22s linear infinite; }
+        @keyframes gridDrift { 0% { background-position: 0 0, 0 0; } 100% { background-position: 56px 56px, 56px 56px; } }
 
-        body:hover .cursor-hud {
-            opacity: 1;
-        }
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--bg-panel); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border-line); position: fixed; top: 0; width: 100%; z-index: 1500; }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0; }
+        .brand-svg { width: 38px; height: 38px; filter: drop-shadow(0 0 8px var(--shadow-color)); }
+        .brand-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.25rem; color: var(--text-main); letter-spacing: 2px; }
+        .brand-name span { color: var(--orange-alert); }
+        .desktop-nav { display: flex; align-items: center; gap: 20px; }
+        .nav-links { display: flex; gap: 22px; list-style: none; }
+        .nav-links a { font-family: 'Space Mono', monospace; color: var(--text-muted); text-decoration: none; font-size: 0.82rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
+        .nav-links a:hover, .nav-links a.active { color: var(--cyan-glow); }
+        .theme-toggle { background: none; border: 1px solid var(--border-line); border-radius: 50%; width: 38px; height: 38px; font-size: 1.1rem; cursor: pointer; color: var(--text-main); }
+        .mobile-nav-btn { display: none; background: none; border: none; color: var(--cyan-glow); font-size: 2rem; cursor: pointer; }
 
-        .cursor-reticle {
-            width: 26px;
-            height: 26px;
-            border: 1.5px solid var(--cyan-glow);
-            border-radius: 50%;
-            box-shadow: 0 0 12px var(--shadow-color), inset 0 0 8px var(--shadow-color);
-            position: relative;
-        }
+        .user-profile-container { position: relative; display: inline-block; z-index: 1000; }
+        .user-chip { display: flex; align-items: center; gap: 10px; background: var(--bg-panel); border: 1px solid var(--cyan-glow); padding: 6px 14px 6px 6px; border-radius: 30px; font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--text-main); font-weight: 700; }
+        .user-avatar { width: 26px; height: 26px; background: var(--cyan-glow); color: #02050E; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; }
+        .agent-name-txt { max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .user-dropdown { position: absolute; top: 125%; right: 0; background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 8px; padding: 16px; width: 230px; display: none; flex-direction: column; gap: 10px; text-align: center; }
+        .user-profile-container:hover .user-dropdown { display: flex; }
+        .dropdown-email { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--text-muted); word-break: break-all; border-bottom: 1px solid var(--border-line); padding-bottom: 10px; }
+        .btn-logout-drop { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 8px; border-radius: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; font-weight: 700; cursor: pointer; }
 
-        .cursor-reticle::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 4px;
-            height: 4px;
-            background: var(--orange-alert);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .cursor-readout {
-            background: rgba(3, 7, 18, 0.88);
-            border: 1px solid var(--border-line);
-            color: var(--cyan-glow);
-            font-family: 'Space Mono', monospace;
-            font-size: 0.65rem;
-            padding: 3px 7px;
-            border-radius: 4px;
-            white-space: nowrap;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
-        }
-
-        @media (pointer: coarse) {
-            .cursor-hud { display: none; }
-        }
-
-        /* ========================================================
-           BACKGROUND ANIMATION ENGINE
-           ======================================================== */
-        .ambient-bg {
-            position: fixed;
-            inset: 0;
-            z-index: -4;
-            background: var(--ambient-light);
-            pointer-events: none;
-        }
-
-        #interactiveCanvas {
-            position: fixed;
-            inset: 0;
-            z-index: -3;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .grid-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            pointer-events: none;
-            background-image:
-                linear-gradient(var(--border-line) 1px, transparent 1px),
-                linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
-            background-size: 56px 56px;
-            opacity: 0.24;
-            animation: gridDrift 22s linear infinite;
-        }
-
-        @keyframes gridDrift {
-            0% { background-position: 0 0, 0 0; }
-            100% { background-position: 56px 56px, 56px 56px; }
-        }
-
-        /* ========================================================
-           NAVBAR & PROFILE
-           ======================================================== */
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 5%;
-            background: var(--bg-panel);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border-line);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1500;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            flex-shrink: 0;
-        }
-
-        .brand-svg {
-            width: 38px;
-            height: 38px;
-            filter: drop-shadow(0 0 8px var(--shadow-color));
-        }
-
-        .brand-name {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            font-size: 1.3rem;
-            color: var(--text-main);
-            letter-spacing: 2px;
-        }
-
-        .brand-name span {
-            color: var(--orange-alert);
-        }
-
-        .desktop-nav {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: nowrap;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 24px;
-            list-style: none;
-            margin-right: 10px;
-        }
-
-        .nav-links a {
-            font-family: 'Space Mono', monospace;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: 0.25s;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: var(--cyan-glow);
-            text-shadow: 0 0 10px var(--shadow-color);
-        }
-
-        .theme-toggle {
-            background: none;
-            border: 1px solid var(--border-line);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 1.15rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: 0.25s;
-            color: var(--text-main);
-            flex-shrink: 0;
-        }
-
-        .theme-toggle:hover {
-            border-color: var(--cyan-glow);
-            box-shadow: 0 0 12px var(--shadow-color);
-        }
-
-        .mobile-nav-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--cyan-glow);
-            font-size: 2rem;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .user-profile-container { position: relative; display: inline-block; z-index: 1000; flex-shrink: 0; }
-        .user-chip {
-            display: flex; align-items: center; gap: 10px; background: var(--bg-panel);
-            border: 1px solid var(--cyan-glow); padding: 6px 14px 6px 6px; border-radius: 30px;
-            cursor: pointer; font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--text-main); font-weight: 700;
-        }
-        .user-avatar {
-            width: 28px; height: 28px; background: var(--cyan-glow); color: #02050E; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; font-weight: 900; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; flex-shrink: 0;
-        }
-        .agent-name-txt { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; }
-
-        .user-dropdown {
-            position: absolute; top: 125%; right: 0; background: var(--bg-panel); border: 1px solid var(--border-line);
-            border-radius: 8px; padding: 18px; width: 240px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px);
-            display: none; flex-direction: column; gap: 10px; text-align: center;
-        }
-        .user-profile-container:hover .user-dropdown { display: flex; animation: slideDown 0.25s ease; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-
-        .dropdown-email {
-            font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--text-muted);
-            word-break: break-all; border-bottom: 1px solid var(--border-line); padding-bottom: 12px;
-        }
-        .btn-logout-drop {
-            background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 9px; border-radius: 4px;
-            font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px;
-        }
-        .btn-logout-drop:hover { background: var(--danger-bg); }
-
-        /* ========================================================
-           MOBILE SLIDE-OUT MENU
-           ======================================================== */
-        .mobile-overlay {
-            position: fixed; top: 0; right: -100%; width: 280px; height: 100vh;
-            background: var(--bg-panel); backdrop-filter: blur(20px); z-index: 3000;
-            padding: 75px 25px 30px; transition: right 0.35s ease; border-left: 2px solid var(--cyan-glow);
-            box-shadow: -10px 0 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 25px;
-        }
+        .mobile-overlay { position: fixed; top: 0; right: -100%; width: 280px; height: 100vh; background: var(--bg-panel); backdrop-filter: blur(20px); z-index: 3000; padding: 75px 25px 30px; transition: right 0.35s ease; border-left: 2px solid var(--cyan-glow); display: flex; flex-direction: column; gap: 24px; }
         .mobile-overlay.active { right: 0; }
         .m-nav-close { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 2.2rem; color: var(--text-muted); cursor: pointer; }
         .m-nav-links { list-style: none; display: flex; flex-direction: column; gap: 20px; }
-        .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; letter-spacing: 2px; font-weight: 700; }
-        .m-nav-links a:hover, .m-nav-links a.active { color: var(--cyan-glow); }
+        .m-nav-links a { color: var(--text-main); text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 1.05rem; letter-spacing: 2px; font-weight: 700; }
 
-        /* ========================================================
-           MAIN & FLEX NEON SERVICE CARDS
-           ======================================================== */
-        main {
-            flex-grow: 1;
-            padding: 112px 5% 60px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            z-index: 10;
-        }
+        main { flex-grow: 1; padding: 108px 5% 60px; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 10; }
+        .content-wrapper { width: 100%; max-width: 1320px; display: flex; flex-direction: column; gap: 28px; }
 
-        .content-wrapper {
-            width: 100%;
-            max-width: 1320px;
-            display: flex;
-            flex-direction: column;
-            gap: 36px;
-        }
+        /* BASTION TOP TELEMETRY STRIP */
+        .bastion-hud-strip { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; background: var(--bg-card); border: 1px solid var(--border-line); border-radius: 10px; padding: 16px 20px; backdrop-filter: blur(14px); }
+        .hud-stat-group { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; font-family: 'Space Mono', monospace; font-size: 0.78rem; }
+        .hud-metric strong { display: block; font-family: 'Orbitron', sans-serif; font-size: 1.15rem; color: var(--cyan-glow); }
+        .hud-metric span { color: var(--text-muted); font-size: 0.68rem; text-transform: uppercase; }
 
-        .header-title {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
+        .header-title { display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(2rem, 4.8vw, 3.4rem); font-weight: 900; text-transform: uppercase; margin-bottom: 10px; background: linear-gradient(90deg, var(--text-main), var(--cyan-glow), var(--neon-pink), var(--cyan-glow)); background-size: 250% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: gradientFlow 6s linear infinite; }
+        @keyframes gradientFlow { to { background-position: 250% center; } }
+        .sys-status { display: inline-flex; align-items: center; gap: 8px; color: var(--success); font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.78rem; letter-spacing: 1px; padding: 6px 16px; border: 1px solid var(--success); border-radius: 30px; background: rgba(16, 185, 129, 0.1); }
+        .pulse-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; animation: pulseDot 1.5s infinite; }
+        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 
-        .header-title h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2rem, 5vw, 3.6rem);
-            font-weight: 900;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 14px;
-            background: linear-gradient(90deg, var(--text-main), var(--cyan-glow), var(--neon-pink), var(--cyan-glow));
-            background-size: 250% auto;
-            color: transparent;
-            -webkit-background-clip: text;
-            background-clip: text;
-            animation: gradientFlow 6s linear infinite;
-        }
+        .services-flex-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px; width: 100%; }
+        .neon-service-card { flex: 1 1 320px; max-width: 405px; display: flex; flex-direction: column; justify-content: space-between; background: var(--bg-card); border: 1.5px solid var(--border-line); border-radius: 12px; padding: 24px; position: relative; overflow: hidden; backdrop-filter: blur(14px); transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s; min-height: 280px; }
+        .neon-service-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--cyan-glow), var(--neon-pink)); }
+        .neon-service-card:hover { transform: translateY(-5px); border-color: var(--cyan-glow); box-shadow: 0 0 26px rgba(0, 240, 255, 0.24); }
+        .neon-service-card.pink-neon:hover { border-color: var(--neon-pink); box-shadow: 0 0 26px rgba(255, 42, 133, 0.25); }
 
-        @keyframes gradientFlow {
-            to { background-position: 250% center; }
-        }
+        .card-top-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--text-muted); }
+        .neon-pill { background: rgba(0, 240, 255, 0.14); border: 1px solid rgba(0, 240, 255, 0.35); color: var(--cyan-glow); padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+        .neon-service-card.pink-neon .neon-pill { background: rgba(255, 42, 133, 0.14); border-color: rgba(255, 42, 133, 0.4); color: var(--neon-pink); }
 
-        .sys-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--success);
-            font-weight: 700;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            padding: 7px 18px;
-            border: 1px solid var(--success);
-            border-radius: 30px;
-            background: rgba(16, 185, 129, 0.1);
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.18);
-        }
+        .c-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .c-icon { font-size: 1.65rem; color: var(--cyan-glow); }
+        .c-title { font-family: 'Orbitron', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); text-transform: uppercase; }
+        .neon-service-card p { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 22px; line-height: 1.62; flex-grow: 1; }
 
-        .pulse-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--success);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--success);
-            animation: pulseDot 1.5s infinite;
-        }
+        .btn-outline { padding: 12px; border-radius: 6px; font-family: 'Orbitron', sans-serif; font-size: 0.82rem; font-weight: 800; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; background: rgba(0, 240, 255, 0.05); color: var(--cyan-glow); border: 1.5px solid var(--cyan-glow); width: 100%; display: inline-block; text-align: center; text-decoration: none; }
+        .btn-outline:hover { background: var(--cyan-glow); color: #02050E; }
 
-        @keyframes pulseDot {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.35; }
-        }
+        .card-danger { flex: 1 1 100%; max-width: 100%; min-height: auto; flex-direction: row; align-items: center; justify-content: space-between; gap: 24px; padding: 30px; border-color: rgba(239, 68, 68, 0.35); background: rgba(239, 68, 68, 0.04); }
+        .card-danger::before { background: linear-gradient(90deg, var(--danger), var(--orange-alert)); }
+        .card-danger .c-icon, .card-danger .c-title { color: var(--danger); }
+        .card-danger p { margin-bottom: 0; }
+        .card-danger .btn-outline-danger { width: auto; padding: 13px 30px; white-space: nowrap; border-color: var(--danger); color: var(--danger); background: rgba(239, 68, 68, 0.06); }
+        .card-danger .btn-outline-danger:hover { background: var(--danger); color: #FFFFFF; }
 
-        /* FLEX NEON CARDS CONTAINER */
-        .services-flex-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 24px;
-            width: 100%;
-        }
+        footer { background: var(--bg-panel); border-top: 1px solid var(--border-line); padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 0.82rem; font-weight: 600; color: var(--text-muted); margin-top: auto; }
 
-        .neon-service-card {
-            flex: 1 1 320px;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            background: var(--bg-card);
-            border: 1.5px solid var(--border-line);
-            border-radius: 12px;
-            padding: 26px;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(14px);
-            transition: transform 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
-            box-shadow: 0 0 16px rgba(0, 240, 255, 0.08);
-            min-height: 290px;
-        }
-
-        .neon-service-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--cyan-glow), var(--neon-pink));
-            opacity: 0.85;
-        }
-
-        .neon-service-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--cyan-glow);
-            box-shadow: 0 0 28px rgba(0, 240, 255, 0.28), inset 0 0 14px rgba(0, 240, 255, 0.08);
-        }
-
-        .neon-service-card.pink-neon:hover {
-            border-color: var(--neon-pink);
-            box-shadow: 0 0 28px rgba(255, 42, 133, 0.28), inset 0 0 14px rgba(255, 42, 133, 0.08);
-        }
-
-        .card-top-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-        }
-
-        .neon-pill {
-            background: rgba(0, 240, 255, 0.14);
-            border: 1px solid rgba(0, 240, 255, 0.35);
-            color: var(--cyan-glow);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: 700;
-        }
-
-        .neon-service-card.pink-neon .neon-pill {
-            background: rgba(255, 42, 133, 0.14);
-            border-color: rgba(255, 42, 133, 0.4);
-            color: var(--neon-pink);
-        }
-
-        .c-head {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 14px;
-        }
-
-        .c-icon {
-            font-size: 1.7rem;
-            color: var(--cyan-glow);
-            filter: drop-shadow(0 0 6px var(--shadow-color));
-        }
-
-        .c-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.08rem;
-            font-weight: 800;
-            color: var(--text-main);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .neon-service-card p {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.88rem;
-            color: var(--text-muted);
-            margin-bottom: 24px;
-            line-height: 1.65;
-            flex-grow: 1;
-        }
-
-        .btn-outline {
-            padding: 13px;
-            border-radius: 6px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 800;
-            cursor: pointer;
-            transition: 0.25s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            background: rgba(0, 240, 255, 0.05);
-            color: var(--cyan-glow);
-            border: 1.5px solid var(--cyan-glow);
-            width: 100%;
-            display: inline-block;
-            text-align: center;
-            text-decoration: none;
-            margin-top: auto;
-        }
-
-        .btn-outline:hover {
-            background: var(--cyan-glow);
-            color: #02050E;
-            box-shadow: 0 0 20px var(--shadow-color);
-        }
-
-        /* TIER-3 VAULT FULL-WIDTH NEON BANNER */
-        .card-danger {
-            flex: 1 1 100%;
-            max-width: 100%;
-            min-height: auto;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            gap: 24px;
-            padding: 32px;
-            border-color: rgba(239, 68, 68, 0.35);
-            background: rgba(239, 68, 68, 0.04);
-        }
-
-        .card-danger::before {
-            background: linear-gradient(90deg, var(--danger), var(--orange-alert));
-        }
-
-        .card-danger:hover {
-            border-color: var(--danger);
-            box-shadow: 0 0 28px rgba(239, 68, 68, 0.28), inset 0 0 12px rgba(239, 68, 68, 0.08);
-        }
-
-        .card-danger .c-icon,
-        .card-danger .c-title {
-            color: var(--danger);
-            filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.4));
-        }
-
-        .card-danger p {
-            margin-bottom: 0;
-        }
-
-        .card-danger .btn-outline-danger {
-            width: auto;
-            padding: 14px 32px;
-            white-space: nowrap;
-            border-color: var(--danger);
-            color: var(--danger);
-            background: rgba(239, 68, 68, 0.06);
-        }
-
-        .card-danger .btn-outline-danger:hover {
-            background: var(--danger);
-            color: #FFFFFF;
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.45);
-        }
-
-        footer {
-            background: var(--bg-panel);
-            border-top: 1px solid var(--border-line);
-            padding: 22px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            position: relative;
-            z-index: 10;
-            margin-top: auto;
-        }
-
-        @media (max-width: 960px) {
-            .card-danger {
-                flex-direction: column;
-                align-items: stretch;
-                text-align: center;
-            }
-            .card-danger .c-head {
-                justify-content: center;
-            }
-            .card-danger .btn-outline-danger {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 850px) {
-            .desktop-nav { display: none !important; }
-            .mobile-nav-btn { display: block !important; }
-        }
-
-        #authLoader {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-deep);
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Orbitron', sans-serif;
-            color: var(--cyan-glow);
-            font-size: 1.4rem;
-            letter-spacing: 2px;
-        }
+        @media (max-width: 960px) { .card-danger { flex-direction: column; align-items: stretch; text-align: center; } .card-danger .c-head { justify-content: center; } .card-danger .btn-outline-danger { width: 100%; } }
+        @media (max-width: 850px) { .desktop-nav { display: none !important; } .mobile-nav-btn { display: block !important; } }
+        #authLoader { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; color: var(--cyan-glow); font-size: 1.4rem; }
     </style>
 </head>
 <body>
-
-    <!-- CURSOR ANALYSIS HUD -->
     <div class="cursor-hud" id="cursorHud">
         <div class="cursor-reticle"></div>
         <div class="cursor-readout" id="cursorReadout">SERVICES // X:0 Y:0</div>
@@ -639,13 +154,11 @@
     <canvas id="interactiveCanvas"></canvas>
     <div class="grid-overlay"></div>
 
-    <!-- NAVBAR -->
     <nav class="nav">
         <a href="index.html" class="brand">
             <svg class="brand-svg"><use href="#shield-logo"></use></svg>
             <div class="brand-name">RAKSHA<span> SURAKSHA</span></div>
         </a>
-
         <div class="desktop-nav" id="desktopNavContainer">
             <ul class="nav-links">
                 <li><a href="index.html">HOME</a></li>
@@ -653,17 +166,15 @@
                 <li><a href="manual.html">MANUAL</a></li>
                 <li><a href="downloads.html">DOWNLOADS</a></li>
             </ul>
-            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk" title="Toggle Theme">🌓</button>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtnDesk">🌓</button>
             <div id="desktopAuthState"></div>
         </div>
-
         <div style="display: flex; align-items: center; gap: 15px;">
-            <button class="theme-toggle" style="display: none;" onclick="toggleTheme()" id="themeBtnMob" title="Toggle Theme">🌓</button>
+            <button class="theme-toggle" style="display: none;" onclick="toggleTheme()" id="themeBtnMob">🌓</button>
             <button class="mobile-nav-btn" onclick="toggleMobileNav()">☰</button>
         </div>
     </nav>
 
-    <!-- MOBILE MENU -->
     <div class="mobile-overlay" id="mobileNav">
         <button class="m-nav-close" onclick="toggleMobileNav()">×</button>
         <ul class="m-nav-links">
@@ -672,10 +183,9 @@
             <li><a href="manual.html">MANUAL</a></li>
             <li><a href="downloads.html">DOWNLOADS</a></li>
         </ul>
-        <div id="mobileAuthState" style="margin-top: 40px; border-top: 2px solid var(--border-line); padding-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px;"></div>
+        <div id="mobileAuthState" style="margin-top: 30px; border-top: 1px solid var(--border-line); padding-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px;"></div>
     </div>
 
-    <!-- MAIN CONTENT -->
     <main>
         <div class="content-wrapper">
             <div class="header-title">
@@ -683,110 +193,78 @@
                 <div class="sys-status"><span class="pulse-dot"></span> SECURE UPLINK ESTABLISHED</div>
             </div>
 
-            <!-- FLEX NEON SERVICES GRID -->
+            <!-- BASTION-STYLE TELEMETRY SUMMARY BAR -->
+            <div class="bastion-hud-strip">
+                <div class="hud-stat-group">
+                    <div class="hud-metric"><strong>7 MODULES</strong><span>ACTIVE STACK</span></div>
+                    <div class="hud-metric"><strong style="color: var(--success);">3-TIER</strong><span>CLOUD + SMS + HW</span></div>
+                    <div class="hud-metric"><strong style="color: var(--neon-pink);">GUARDED</strong><span>SOS LOCK ACTIVE</span></div>
+                </div>
+                <div style="font-family: 'Space Mono', monospace; font-size: 0.74rem; color: var(--cyan-glow);">
+                    SECTOR // RAKSHA SURAKSHA COMMAND
+                </div>
+            </div>
+
             <div class="services-flex-grid">
                 <div class="neon-service-card">
                     <div>
-                        <div class="card-top-meta">
-                            <span>MOD-01</span>
-                            <span class="neon-pill">COMMAND</span>
-                        </div>
-                        <div class="c-head">
-                            <div class="c-icon">🎛️</div>
-                            <div class="c-title">APP CONTROLS</div>
-                        </div>
-                        <p>Remote device locking, hardware overrides, and system parameter adjustments.</p>
+                        <div class="card-top-meta"><span>MOD-01</span><span class="neon-pill">COMMAND</span></div>
+                        <div class="c-head"><div class="c-icon">🎛️</div><div class="c-title">APP CONTROLS</div></div>
+                        <p>Remote device locking, hardware overrides, siren/strobe triggers, and system parameter controls.</p>
                     </div>
                     <a href="app-controls.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
                 <div class="neon-service-card pink-neon">
                     <div>
-                        <div class="card-top-meta">
-                            <span>MOD-02</span>
-                            <span class="neon-pill">GPS LINK</span>
-                        </div>
-                        <div class="c-head">
-                            <div class="c-icon">📍</div>
-                            <div class="c-title">APP LOCATION</div>
-                        </div>
-                        <p>Access precision coordinates and real-time device tracking telemetry.</p>
+                        <div class="card-top-meta"><span>MOD-02</span><span class="neon-pill">GPS LINK</span></div>
+                        <div class="c-head"><div class="c-icon">📍</div><div class="c-title">APP LOCATION</div></div>
+                        <p>Access live coordinates, route trails, archive playback, and offline SMS coordinate injection.</p>
                     </div>
                     <a href="map.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
                 <div class="neon-service-card">
                     <div>
-                        <div class="card-top-meta">
-                            <span>MOD-03</span>
-                            <span class="neon-pill">SMS BUS</span>
-                        </div>
-                        <div class="c-head">
-                            <div class="c-icon">💬</div>
-                            <div class="c-title">MESSAGE CONTROL</div>
-                        </div>
-                        <p>Manage SMS routing, offline payloads, and automated alert triggers.</p>
+                        <div class="card-top-meta"><span>MOD-03</span><span class="neon-pill">SMS BUS</span></div>
+                        <div class="c-head"><div class="c-icon">💬</div><div class="c-title">MESSAGE CONTROL</div></div>
+                        <p>Manage SMS command routing, offline payloads, and fallback alert rules.</p>
                     </div>
                     <a href="message-control.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
                 <div class="neon-service-card pink-neon">
                     <div>
-                        <div class="card-top-meta">
-                            <span>MOD-04</span>
-                            <span class="neon-pill">SYNC</span>
-                        </div>
-                        <div class="c-head">
-                            <div class="c-icon">🔗</div>
-                            <div class="c-title">DEVICE LINKING</div>
-                        </div>
-                        <p>Pair target devices, review active sessions, and verify agent tokens.</p>
+                        <div class="card-top-meta"><span>MOD-04</span><span class="neon-pill">SYNC</span></div>
+                        <div class="c-head"><div class="c-icon">🔗</div><div class="c-title">DEVICE LINKING</div></div>
+                        <p>Pair Android hardware clients, inspect active nodes, and verify session tokens.</p>
                     </div>
                     <a href="app-linking.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
                 <div class="neon-service-card">
                     <div>
-                        <div class="card-top-meta">
-                            <span>MOD-05</span>
-                            <span class="neon-pill">INTEL</span>
-                        </div>
-                        <div class="c-head">
-                            <div class="c-icon">🌤️</div>
-                            <div class="c-title">WEATHER CORE INTEL</div>
-                        </div>
-                        <p>Pull live local weather indices to support outdoor field operations.</p>
+                        <div class="card-top-meta"><span>MOD-05</span><span class="neon-pill">INTEL</span></div>
+                        <div class="c-head"><div class="c-icon">🌤️</div><div class="c-title">WEATHER CORE INTEL</div></div>
+                        <p>Pull live weather conditions for field tracking and outdoor asset awareness.</p>
                     </div>
                     <a href="weather.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
                 <div class="neon-service-card pink-neon">
                     <div>
-                        <div class="card-top-meta">
-                            <span>MOD-06</span>
-                            <span class="neon-pill">VECTOR</span>
-                        </div>
-                        <div class="c-head">
-                            <div class="c-icon">📡</div>
-                            <div class="c-title">SITE LOCATION TRACKING</div>
-                        </div>
+                        <div class="card-top-meta"><span>MOD-06</span><span class="neon-pill">VECTOR</span></div>
+                        <div class="c-head"><div class="c-icon">📡</div><div class="c-title">SITE LOCATION TRACKING</div></div>
                         <p>Initialize graphical coordinate mapping pipelines for tracked assets.</p>
                     </div>
                     <a href="site-tracking.html" class="btn-outline">OPEN MODULE</a>
                 </div>
 
-                <!-- FULL-WIDTH TIER-3 VAULT CARD -->
                 <div class="neon-service-card card-danger">
                     <div>
-                        <div class="card-top-meta">
-                            <span>TIER-3 // RESTRICTED</span>
-                            <span class="neon-pill" style="background: rgba(239,68,68,0.16); border-color: rgba(239,68,68,0.45); color: var(--danger);">HIGH SECURITY</span>
-                        </div>
-                        <div class="c-head">
-                            <div class="c-icon">🛡️</div>
-                            <div class="c-title">TIER-3 EVIDENCE VAULT</div>
-                        </div>
-                        <p>Authorized agents only. Access encrypted media and incident capture logs.</p>
+                        <div class="card-top-meta"><span>TIER-3 // RESTRICTED</span><span class="neon-pill" style="background: rgba(239,68,68,0.16); border-color: rgba(239,68,68,0.45); color: var(--danger);">HIGH SECURITY</span></div>
+                        <div class="c-head"><div class="c-icon">🛡️</div><div class="c-title">TIER-3 EVIDENCE VAULT</div></div>
+                        <p>Authorized agents only. Access encrypted incident captures and security logs.</p>
                     </div>
                     <a href="evidence-vault.html" class="btn-outline btn-outline-danger">ENTER VAULT</a>
                 </div>
@@ -807,63 +285,36 @@
         }
         function toggleTheme() {
             const root = document.documentElement;
-            const currentTheme = root.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            root.setAttribute('data-theme', newTheme);
-            localStorage.setItem('tactical_theme', newTheme);
+            const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            root.setAttribute('data-theme', next);
+            localStorage.setItem('tactical_theme', next);
         }
         function updateMobileThemeBtnVis() {
             document.getElementById('themeBtnMob').style.display = window.innerWidth <= 850 ? 'flex' : 'none';
         }
         initTheme();
         window.addEventListener('resize', updateMobileThemeBtnVis);
-        function toggleMobileNav() {
-            document.getElementById('mobileNav').classList.toggle('active');
-        }
+        function toggleMobileNav() { document.getElementById('mobileNav').classList.toggle('active'); }
 
-        /* ========================================================
-           CURSOR ANALYSIS TRACKER
-           ======================================================== */
         const cursorHud = document.getElementById('cursorHud');
         const cursorReadout = document.getElementById('cursorReadout');
-        let pointerX = window.innerWidth / 2;
-        let pointerY = window.innerHeight / 2;
-        let pointerActive = false;
+        let pointerX = window.innerWidth / 2, pointerY = window.innerHeight / 2, pointerActive = false;
 
         window.addEventListener('pointermove', (e) => {
-            pointerX = e.clientX;
-            pointerY = e.clientY;
-            pointerActive = true;
-
+            pointerX = e.clientX; pointerY = e.clientY; pointerActive = true;
             if (cursorHud) {
                 cursorHud.style.left = pointerX + 'px';
                 cursorHud.style.top = pointerY + 'px';
                 const card = e.target.closest('.neon-service-card');
-                const label = card
-                    ? card.querySelector('.c-title')?.textContent.trim() || 'MODULE'
-                    : 'SERVICES GRID';
+                const label = card ? card.querySelector('.c-title')?.textContent.trim() : 'SERVICES';
                 cursorReadout.textContent = `${label} // ${Math.round(pointerX)},${Math.round(pointerY)}`;
             }
         });
 
-        /* ========================================================
-           BACKGROUND CONSTELLATION + CURSOR ANALYSIS CANVAS
-           ======================================================== */
         const canvas = document.getElementById('interactiveCanvas');
         const ctx = canvas.getContext('2d');
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
-
-        const NODE_COUNT = 38;
-        const nodes = [];
-        for (let i = 0; i < NODE_COUNT; i++) {
-            nodes.push({
-                x: Math.random() * width,
-                y: Math.random() * height,
-                vx: (Math.random() - 0.5) * 0.55,
-                vy: (Math.random() - 0.5) * 0.55
-            });
-        }
+        let width = canvas.width = window.innerWidth, height = canvas.height = window.innerHeight;
+        const nodes = Array.from({ length: 38 }, () => ({ x: Math.random() * width, y: Math.random() * height, vx: (Math.random() - 0.5) * 0.55, vy: (Math.random() - 0.5) * 0.55 }));
 
         function animateCanvas(now) {
             ctx.clearRect(0, 0, width, height);
@@ -876,18 +327,15 @@
             ctx.beginPath();
             for (let x = 0; x <= width; x += 40) {
                 const y = height * 0.5 + Math.sin(x * 0.008 + (now || 0) * 0.0015) * 32;
-                if (x === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
+                if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             }
             ctx.stroke();
 
-            for (let i = 0; i < NODE_COUNT; i++) {
+            for (let i = 0; i < nodes.length; i++) {
                 const p = nodes[i];
-                p.x += p.vx;
-                p.y += p.vy;
+                p.x += p.vx; p.y += p.vy;
                 if (p.x < 0 || p.x > width) p.vx *= -1;
                 if (p.y < 0 || p.y > height) p.vy *= -1;
-
                 ctx.fillStyle = `rgba(${primaryRgb}, 0.55)`;
                 ctx.fillRect(p.x - 1, p.y - 1, 2.5, 2.5);
 
@@ -896,67 +344,25 @@
                     if (dist < 165) {
                         ctx.strokeStyle = `rgba(${accentRgb}, ${0.42 * (1 - dist / 165)})`;
                         ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(pointerX, pointerY);
-                        ctx.stroke();
-                    }
-                }
-
-                for (let j = i + 1; j < NODE_COUNT; j++) {
-                    const p2 = nodes[j];
-                    const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-                    if (dist < 115) {
-                        ctx.strokeStyle = `rgba(${primaryRgb}, ${0.14 - dist / 900})`;
-                        ctx.lineWidth = 0.6;
-                        ctx.beginPath();
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(pointerX, pointerY); ctx.stroke();
                     }
                 }
             }
-
             requestAnimationFrame(animateCanvas);
         }
         requestAnimationFrame(animateCanvas);
+        window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
 
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        });
-
-        /* ========================================================
-           FIREBASE AUTHENTICATION
-           ======================================================== */
-        const fbCfg = {
-            apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI",
-            authDomain: "sentinel-vault-fb4b7.firebaseapp.com",
-            projectId: "sentinel-vault-fb4b7",
-            storageBucket: "sentinel-vault-fb4b7.firebasestorage.app",
-            messagingSenderId: "192301825793",
-            appId: "1:192301825793:web:734530705f4084608fe500"
-        };
-        firebase.initializeApp(fbCfg);
+        const fbCfg = { apiKey: "AIzaSyA7SlllDkivi27WF7ikTRjqb4GqRIoYxlI", authDomain: "sentinel-vault-fb4b7.firebaseapp.com", projectId: "sentinel-vault-fb4b7", storageBucket: "sentinel-vault-fb4b7.firebasestorage.app", messagingSenderId: "192301825793", appId: "1:192301825793:web:734530705f4084608fe500" };
+        if (!firebase.apps.length) firebase.initializeApp(fbCfg);
 
         firebase.auth().onAuthStateChanged(user => {
-            if (!user) {
-                window.location.href = 'index.html';
-            } else {
+            if (!user) { window.location.href = 'index.html'; }
+            else {
                 document.getElementById('authLoader').style.display = 'none';
                 const agentName = user.email.split('@')[0].toUpperCase();
                 const initial = agentName.charAt(0);
-                const profileUI = `
-                    <div class="user-profile-container">
-                        <div class="user-chip">
-                            <div class="user-avatar">${initial}</div>
-                            <span class="agent-name-txt">AGENT ${agentName}</span>
-                        </div>
-                        <div class="user-dropdown">
-                            <div class="dropdown-email">${user.email}</div>
-                            <button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ SECURE LOGOUT</button>
-                        </div>
-                    </div>`;
+                const profileUI = `<div class="user-profile-container"><div class="user-chip"><div class="user-avatar">${initial}</div><span class="agent-name-txt">AGENT ${agentName}</span></div><div class="user-dropdown"><div class="dropdown-email">${user.email}</div><button class="btn-logout-drop" onclick="firebase.auth().signOut()">⍈ SECURE LOGOUT</button></div></div>`;
                 document.getElementById('desktopAuthState').innerHTML = profileUI;
                 document.getElementById('mobileAuthState').innerHTML = profileUI;
             }
